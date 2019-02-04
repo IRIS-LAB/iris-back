@@ -1,4 +1,4 @@
-import { checkNoInjection } from "./RechercheUtils";
+import { checkNoInjection } from "../recherche/RechercheUtils";
 import {BusinessException, ErrorDO} from 'iris-common'
 
 /**

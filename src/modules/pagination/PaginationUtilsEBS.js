@@ -1,4 +1,4 @@
-import * as typeUtils from './TypeUtils'
+import * as typeUtils from '../type/TypeUtils'
 import { ErrorDO, BusinessException, TechnicalException } from 'iris-common'
 /**
  * Generates headers for pagination
