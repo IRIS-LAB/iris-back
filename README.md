@@ -25,5 +25,5 @@ npm test
 
 ```bash
 # install dependency
-npm i iris-back --save
+npm i @ugieiris/iris-back --save
 ```

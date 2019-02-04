@@ -1,8 +1,11 @@
 {
   "name": "@ugieiris/iris-back",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A back common js module",
+  "main": "dist/index.js",
+	"files": [
+		"dist/"
+	],
   "scripts": {
     "build": "rollup --config",
     "test": "echo \"Error: no test specified\" && exit 1"
