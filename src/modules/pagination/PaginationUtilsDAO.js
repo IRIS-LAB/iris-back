@@ -1,7 +1,7 @@
 import { SearchUtils } from '../search/searchUtils';
 import {BusinessException, ErrorDO} from 'iris-common'
 
-export const paginationUtilsDAO = (checkNoInjection) = {
+export const PaginationUtilsDAO = checkNoInjection = {
 
     /**
      * Generates object to sort
