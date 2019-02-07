@@ -1,5 +1,9 @@
 import * as typeUtils from '../type/TypeUtils'
-import { ErrorDO, BusinessException, TechnicalException } from 'iris-common'
+import {
+  ErrorDO,
+  BusinessException,
+  TechnicalException
+} from '@ugieiris/iris-common'
 /**
  * Generates headers for pagination
  * @param {String} type 
