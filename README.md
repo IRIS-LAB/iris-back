@@ -27,3 +27,16 @@ npm test
 # install dependency
 npm i @ugieiris/iris-back --save
 ```
+
+## Logger
+
+You can create a logger that log in a file and in the console like that :
+
+```js
+import { Logger } from '@ugieiris/iris-back'
+
+const logger = Logger.create('debug', 'd:\\temp\\myAppLog.log')
+logger.info('my first log')
+```
+
+The library `winston` is used to create the logger.
