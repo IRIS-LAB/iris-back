@@ -28,6 +28,14 @@ npm test
 npm i @ugieiris/iris-back --save
 ```
 
+## Pagination for exposition
+You can use a pagination's function for exposition
+
+```js
+    import { PaginationUtilsEBS } from '@ugieiris/iris-back'
+
+    const
+```
 ## Actuator
 
 If you want add actuator for your Express Api :
