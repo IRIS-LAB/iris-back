@@ -28,6 +28,35 @@ npm test
 npm i @ugieiris/iris-back --save
 ```
 
+## Actuator
+
+If you want add actuator for your Express Api :
+
+```js
+import { actuator } from '@ugieiris/iris-back'
+
+const app = express()
+actuator(logger).route(app)
+```
+
+## Express Utils
+
+Severals middleware for Express are availables :
+
+- parseJSON: transform body request to a JSON object
+- logRequests: log debug request
+- errorHandler: log the error and return the good status
+- enableCors: enable cors with cors plugin
+- returnApplicationJson: add to the header the content-type application/json
+
+```js
+import { expressUtils } from '@ugieiris/iris-back'
+
+const utils = expressUtils(logger)
+const app = express()
+app.use(utils.parseJSON)
+```
+
 ## Logger
 
 You can create a logger that log in a file and in the console like that :
@@ -40,17 +69,6 @@ logger.info('my first log')
 ```
 
 The library `winston` is used to create the logger.
-
-## Actuator
-
-If you want add actuator for your Express Api :
-
-```js
-import { actuator } from '@ugieiris/iris-back'
-
-const app = express()
-actuator(logger).route(app)
-```
 
 ## TypeUtils
 
