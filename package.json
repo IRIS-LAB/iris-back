@@ -1,6 +1,6 @@
 {
   "name": "@ugieiris/iris-back",
-  "version": "1.0.0-6",
+  "version": "1.0.5-0",
   "description": "A back common js module",
   "main": "dist/index.js",
   "files": [
@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "iris-common": "^1.0.4-0",
+    "express-actuator": "^1.1.0",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.23",
     "winston": "^3.1.0"
