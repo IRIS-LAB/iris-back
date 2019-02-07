@@ -40,3 +40,17 @@ logger.info('my first log')
 ```
 
 The library `winston` is used to create the logger.
+
+## TypeUtils
+
+You can use that to change a type of variable 
+
+```js
+import { TypeUtils } from '@ugieiris/iris-back'
+
+let int = '8'
+console.log(typeof int)
+await TypeUtils.defineType(TypeUtils.TYPE.INT, int)
+console.log(typeof int)
+
+```
