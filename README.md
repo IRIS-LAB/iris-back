@@ -40,3 +40,14 @@ logger.info('my first log')
 ```
 
 The library `winston` is used to create the logger.
+
+## Actuator
+
+If you want add actuator for your Express Api :
+
+```js
+import { actuator } from '@ugieiris/iris-back'
+
+const app = express()
+actuator(logger).route(app)
+```
