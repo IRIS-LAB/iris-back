@@ -49,9 +49,9 @@ async function createObjectForSortString (sortString) {
 async function searchInDb (collection ,connectionDb, find, query) {
     const sortMongo = query.sort ? await paginationUtils.createObjectForSort(query.sort) : null
     let response = {}
-    //Recupere tous les éléments par rapport au find
+
     response.response = await connectionDb.collection(collection).find(find).sort(sortMongo).skip(query.size * query.page).limit(query.size).toArray()
-    //Récupére le nombre maximum qui est retourné par le find
+
     response.count = await connectionDb.collection(collection).countDocuments(find)
     return response
 }

@@ -137,7 +137,7 @@ async function checkDefaultSizeAndPage (queryParams) {
             throw new BusinessException(new ErrorDO('size', 'pagination.size.greaterThan0'))
         } 
     } catch (error) {
-        if (error instanceof TechnicalException){
+        if (error instanceof BusinessException){
             throw new BusinessException([new ErrorDO('size', 'pagination.size.number'), new ErrorDO('page', 'pagination.page.number')])
         }else{
             throw error
