@@ -27,3 +27,12 @@ npm test
 # install dependency
 npm i @ugieiris/iris-back --save
 ```
+
+## Pagination for exposition
+You can use a pagination's function for exposition
+
+```js
+    import { PaginationUtilsEBS } from '@ugieiris/iris-back'
+
+    const
+```
