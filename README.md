@@ -43,14 +43,14 @@ The library `winston` is used to create the logger.
 
 ## TypeUtils
 
-You can use that to change a type of variable 
+You can use that to change variable's type
 
 ```js
 import { TypeUtils } from '@ugieiris/iris-back'
 
 let int = '8'
-console.log(typeof int)
+console.log(typeof int) //string
 await TypeUtils.defineType(TypeUtils.TYPE.INT, int)
-console.log(typeof int)
+console.log(typeof int) //number
 
 ```
