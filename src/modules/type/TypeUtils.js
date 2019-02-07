@@ -1,20 +1,22 @@
 import {BusinessException} from 'iris-common'
 var moment = require('moment')
+
+export const TypeUtils = {
 /**
  * Enum type
  */
-export const TYPE = {
+TYPE : {
 	STRING : 'string',
 	INT : 'int',
 	DATE : 'date',
-}
+},
 
 /**
  * Allows to transform the parameter into the type provided
  * @param {TYPE} type 
  * @param {String} param 
  */
-export const defineType = async (type , param) => {
+async defineType (type , param) {
 	switch (type) {
 		case TYPE.STRING:
 			break
@@ -28,28 +30,28 @@ export const defineType = async (type , param) => {
 			throw new BusinessException('bad type')
 	}
 	return param
-}
+},
 
 /**
  * Transforms string to int
  * @param {String} param 
  * 					a number
  */
-export const stringToIntBase10 = async (param) => {
+async stringToIntBase10 (param) {
 	let regInt = RegExp(/^\d+$/, 'g')
 	if(!regInt.test(param)){
 		throw new Error('number')
 	}
 	param = parseInt(param)
 	return param
-}
+},
 
 /**
  * Transforms string to date
  * @param {String} param 
  * 					a date
  */
-export const stringToDate = async (param) => {
+async stringToDate (param) {
 	try {
 		if(!moment(param, moment.HTML5_FMT.DATETIME_LOCAL_MS, true).isValid()){
 			throw new Error('date')
@@ -59,4 +61,5 @@ export const stringToDate = async (param) => {
 	} catch (error) {
 		throw error
 	}
+}
 }
