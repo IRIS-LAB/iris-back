@@ -1,9 +1,10 @@
 import {BusinessException} from 'iris-common'
 var moment = require('moment')
+
 /**
  * Enum type
  */
-export const TYPE = {
+const TYPE = {
 	STRING : 'string',
 	INT : 'int',
 	DATE : 'date',
@@ -13,8 +14,10 @@ export const TYPE = {
  * Allows to transform the parameter into the type provided
  * @param {TYPE} type 
  * @param {String} param 
+ * 
+ * @returns param with a good type
  */
-export const defineType = async (type , param) => {
+async function defineType (type , param) {
 	switch (type) {
 		case TYPE.STRING:
 			break
@@ -34,29 +37,36 @@ export const defineType = async (type , param) => {
  * Transforms string to int
  * @param {String} param 
  * 					a number
+ * @returns number
  */
-export const stringToIntBase10 = async (param) => {
-	let regInt = RegExp(/^\d+$/, 'g')
+async function stringToIntBase10 (param) {
+	const regInt = RegExp(/^\d+$/, 'g')
 	if(!regInt.test(param)){
 		throw new Error('number')
 	}
-	param = parseInt(param)
-	return param
+	return parseInt(param)
 }
 
 /**
  * Transforms string to date
  * @param {String} param 
  * 					a date
+ * @returns date
  */
-export const stringToDate = async (param) => {
+async function stringToDate (param) {
 	try {
 		if(!moment(param, moment.HTML5_FMT.DATETIME_LOCAL_MS, true).isValid()){
 			throw new Error('date')
 		}
-		param = new Date(param)
-		return param
+		return new Date(param)
 	} catch (error) {
 		throw error
 	}
+}
+
+export const TypeUtils = {
+	TYPE: TYPE,
+	defineType: defineType,
+	stringToIntBase10: stringToIntBase10,
+	stringToDate: stringToDate
 }
