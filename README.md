@@ -70,6 +70,7 @@ logger.info('my first log')
 
 The library `winston` is used to create the logger.
 
+
 ## TypeUtils
 
 You can use that to change variable's type
@@ -81,4 +82,30 @@ let int = '8'
 console.log(typeof int) //string
 await TypeUtils.defineType(TypeUtils.TYPE.INT, int)
 console.log(typeof int) //number
+```
+
+## Advanced search on mongodb
+
+You can use searchUtils to use a advanced search (min, max , wildcard, list).
+If you want search with wildcard:
+
+```js
+import { SearchUtils } from @ugieiris/iris-back
+
+//Your search's object
+let object = {
+    id: 1
+}
+
+SearchUtils.searchStringObject(object, 'libelle', '*ui*')
+
+console.log(object)
+/*
+object {
+    id: 1,
+    libelle: {
+        $regex: `ui`i
+    }
+}
+*/
 ```

@@ -13,8 +13,8 @@ import {BusinessException, ErrorDO} from '@ugieiris/iris-common'
 async function searchStringObject (object , prop , param) {
 	try {
 		await checkNoInjection(param)
-		let startWith = RegExp(/\*$/)
-		let endWith = RegExp(/^\*/)
+		const startWith = RegExp(/\*$/)
+		const endWith = RegExp(/^\*/)
 		//contains
 		if( endWith.test(param) && startWith.test(param) ){
 			param = param.replace(RegExp(/\*/, 'g'),'')
