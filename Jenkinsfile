@@ -1,6 +1,6 @@
 #!groovy
  
-@Library('gie') _
+@Library('gie@develop') _
  
 continuousIntegration(
   builder: 'npm',
