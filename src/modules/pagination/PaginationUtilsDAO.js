@@ -1,4 +1,4 @@
-import { SearchUtils } from "./../search/searchUtils";
+import { checkNoInjection } from '../recherche/RechercheUtils';
 import {BusinessException, ErrorDO} from 'iris-common'
 
 /**
@@ -25,7 +25,7 @@ export const createObjectForSort = async sorts => {
 
 const createObjectForSortString = async (sortString) => {
     try {
-        await SearchUtils.checkNoInjection(sortString)
+        await checkNoInjection(sortString)
         const tab = sortString.split(",")
         let objectSort = {}
         objectSort[tab[0]] = tab[1] === 'asc' ? 1 : -1
