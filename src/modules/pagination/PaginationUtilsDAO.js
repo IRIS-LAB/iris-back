@@ -1,54 +1,66 @@
-import { checkNoInjection } from "../recherche/RechercheUtils";
-import {BusinessException, ErrorDO} from 'iris-common'
+import { checkNoInjection } from '../recherche/RechercheUtils'
+import { BusinessException, ErrorDO } from '@ugieiris/iris-common'
 
 /**
  * Generates object to sort
- * @param {String[] | String} sorts 
- *                              sort 
+ * @param {String[] | String} sorts
+ *                              sort
  */
-export const createObjectForSort = async (sorts) => {
-	let responseSort = {}
-	if(typeof sorts === 'string'){
-		responseSort = await createObjectForSortString(sorts)
-	}else if (typeof sorts === 'object'){
-		for (let sort in sorts) {
-			responseSort = {...responseSort, ...await createObjectForSortString(sorts[sort])}
-		}
-	}else{
-        throw new BusinessException(new ErrorDO('sort','pagination.sort.type'))
+export const createObjectForSort = async sorts => {
+  let responseSort = {}
+  if (typeof sorts === 'string') {
+    responseSort = await createObjectForSortString(sorts)
+  } else if (typeof sorts === 'object') {
+    for (let sort in sorts) {
+      responseSort = {
+        ...responseSort,
+        ...(await createObjectForSortString(sorts[sort]))
+      }
     }
-    return responseSort
+  } else {
+    throw new BusinessException(new ErrorDO('sort', 'pagination.sort.type'))
+  }
+  return responseSort
 }
 
-const createObjectForSortString = async (sortString) => {
-    try {
-        await checkNoInjection(sortString)
-        const tab = sortString.split(",")
-        let objectSort = {}
-        objectSort[tab[0]] = tab[1] === 'asc' ? 1 : -1
-        return objectSort   
-    } catch (error) {
-        throw error
-    }
-	
+const createObjectForSortString = async sortString => {
+  try {
+    await checkNoInjection(sortString)
+    const tab = sortString.split(',')
+    let objectSort = {}
+    objectSort[tab[0]] = tab[1] === 'asc' ? 1 : -1
+    return objectSort
+  } catch (error) {
+    throw error
+  }
 }
 /**
  * generates a paged response
- * @param {String} collection 
+ * @param {String} collection
  *                      name of collection
- * @param {Object} connectionDb 
- *                      object to connect to the database 
- * @param {Object} find 
+ * @param {Object} connectionDb
+ *                      object to connect to the database
+ * @param {Object} find
  *                      object that is being researched
- * @param {Object} query 
+ * @param {Object} query
  *                      query paramater
  */
-export const searchInDb = async (collection ,connectionDb, find, query) => {
-    const sortMongo = query.sort ? await paginationUtils.createObjectForSort(query.sort) : null
-    let response = {}
-    //Recupere tous les éléments par rapport au find
-	response.response = await connectionDb.collection(collection).find(find).sort(sortMongo).skip(query.size * query.page).limit(query.size).toArray()
-	//Récupére le nombre maximum qui est retourné par le find
-    response.count = await connectionDb.collection(collection).countDocuments(find)
-    return response
+export const searchInDb = async (collection, connectionDb, find, query) => {
+  const sortMongo = query.sort
+    ? await paginationUtils.createObjectForSort(query.sort)
+    : null
+  let response = {}
+  //Recupere tous les éléments par rapport au find
+  response.response = await connectionDb
+    .collection(collection)
+    .find(find)
+    .sort(sortMongo)
+    .skip(query.size * query.page)
+    .limit(query.size)
+    .toArray()
+  //Récupére le nombre maximum qui est retourné par le find
+  response.count = await connectionDb
+    .collection(collection)
+    .countDocuments(find)
+  return response
 }
