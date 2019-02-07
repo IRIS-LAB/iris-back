@@ -10,7 +10,7 @@ import {BusinessException, ErrorDO} from '@ugieiris/iris-common'
  * @param {String} param 
  * 					the string who is searching with wildcards
  */
-export const searchStringObject = async (object , prop , param) =>{
+async function searchStringObject (object , prop , param) {
 	try {
 		await checkNoInjection(param)
 		let startWith = RegExp(/\*$/)
@@ -54,7 +54,7 @@ export const searchStringObject = async (object , prop , param) =>{
  * 					parameter's type
  * 
  */
-export const searchMax = async (object, prop , param , type) => {
+async function searchMax (object, prop , param , type) {
 	try{
 		await checkNoInjection(param)
 		param = await typeUtils.defineType(type, param)
@@ -79,7 +79,7 @@ export const searchMax = async (object, prop , param , type) => {
  * 					parameter's type
  * 
  */
-export const searchMin = async (object, prop , param , type) => {
+async function searchMin (object, prop , param , type) {
 	try{
 		await checkNoInjection(param)
 		param = await typeUtils.defineType(type, param)
@@ -105,7 +105,7 @@ export const searchMin = async (object, prop , param , type) => {
  * 					parameter's type
  * 
  */
-export const searchList = async (object , prop , param , type) => {
+async function searchList (object , prop , param , type) {
 	try {
 		if(!object['$or'] ) {
 			object['$or'] = []
@@ -125,8 +125,16 @@ export const searchList = async (object , prop , param , type) => {
  * @param {String} param 
  * 					paramater check
  */
-export const checkNoInjection = async (param) => {
+async function checkNoInjection (param) {
 	if(RegExp(/[{}]/).test(param)){
 		throw new Error('injection')
 	}
+}
+
+export const SearchUtils = {
+	checkNoInjection: checkNoInjection,
+	searchList: searchList,
+	searchMin: searchMin,
+	searchMax: searchMax,
+	searchStringObject: searchStringObject
 }
