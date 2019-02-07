@@ -28,14 +28,6 @@ npm test
 npm i @ugieiris/iris-back --save
 ```
 
-## Pagination for exposition
-You can use a pagination's function for exposition
-
-```js
-    import { PaginationUtilsEBS } from '@ugieiris/iris-back'
-
-    const
-```
 ## Actuator
 
 If you want add actuator for your Express Api :
@@ -89,4 +81,43 @@ let int = '8'
 console.log(typeof int) //string
 await TypeUtils.defineType(TypeUtils.TYPE.INT, int)
 console.log(typeof int) //number
+```
+## Pagination
+To use pagination you need to change your function that exposes your route (EBS) and your function that makes the request to the database (DAO).
+
+### Pagination EBS
+The EBS pagination will allow you to check the size and page requested by the customer, but also to return an appropriate header.
+
+```js
+    import { PaginationUtilsEBS } from '@ugieiris/iris-back'
+
+    commandesRouter.get('/', async (req, res) => {
+        try {
+            //StartOnPagination check if size and page are a number and check too Accept-Range
+            await PaginationUtilsEBS.startOnPagination(req.query, 50)
+            const response = await commandesLBS.findCommandes(req.query)
+            //generatesResponse generate a header and a status of response
+            await PaginationUtilsEBS.generatesResponse('commande', 50, response.count, response.response.length, req.headers.host+req.originalUrl, req.query , res)
+            res.send(response.response)
+        } catch (error) {
+            res.send(error)
+        }
+    })
+```
+
+### Pagination DAO
+
+```js
+import { PaginationUtilsDAO } from '@ugieiris/iris-back'
+
+export const findCommandes = async (query) => {
+	try {
+		let commandeFind = {}
+        const commandesDB = await connect()
+        //searchInDB create query and response paged		
+		return await PaginationUtilsDAO.searchInDb('commandes' , commandesDB ,commandeFind , query)
+		
+	} catch (error) {
+		throw error
+	}
 ```
