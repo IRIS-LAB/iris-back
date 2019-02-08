@@ -167,11 +167,11 @@ async function StartOnPagination  (queryParams , nbMaxAllow) {
 }
 
 export const PaginationUtilsEBS = {
-    generateHeader: generateHeader,
-    generateStatus: generateStatus,
-    generatesResponse: generatesResponse,
-    createUrl: createUrl,
-    checkAcceptRange: checkAcceptRange,
-    checkDefaultSizeAndPage: checkDefaultSizeAndPage,
-    StartOnPagination: StartOnPagination
+    generateHeader,
+    generateStatus,
+    generatesResponse,
+    createUrl,
+    checkAcceptRange,
+    checkDefaultSizeAndPage,
+    StartOnPagination
 }
