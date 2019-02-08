@@ -1,5 +1,8 @@
 import { SearchUtils } from '../search/searchUtils';
-import {BusinessException, ErrorDO} from 'iris-common'
+import {
+    BusinessException,
+    ErrorDO
+} from '@ugieiris/iris-common'
 
 
 /**
@@ -23,7 +26,7 @@ async function createObjectForSort (sorts) {
 
 async function createObjectForSortString (sortString) {
     try {
-        await checkNoInjection(sortString)
+        await SearchUtils.checkNoInjection(sortString)
         const tab = sortString.split(",")
         let objectSort = {}
         objectSort[tab[0]] = tab[1] === 'asc' ? 1 : -1
@@ -33,8 +36,6 @@ async function createObjectForSortString (sortString) {
     }    
 }
 
-<<<<<<< HEAD
-=======
 /**
  * generates a paged response
  * @param {String} collection 
@@ -47,16 +48,15 @@ async function createObjectForSortString (sortString) {
  *                      query paramater
 */
 async function searchInDb (collection ,connectionDb, find, query) {
-    const sortMongo = query.sort ? await paginationUtils.createObjectForSort(query.sort) : null
+    const sortMongo = query.sort ? await createObjectForSort(query.sort) : null
     let response = {}
-
+    //Recupere tous les éléments par rapport au find
     response.response = await connectionDb.collection(collection).find(find).sort(sortMongo).skip(query.size * query.page).limit(query.size).toArray()
-
+    //Récupére le nombre maximum qui est retourné par le find
     response.count = await connectionDb.collection(collection).countDocuments(find)
     return response
 }
 
->>>>>>> refactor pagination
 export const PaginationUtilsDAO = {
     createObjectForSort: createObjectForSort,
     searchInDb: searchInDb

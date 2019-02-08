@@ -1,5 +1,9 @@
-import * as typeUtils from '../type/TypeUtils'
-import { ErrorDO, BusinessException, TechnicalException } from 'iris-common'
+import { TypeUtils } from '../type/typeUtils'
+import { 
+    ErrorDO,
+    BusinessException,
+    TechnicalException
+} from '@ugieiris/iris-common'
 
 /**
  * Generates headers for pagination
@@ -131,8 +135,8 @@ async function checkAcceptRange (size , nbMaxAllow) {
  */
 async function checkDefaultSizeAndPage (queryParams) {
     try {    
-        queryParams.page = queryParams.page ?  await typeUtils.stringToIntBase10(queryParams.page) : 0
-        queryParams.size = queryParams.size ?  await typeUtils.stringToIntBase10(queryParams.size) : 2
+        queryParams.page = queryParams.page ?  await TypeUtils.stringToIntBase10(queryParams.page) : 0
+        queryParams.size = queryParams.size ?  await TypeUtils.stringToIntBase10(queryParams.size) : 2
         if(queryParams.size === 0){ 
             throw new BusinessException(new ErrorDO('size', 'pagination.size.greaterThan0'))
         } 
