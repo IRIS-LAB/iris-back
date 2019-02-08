@@ -1,5 +1,8 @@
-import * as typeUtils from '../type/TypeUtils'
-import {BusinessException, ErrorDO} from '@ugieiris/iris-common'
+import { TypeUtils } from '../type/typeUtils'
+import {
+	BusinessException,
+	ErrorDO
+} from '@ugieiris/iris-common'
 
 /**
  * Permits searching on a string with wildcards(*)
@@ -57,7 +60,7 @@ async function searchStringObject (object , prop , param) {
 async function searchMax (object, prop , param , type) {
 	try{
 		await checkNoInjection(param)
-		param = await typeUtils.defineType(type, param)
+		param = await TypeUtils.defineType(type, param)
 		if(!object[prop]){
 			object[prop] = {}
 		}
@@ -82,7 +85,7 @@ async function searchMax (object, prop , param , type) {
 async function searchMin (object, prop , param , type) {
 	try{
 		await checkNoInjection(param)
-		param = await typeUtils.defineType(type, param)
+		param = await TypeUtils.defineType(type, param)
 		if(!object[prop]){
 			object[prop] = {}
 		}
@@ -112,7 +115,7 @@ async function searchList (object , prop , param , type) {
 	    }
 	    for (let index = 0; index < param.length; index++) {
 		   checkNoInjection(param)
-		   const element = await typeUtils.defineType(type, param[index])
+		   const element = await TypeUtils.defineType(type, param[index])
 		   object.$or.push({[prop]:element})
 	    }
 	} catch (error) {

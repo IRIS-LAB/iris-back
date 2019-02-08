@@ -1,9 +1,10 @@
-import * as typeUtils from '../type/TypeUtils'
-import {
-  ErrorDO,
-  BusinessException,
-  TechnicalException
+import { TypeUtils } from '../type/typeUtils'
+import { 
+    ErrorDO,
+    BusinessException,
+    TechnicalException
 } from '@ugieiris/iris-common'
+
 /**
  * Generates headers for pagination
  * @param {String} type 
@@ -16,16 +17,17 @@ import {
  *                  number of elements in the answer
  * @param {Object} queryParams
  *                  all query params (req.query) 
+ * @returns header's object
  *                  
  */
-export const generateHeader = async (type, nbMaxAllow , elementCount , lengthResponse , hostname, queryParams) => {
+async function generateHeader (type, nbMaxAllow , elementCount , lengthResponse , hostname, queryParams) {
     const minIndex = (queryParams.page * queryParams.size)
     const maxIndex = minIndex + lengthResponse - 1
     const totalPages = Math.ceil(elementCount / queryParams.size)
     
     let link = ""
-
     let cloneQueryParams = Object.assign({},queryParams)
+
     if ((queryParams.page + 1) < totalPages) {
         cloneQueryParams.page++
         link = "<" + createUrl( hostname ,cloneQueryParams ) + ">; rel=\"next\","
@@ -53,16 +55,17 @@ export const generateHeader = async (type, nbMaxAllow , elementCount , lengthRes
         'X-Total-Page': totalPages,
         'link': link
     }
-
 }
+
 /**
  * Generates response's status 
  * @param {Number} nbMaxElement
  *                 maximum number of returned items you allow
  * @param {Number} nbElement 
  *                  number of elements returned
+ * @returns status number
  */
-export const generateStatus = async (nbMaxElement , nbElement) => {
+async function generateStatus (nbMaxElement , nbElement) {
     return nbMaxElement <= nbElement ? 200 : 206
 }
 
@@ -80,12 +83,13 @@ export const generateStatus = async (nbMaxElement , nbElement) => {
  *                  all query params (req.query) 
  * @param {Object} res
  *                  response 
- *                  
+ *            
  */
-export const generatesResponse  = async (type, nbMaxAllow , elementCount , lengthResponse , hostname, queryParams , res) => {
+async function generatesResponse (type, nbMaxAllow , elementCount , lengthResponse , hostname, queryParams , res) {
     res.set(await generateHeader(type, nbMaxAllow , elementCount , lengthResponse , hostname, queryParams ))
     res.status(await generateStatus(nbMaxAllow,elementCount))
 }
+
 /**
  * Creates an url from a string and query parameters entered
  *
@@ -99,18 +103,18 @@ export const generatesResponse  = async (type, nbMaxAllow , elementCount , lengt
  * @throws {Error} 
  *                  URL isn't type string
  */
-export const createUrl = async (url, queryParams) => {
+async function createUrl (url, queryParams) {
     let newUrl
     if (typeof (url) === 'string') {
-      newUrl = new URL(url)
+    newUrl = new URL(url)
     } else {
-      throw new TechnicalException(new ErrorDO('url','pagination.url.string'))
+    throw new TechnicalException(new ErrorDO('url','pagination.url.string'))
     }
     if (queryParams !== null) {
-      newUrl.search = new URLSearchParams(queryParams)
+    newUrl.search = new URLSearchParams(queryParams)
     }
     return newUrl
-  }
+}
 
 /**
  * checks if the size is less than the maximum number 
@@ -118,10 +122,10 @@ export const createUrl = async (url, queryParams) => {
  * @param {Number} nbMaxAllow 
  *                  maximum number allow
  */
-export const checkAcceptRange = async (size , nbMaxAllow) => {
+async function checkAcceptRange (size , nbMaxAllow) {
     if( size > nbMaxAllow){
     throw new BusinessException('Accept-Range')   
-  }
+    }
 }
 
 /**
@@ -129,15 +133,15 @@ export const checkAcceptRange = async (size , nbMaxAllow) => {
  * @param {Object} queryParams
  *                  all query params (req.query) 
  */
-export const checkDefaultSizeAndPage =  async (queryParams) => {
+async function checkDefaultSizeAndPage (queryParams) {
     try {    
-        queryParams.page = queryParams.page ?  await typeUtils.stringToIntBase10(queryParams.page) : 0
-        queryParams.size = queryParams.size ?  await typeUtils.stringToIntBase10(queryParams.size) : 2
+        queryParams.page = queryParams.page ?  await TypeUtils.stringToIntBase10(queryParams.page) : 0
+        queryParams.size = queryParams.size ?  await TypeUtils.stringToIntBase10(queryParams.size) : 2
         if(queryParams.size === 0){ 
             throw new BusinessException(new ErrorDO('size', 'pagination.size.greaterThan0'))
         } 
     } catch (error) {
-        if (error instanceof TechnicalException){
+        if (error instanceof BusinessException){
             throw new BusinessException([new ErrorDO('size', 'pagination.size.number'), new ErrorDO('page', 'pagination.page.number')])
         }else{
             throw error
@@ -153,11 +157,21 @@ export const checkDefaultSizeAndPage =  async (queryParams) => {
  * @param {Number} nbMaxAllow 
  *                          maximum number allow
  */
-export const StartOnPagination = async (queryParams , nbMaxAllow) => {
+async function StartOnPagination  (queryParams , nbMaxAllow) {
     try {
         await checkDefaultSizeAndPage(queryParams)
         await checkAcceptRange(queryParams.size, nbMaxAllow)     
     } catch (error) {
         throw error
     }
+}
+
+export const PaginationUtilsEBS = {
+    generateHeader,
+    generateStatus,
+    generatesResponse,
+    createUrl,
+    checkAcceptRange,
+    checkDefaultSizeAndPage,
+    StartOnPagination
 }

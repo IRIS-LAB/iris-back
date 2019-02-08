@@ -1,29 +1,32 @@
 import { SearchUtils } from '../search/searchUtils';
-import {BusinessException, ErrorDO} from 'iris-common'
+import {
+    BusinessException,
+    ErrorDO
+} from '@ugieiris/iris-common'
+
+
 
 /**
  * Generates object to sort
- * @param {String[] | String} sorts
+ * @param {String[] | String} sorts 
  *                              sort
+ * @returns Object to sort in mongodb
  */
-export const createObjectForSort = async sorts => {
-  let responseSort = {}
-  if (typeof sorts === 'string') {
-    responseSort = await createObjectForSortString(sorts)
-  } else if (typeof sorts === 'object') {
-    for (let sort in sorts) {
-      responseSort = {
-        ...responseSort,
-        ...(await createObjectForSortString(sorts[sort]))
-      }
+async function createObjectForSort (sorts) {
+    let responseSort = {}
+    if(typeof sorts === 'string'){
+        responseSort = await createObjectForSortString(sorts)
+    }else if (typeof sorts === 'object'){
+        for (let sort in sorts) {
+            responseSort = {...responseSort, ...await createObjectForSortString(sorts[sort])}
+        }
+    }else{
+        throw new BusinessException(new ErrorDO('sort','pagination.sort.type'))
     }
-  } else {
-    throw new BusinessException(new ErrorDO('sort', 'pagination.sort.type'))
-  }
-  return responseSort
+    return responseSort
 }
 
-const createObjectForSortString = async (sortString) => {
+async function createObjectForSortString (sortString) {
     try {
         await SearchUtils.checkNoInjection(sortString)
         const tab = sortString.split(",")
@@ -32,36 +35,32 @@ const createObjectForSortString = async (sortString) => {
         return objectSort   
     } catch (error) {
         throw error
-    }
-	
+    }    
 }
+
 /**
  * generates a paged response
- * @param {String} collection
+ * @param {String} collection 
  *                      name of collection
- * @param {Object} connectionDb
- *                      object to connect to the database
- * @param {Object} find
+ * @param {Object} connectionDb 
+ *                      object to connect to the database 
+ * @param {Object} find 
  *                      object that is being researched
- * @param {Object} query
+ * @param {Object} query 
  *                      query paramater
- */
-export const searchInDb = async (collection, connectionDb, find, query) => {
-  const sortMongo = query.sort
-    ? await paginationUtils.createObjectForSort(query.sort)
-    : null
-  let response = {}
-  //Recupere tous les éléments par rapport au find
-  response.response = await connectionDb
-    .collection(collection)
-    .find(find)
-    .sort(sortMongo)
-    .skip(query.size * query.page)
-    .limit(query.size)
-    .toArray()
-  //Récupére le nombre maximum qui est retourné par le find
-  response.count = await connectionDb
-    .collection(collection)
-    .countDocuments(find)
-  return response
+ * @returns Object that contains response of find and a count
+*/
+async function searchInDb (collection ,connectionDb, find, query) {
+    const sortMongo = query.sort ? await createObjectForSort(query.sort) : null
+    let response = {}
+
+    response.response = await connectionDb.collection(collection).find(find).sort(sortMongo).skip(query.size * query.page).limit(query.size).toArray()
+
+    response.count = await connectionDb.collection(collection).countDocuments(find)
+    return response
+}
+
+export const PaginationUtilsDAO = {
+    createObjectForSort,
+    searchInDb
 }
