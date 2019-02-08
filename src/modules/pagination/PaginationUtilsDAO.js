@@ -1,5 +1,5 @@
-import { checkNoInjection } from '../recherche/RechercheUtils'
-import { BusinessException, ErrorDO } from '@ugieiris/iris-common'
+import { SearchUtils } from '../search/searchUtils';
+import {BusinessException, ErrorDO} from 'iris-common'
 
 /**
  * Generates object to sort
@@ -23,16 +23,17 @@ export const createObjectForSort = async sorts => {
   return responseSort
 }
 
-const createObjectForSortString = async sortString => {
-  try {
-    await checkNoInjection(sortString)
-    const tab = sortString.split(',')
-    let objectSort = {}
-    objectSort[tab[0]] = tab[1] === 'asc' ? 1 : -1
-    return objectSort
-  } catch (error) {
-    throw error
-  }
+const createObjectForSortString = async (sortString) => {
+    try {
+        await SearchUtils.checkNoInjection(sortString)
+        const tab = sortString.split(",")
+        let objectSort = {}
+        objectSort[tab[0]] = tab[1] === 'asc' ? 1 : -1
+        return objectSort   
+    } catch (error) {
+        throw error
+    }
+	
 }
 /**
  * generates a paged response
