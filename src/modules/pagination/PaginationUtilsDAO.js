@@ -9,7 +9,8 @@ import {
 /**
  * Generates object to sort
  * @param {String[] | String} sorts 
- *                              sort 
+ *                              sort
+ * @returns Object to sort in mongodb
  */
 async function createObjectForSort (sorts) {
     let responseSort = {}
@@ -47,6 +48,7 @@ async function createObjectForSortString (sortString) {
  *                      object that is being researched
  * @param {Object} query 
  *                      query paramater
+ * @returns Object that contains response of find and a count
 */
 async function searchInDb (collection ,connectionDb, find, query) {
     const sortMongo = query.sort ? await createObjectForSort(query.sort) : null
