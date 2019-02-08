@@ -83,6 +83,32 @@ console.log(typeof int) //string
 await TypeUtils.defineType(TypeUtils.TYPE.INT, int)
 console.log(typeof int) //number
 ```
+
+## Advanced search on mongodb
+
+You can use searchUtils to use a advanced search (min, max , wildcard, list).
+If you want search with wildcard:
+
+```js
+import { SearchUtils } from @ugieiris/iris-back
+
+//Your search's object
+let object = {
+    id: 1
+}
+
+SearchUtils.searchStringObject(object, 'libelle', '*ui*')
+
+console.log(object)
+/*
+object {
+    id: 1,
+    libelle: {
+        $regex: `ui`i
+    }
+}
+*/
+```
 ## Pagination
 To use pagination you need to change your function that exposes your route (EBS) and your function that makes the request to the database (DAO).
 
