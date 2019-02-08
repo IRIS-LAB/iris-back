@@ -5,6 +5,7 @@ import {
 } from '@ugieiris/iris-common'
 
 
+
 /**
  * Generates object to sort
  * @param {String[] | String} sorts 
