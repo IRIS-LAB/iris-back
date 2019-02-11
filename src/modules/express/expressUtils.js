@@ -2,7 +2,9 @@ import cors from 'cors'
 import bodyParser from 'body-parser'
 import {
   EntityNotFoundBusinessException,
-  TechnicalException
+  TechnicalException,
+  ErrorDO,
+  BusinessException
 } from '@ugieiris/iris-common'
 
 /**
@@ -37,18 +39,33 @@ export const expressUtils = logger => {
       if (res.headersSent) {
         return next(err)
       }
-      logger.error(`${err.data || err.message} : ${err.stack}`)
+      const msg = err.data || err.message
+      logger.error(`${msg} : ${err.stack}`)
       let status = 400
+      let result = {}
+      // build errors structure
+      let errors = err.errors
+      if (errors) {
+        result = {
+          errors: Array.isArray(errors) ? errors : [errors]
+        }
+      }
+      // init status
       switch (err.constructor) {
-        case TechnicalException:
-          status = 500
-          break
         case EntityNotFoundBusinessException:
           status = 404
           break
+        case BusinessException:
+          status = 400
+          break
+        case TechnicalException:
+          status = 500
+          break
+        default:
+          result = { errors: [new ErrorDO(null, 'error', msg)] }
       }
 
-      res.status(status).send({ data: err.data || err.message })
+      res.status(status).send(result)
     },
     /**
      * Enable cors with cors plugin

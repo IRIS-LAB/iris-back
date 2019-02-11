@@ -1,5 +1,6 @@
 import fs from 'fs'
 import { google } from 'googleapis'
+import { TechnicalException, ErrorDO } from '@ugieiris/iris-common'
 
 /**
  * Return a helper to get a google token
@@ -7,7 +8,7 @@ import { google } from 'googleapis'
  * @param logger
  * @param exceptions classes
  */
-export const googleAuth = ({ secretPath, tokenPath }, logger, { TokenUnavailableException }) => {
+export const googleAuth = ({ secretPath, tokenPath }, logger) => {
   return {
     getGoogleAuthClient
   }
@@ -22,8 +23,13 @@ export const googleAuth = ({ secretPath, tokenPath }, logger, { TokenUnavailable
       // get oAuth2Client
       return await getOAuthClient(fileSecret.installed)
     } catch (error) {
-      logger.error(`Unable to get google authentification`)
-      throw error
+      logger.error(error)
+      const errorDo = new ErrorDO(
+        null,
+        'error.google.authentification',
+        'Unable to get google authentification'
+      )
+      throw new TechnicalException(errorDo)
     }
   }
 
@@ -33,14 +39,8 @@ export const googleAuth = ({ secretPath, tokenPath }, logger, { TokenUnavailable
    */
   async function getOAuthClient({ client_secret, client_id, redirect_uris }) {
     const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0])
-    // Check if we have previously stored a token.
-    try {
-      const token = JSON.parse(fs.readFileSync(tokenPath))
-      oAuth2Client.setCredentials(token)
-      return oAuth2Client
-    } catch (err) {
-      logger.error(err)
-      throw new TokenUnavailableException()
-    }
+    const token = JSON.parse(fs.readFileSync(tokenPath))
+    oAuth2Client.setCredentials(token)
+    return oAuth2Client
   }
 }
