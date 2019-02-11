@@ -70,7 +70,6 @@ logger.info('my first log')
 
 The library `winston` is used to create the logger.
 
-
 ## TypeUtils
 
 You can use that to change variable's type
@@ -86,11 +85,10 @@ console.log(typeof int) //number
 
 ## Advanced search on mongodb
 
-You can use searchUtils to use a advanced search (min, max , wildcard, list).
-If you want search with wildcard:
+You can use searchUtils to use a advanced search (min, max , wildcard, list). If you want search with wildcard:
 
 ```js
-import { SearchUtils } from @ugieiris/iris-back
+import { SearchUtils } from '@ugieiris/iris-back'
 
 //Your search's object
 let object = {
@@ -109,27 +107,56 @@ object {
 }
 */
 ```
+
+## Google Auth
+
+To call the api google, you can use googleAuth to get a google authentification token
+
+```js
+import { googleAuth } from '@ugieiris/iris-back'
+
+const myGoogleAuth = googleAuth(
+  {
+    secretPath: 'd:/temp/mySecret.json',
+    tokenPath: 'd:/temp/myToken.json'
+  },
+  logger,
+  exceptions
+)
+const authClient = googleAuth.getGoogleAuthClient()
+```
+
 ## Pagination
+
 To use pagination you need to change your function that exposes your route (EBS) and your function that makes the request to the database (DAO).
 
 ### Pagination EBS
+
 The EBS pagination will allow you to check the size and page requested by the customer, but also to return an appropriate header.
 
 ```js
-    import { PaginationUtilsEBS } from '@ugieiris/iris-back'
+import { PaginationUtilsEBS } from '@ugieiris/iris-back'
 
-    commandesRouter.get('/', async (req, res) => {
-        try {
-            //StartOnPagination check if size and page are a number and check too Accept-Range
-            await PaginationUtilsEBS.startOnPagination(req.query, 50)
-            const response = await commandesLBS.findCommandes(req.query)
-            //generatesResponse generate a header and a status of response
-            await PaginationUtilsEBS.generatesResponse('commande', 50, response.count, response.response.length, req.headers.host+req.originalUrl, req.query , res)
-            res.send(response.response)
-        } catch (error) {
-            res.send(error)
-        }
-    })
+commandesRouter.get('/', async (req, res) => {
+  try {
+    //StartOnPagination check if size and page are a number and check too Accept-Range
+    await PaginationUtilsEBS.startOnPagination(req.query, 50)
+    const response = await commandesLBS.findCommandes(req.query)
+    //generatesResponse generate a header and a status of response
+    await PaginationUtilsEBS.generatesResponse(
+      'commande',
+      50,
+      response.count,
+      response.response.length,
+      req.headers.host + req.originalUrl,
+      req.query,
+      res
+    )
+    res.send(response.response)
+  } catch (error) {
+    res.send(error)
+  }
+})
 ```
 
 ### Pagination DAO
@@ -141,9 +168,9 @@ export const findCommandes = async (query) => {
 	try {
 		let commandeFind = {}
         const commandesDB = await connect()
-        //searchInDB create query and response paged		
+        //searchInDB create query and response paged
 		return await PaginationUtilsDAO.searchInDb('commandes' , commandesDB ,commandeFind , query)
-		
+
 	} catch (error) {
 		throw error
 	}
