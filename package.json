@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/IRIS-LAB/iris-back#readme",
   "devDependencies": {
+    "debug": ">=2.6.9",
     "rollup": "^0.67.4",
     "rollup-plugin-minify-es": "^1.1.1",
     "rollup-plugin-multi-entry": "^2.0.2"
@@ -31,6 +32,7 @@
     "cors": "^2.8.5",
     "express-actuator": "^1.1.0",
     "fresh": "^0.5.2",
+    "googleapis": "^37.1.0",
     "mime": "^1.4.1",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.23",
