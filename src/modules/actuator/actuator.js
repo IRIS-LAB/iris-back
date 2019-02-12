@@ -1,4 +1,5 @@
 import eActuator from 'express-actuator'
+import { TechnicalException, ErrorDO } from '@ugieiris/iris-common'
 
 /**
  * @param {*} logger winston logger object
@@ -12,9 +13,15 @@ export const actuator = logger => {
    * @param {App} app express
    */
   async function route(app) {
-    // actuator
-    app.get('/actuator/health', health)
-    app.use(eActuator('/actuator'))
+    try {
+      // actuator
+      app.get('/actuator/health', health)
+      app.use(eActuator('/actuator'))
+    } catch (error) {
+      logger.error(error)
+      const errorDo = new ErrorDO(null, 'error.actuator.init', 'Unable to init Actuator')
+      throw new TechnicalException(errorDo)
+    }
   }
 
   /**
@@ -23,11 +30,6 @@ export const actuator = logger => {
    * @param {*} res response
    */
   async function health(req, res) {
-    try {
-      res.json({ status: 'UP' })
-    } catch (error) {
-      logger.error('An error occured', error)
-      res.status(500).send('An error occured')
-    }
+    res.json({ status: 'UP' })
   }
 }
