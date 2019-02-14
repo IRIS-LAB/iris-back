@@ -44,8 +44,8 @@ function createObjectSort(sorts) {
   if (typeof sorts === 'string') {
     createObjectSortString(sorts, responseSort)
   } else if (typeof sorts === 'object') {
-    for (const sort in sorts) {
-      createObjectSortString(sorts[sort], responseSort)
+    for (const sort of sorts) {
+      createObjectSortString(sort, responseSort)
     }
   }
   return responseSort
