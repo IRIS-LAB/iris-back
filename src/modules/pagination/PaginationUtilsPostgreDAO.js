@@ -1,20 +1,30 @@
 import { BusinessException, ErrorDO } from '@ugieiris/iris-common'
 
-async function findWithPagination(models, size, page, where, sorts) {
+/**
+ * Find all with pagination
+ * @param {object} models
+ *                  it's a sequelize model
+ * @param {object} query
+ *                      query paramater
+ * @param {Object} where
+ *                  object that is being researched
+ * @returns {Object} who composed by response and count (ex {response: , count: })
+ */
+async function findWithPagination(models, query, where) {
   try {
     let offset = 0
-    if (page !== 0) {
-      offset = (page - 1) * size
+    if (query.page !== 0) {
+      offset = (query.page - 1) * query.size
     }
     let objectFindAll = {}
     if (where && where !== null) {
       objectFindAll.where = where
     }
-    if (sorts && sorts !== null) {
-      objectFindAll.order = createObjectSort(sorts)
+    if (query.sort && query.sort !== null) {
+      objectFindAll.order = createObjectSort(query.sort)
     }
     objectFindAll.offset = offset
-    objectFindAll.limit = size
+    objectFindAll.limit = query.size
     const result = await models.findAndCountAll(objectFindAll)
     return { response: result.rows, count: result.count }
   } catch (error) {
