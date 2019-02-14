@@ -60,7 +60,7 @@ async function searchInDb (collection ,connectionDb, find, query) {
     return response
 }
 
-export const PaginationUtilsDAO = {
+export const PaginationUtilsMongoDAO = {
     createObjectForSort,
     searchInDb
 }

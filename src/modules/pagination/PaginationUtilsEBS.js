@@ -87,7 +87,7 @@ async function generateStatus (nbMaxElement , nbElement) {
  */
 async function generatesResponse (type, nbMaxAllow , elementCount , lengthResponse , hostname, queryParams , res) {
     res.set(await generateHeader(type, nbMaxAllow , elementCount , lengthResponse , hostname, queryParams ))
-    res.status(await generateStatus(nbMaxAllow,elementCount))
+    res.status(await generateStatus(elementCount,lengthResponse))
 }
 
 /**
