@@ -54,7 +54,7 @@ async function searchInDb (collection ,connectionDb, find, query) {
     const sortMongo = query.sort ? await createObjectForSort(query.sort) : null
     let response = {}
 
-    response.response = await connectionDb.collection(collection).find(find).sort(sortMongo).skip(query.size * query.page).limit(query.size).toArray()
+    response.rows = await connectionDb.collection(collection).find(find).sort(sortMongo).skip(query.size * query.page).limit(query.size).toArray()
 
     response.count = await connectionDb.collection(collection).countDocuments(find)
     return response

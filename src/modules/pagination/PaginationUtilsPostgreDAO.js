@@ -25,8 +25,7 @@ async function findWithPagination(models, query, where) {
     }
     objectFindAll.offset = offset
     objectFindAll.limit = query.size
-    const result = await models.findAndCountAll(objectFindAll)
-    return { response: result.rows, count: result.count }
+    return await await models.findAndCountAll(objectFindAll)
   } catch (error) {
     if (error.parent.routine === 'errorMissingColumn') {
       throw new BusinessException(new ErrorDO(error.message, 'bad.params', 'bad query params'))
