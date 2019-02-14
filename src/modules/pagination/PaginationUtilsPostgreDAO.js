@@ -1,4 +1,4 @@
-import { BusinessException, ErrorDO } from '@ugieiris/iris-common'
+import { BusinessException, ErrorDO, TechnicalException } from '@ugieiris/iris-common'
 
 /**
  * Find all with pagination
@@ -27,10 +27,10 @@ async function findWithPagination(models, query, where) {
     objectFindAll.limit = query.size
     return await await models.findAndCountAll(objectFindAll)
   } catch (error) {
-    if (error.parent.routine === 'errorMissingColumn') {
+    if (error.parent && error.parent.routine === 'errorMissingColumn') {
       throw new BusinessException(new ErrorDO(error.message, 'bad.params', 'bad query params'))
     } else {
-      throw error
+      throw new TechnicalException(new ErrorDO('','error.interne','error interne'))
     }
   }
 }
