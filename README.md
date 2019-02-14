@@ -159,19 +159,33 @@ commandesRouter.get('/', async (req, res) => {
 })
 ```
 
-### Pagination DAO
+### Pagination Mongo DAO
 
 ```js
-import { PaginationUtilsDAO } from '@ugieiris/iris-back'
+import { PaginationUtilsMongoDAO } from '@ugieiris/iris-back'
 
 export const findCommandes = async (query) => {
 	try {
 		let commandeFind = {}
         const commandesDB = await connect()
         //searchInDB create query and response paged
-		return await PaginationUtilsDAO.searchInDb('commandes' , commandesDB ,commandeFind , query)
+		return await PaginationUtilsMongoDAO.searchInDb('commandes' , commandesDB ,commandeFind , query)
 
 	} catch (error) {
 		throw error
 	}
+```
+
+### Pagination Postgre DAO
+To use a pagination for postgre, you must have 'sequelize'.
+```js
+import { PaginationUtilsPostgreDAO } from '@ugieiris/iris-back'
+import Sequelize from 'sequelize'
+
+
+export const findCommandes = async (query) => {
+  async function findAll(query) {
+    return await PaginationUtilsPostgreDAO.findWithPagination(models, query, where)
+  }
+
 ```
