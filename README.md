@@ -83,7 +83,9 @@ await TypeUtils.defineType(TypeUtils.TYPE.INT, int)
 console.log(typeof int) //number
 ```
 
-## Advanced search on mongodb
+## Advanced search 
+
+## on mongodb
 
 You can use searchUtils to use a advanced search (min, max , wildcard, list). If you want search with wildcard:
 
@@ -106,6 +108,28 @@ object {
     }
 }
 */
+```
+## on PostgreSQL
+To use an advanced search, you must have Sequelize
+
+```js
+import { SearchUtilsPostgre } from '@ugieiris/searchUtilsPostgre'
+  async function findAll(query) {
+    let where = {}
+    if(query.minCapacity){
+      SearchUtilsPostgre.searchMin('capacity', Number(query.minCapacity), where, Sequelize.Op)
+    }
+    if(query.maxCapacity){
+      SearchUtilsPostgre.searchMax('capacity', Number(query.maxCapacity), where, Sequelize.Op)
+    }
+    if(query.title){
+      SearchUtilsPostgre.searchString('title', query.title, where, Sequelize.Op)
+    }
+    if(query.mail){
+      SearchUtilsPostgre.searchList('mail', query.mail, where, Sequelize.Op)
+    }
+    return await PaginationUtilsPostgreDAO.findWithPagination(Resource,query.size,query.page,where, query.sort)
+  }
 ```
 
 ## Google Auth
