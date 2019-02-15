@@ -113,20 +113,21 @@ object {
 To use an advanced search, you must have Sequelize
 
 ```js
-import { SearchUtilsPostgre } from '@ugieiris/searchUtilsPostgre'
+import SearchUtilsPostgre from '@ugieiris/searchUtilsPostgre'
   async function findAll(query) {
     let where = {}
+    const searchUtilsPostgre = SearchUtilsPostgre(where, Sequelize.Op)
     if(query.minCapacity){
-      SearchUtilsPostgre.searchMin('capacity', Number(query.minCapacity), where, Sequelize.Op)
+      SearchUtilsPostgre.searchMin('capacity', Number(query.minCapacity))
     }
     if(query.maxCapacity){
-      SearchUtilsPostgre.searchMax('capacity', Number(query.maxCapacity), where, Sequelize.Op)
+      SearchUtilsPostgre.searchMax('capacity', Number(query.maxCapacity))
     }
     if(query.title){
-      SearchUtilsPostgre.searchString('title', query.title, where, Sequelize.Op)
+      SearchUtilsPostgre.searchString('title', query.title)
     }
     if(query.mail){
-      SearchUtilsPostgre.searchList('mail', query.mail, where, Sequelize.Op)
+      SearchUtilsPostgre.searchList('mail', query.mail)
     }
     return await PaginationUtilsPostgreDAO.findWithPagination(Resource,query.size,query.page,where, query.sort)
   }
