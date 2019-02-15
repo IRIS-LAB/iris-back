@@ -118,16 +118,16 @@ import SearchUtilsPostgre from '@ugieiris/searchUtilsPostgre'
     let where = {}
     const searchUtilsPostgre = SearchUtilsPostgre(where, Sequelize.Op)
     if(query.minCapacity){
-      SearchUtilsPostgre.searchMin('capacity', Number(query.minCapacity))
+      searchUtilsPostgre.searchMin('capacity', Number(query.minCapacity))
     }
     if(query.maxCapacity){
-      SearchUtilsPostgre.searchMax('capacity', Number(query.maxCapacity))
+      searchUtilsPostgre.searchMax('capacity', Number(query.maxCapacity))
     }
     if(query.title){
-      SearchUtilsPostgre.searchString('title', query.title)
+      searchUtilsPostgre.searchString('title', query.title)
     }
     if(query.mail){
-      SearchUtilsPostgre.searchList('mail', query.mail)
+      searchUtilsPostgre.searchList('mail', query.mail)
     }
     return await PaginationUtilsPostgreDAO.findWithPagination(Resource,query.size,query.page,where, query.sort)
   }
