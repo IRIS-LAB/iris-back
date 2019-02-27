@@ -1,6 +1,6 @@
 import { TypeUtils } from '../type/typeUtils'
 import { 
-    ErrorDO,
+    ErreurDO,
     BusinessException,
     TechnicalException
 } from '@ugieiris/iris-common'
@@ -108,7 +108,7 @@ async function createUrl (url, queryParams) {
     if (typeof (url) === 'string') {
     newUrl = new URL(url)
     } else {
-    throw new TechnicalException(new ErrorDO('url','pagination.url.string'))
+    throw new TechnicalException(new ErreurDO('url','pagination.url.string'))
     }
     if (queryParams !== null) {
     newUrl.search = new URLSearchParams(queryParams)
@@ -138,11 +138,11 @@ async function checkDefaultSizeAndPage (queryParams) {
         queryParams.page = queryParams.page ?  await TypeUtils.stringToIntBase10(queryParams.page) : 0
         queryParams.size = queryParams.size ?  await TypeUtils.stringToIntBase10(queryParams.size) : 2
         if(queryParams.size === 0){ 
-            throw new BusinessException(new ErrorDO('size', 'pagination.size.greaterThan0'))
+            throw new BusinessException(new ErreurDO('size', 'pagination.size.greaterThan0'))
         } 
     } catch (error) {
         if (error instanceof BusinessException){
-            throw new BusinessException([new ErrorDO('size', 'pagination.size.number'), new ErrorDO('page', 'pagination.page.number')])
+            throw new BusinessException([new ErreurDO('size', 'pagination.size.number'), new ErreurDO('page', 'pagination.page.number')])
         }else{
             throw error
         }

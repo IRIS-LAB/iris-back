@@ -1,7 +1,7 @@
 import { SearchUtils } from '../search/searchUtils';
 import {
     BusinessException,
-    ErrorDO
+    ErreurDO
 } from '@ugieiris/iris-common'
 
 
@@ -21,7 +21,7 @@ async function createObjectForSort (sorts) {
             responseSort = {...responseSort, ...await createObjectForSortString(sorts[sort])}
         }
     }else{
-        throw new BusinessException(new ErrorDO('sort','pagination.sort.type'))
+        throw new BusinessException(new ErreurDO('sort','pagination.sort.type'))
     }
     return responseSort
 }

@@ -1,7 +1,7 @@
 import { TypeUtils } from '../type/typeUtils'
 import {
 	BusinessException,
-	ErrorDO
+	ErreurDO
 } from '@ugieiris/iris-common'
 
 /**
@@ -40,7 +40,7 @@ async function searchStringObject (object , prop , param) {
 		}
 		
 	} catch (error) {
-		throw new BusinessException(new ErrorDO(prop , 'search.'+prop+'.string'))
+		throw new BusinessException(new ErreurDO(prop , 'search.'+prop+'.string'))
 	}
 
 }
@@ -66,7 +66,7 @@ async function searchMax (object, prop , param , type) {
 		}
 		object[prop]['$lte'] = param
 	}catch (error){
-		throw new BusinessException(new ErrorDO(prop , 'search.'+prop+'.'+error.message))
+		throw new BusinessException(new ErreurDO(prop , 'search.'+prop+'.'+error.message))
 	}
 }
 
@@ -91,7 +91,7 @@ async function searchMin (object, prop , param , type) {
 		}
 		object[prop]['$gte'] = param
 	}catch (error){
-		throw new BusinessException(new ErrorDO(prop , 'search.'+prop+'.'+error.message))
+		throw new BusinessException(new ErreurDO(prop , 'search.'+prop+'.'+error.message))
 	}
 	
 }
@@ -119,7 +119,7 @@ async function searchList (object , prop , param , type) {
 		   object.$or.push({[prop]:element})
 	    }
 	} catch (error) {
-		throw new BusinessException(new ErrorDO(prop , 'search.'+prop+'.'+error.message))
+		throw new BusinessException(new ErreurDO(prop , 'search.'+prop+'.'+error.message))
 	}
 	
 }

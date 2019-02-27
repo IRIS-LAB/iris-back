@@ -3,7 +3,7 @@ import bodyParser from 'body-parser'
 import {
   EntityNotFoundBusinessException,
   TechnicalException,
-  ErrorDO,
+  ErreurDO,
   BusinessException
 } from '@ugieiris/iris-common'
 
@@ -62,7 +62,7 @@ export const expressUtils = logger => {
           status = 500
           break
         default:
-          result = { errors: [new ErrorDO(null, 'error', msg)] }
+          result = { errors: [new ErreurDO(null, 'error', msg)] }
       }
 
       res.status(status).send(result)
