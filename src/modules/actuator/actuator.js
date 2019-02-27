@@ -1,5 +1,5 @@
 import eActuator from 'express-actuator'
-import { TechnicalException, ErrorDO } from '@ugieiris/iris-common'
+import { TechnicalException, ErreurDO } from '@ugieiris/iris-common'
 
 /**
  * @param {*} logger winston logger object
@@ -19,7 +19,7 @@ export const actuator = logger => {
       app.use(eActuator('/actuator'))
     } catch (error) {
       logger.error(error)
-      const errorDo = new ErrorDO(null, 'error.actuator.init', 'Unable to init Actuator')
+      const errorDo = new ErreurDO(null, 'error.actuator.init', 'Unable to init Actuator')
       throw new TechnicalException(errorDo)
     }
   }

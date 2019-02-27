@@ -1,6 +1,6 @@
 import fs from 'fs'
 import { google } from 'googleapis'
-import { TechnicalException, ErrorDO } from '@ugieiris/iris-common'
+import { TechnicalException, ErreurDO } from '@ugieiris/iris-common'
 
 /**
  * Return a helper to get a google token
@@ -24,7 +24,7 @@ export const googleAuth = ({ secretPath, tokenPath }, logger) => {
       return await getOAuthClient(fileSecret.installed)
     } catch (error) {
       logger.error(error)
-      const errorDo = new ErrorDO(
+      const errorDo = new ErreurDO(
         null,
         'error.google.authentification',
         'Unable to get google authentification'
