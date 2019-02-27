@@ -46,15 +46,15 @@ export const Logger = {
     }
 
     // disable console if mode = production
-    const transports = [new transports.File(options.file)]
+    const loggerTransports = [new transports.File(options.file)]
     if (process.env.NODE_ENV !== 'production') {
-      transports.push(new transports.Console(options.console))
+      loggerTransports.push(new transports.Console(options.console))
     }
 
     return createLogger({
       level: logLevel,
       format: combine(appendTimestamp({ tz: localTimeZone }), splat(), myFormat),
-      transports,
+      transports: loggerTransports,
       exitOnError: false // do not exit on handled exceptions
     })
   }
