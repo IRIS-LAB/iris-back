@@ -41,7 +41,7 @@ export const expressUtils = logger => {
       }
       const msg = err.data || err.message
       logger.error(`${msg} : ${err.stack}`)
-      let status = 400
+      let status = 500
       let result = {}
       // build errors structure
       let errors = err.errors
