@@ -1,5 +1,5 @@
 {
-  "name": "@ugieiris/iris-back",
+  "name": "@u-iris/iris-back",
   "version": "1.0.10-0",
   "description": "A back common js module",
   "main": "dist/index.js",
