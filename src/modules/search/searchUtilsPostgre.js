@@ -76,6 +76,12 @@ export const SearchUtilsPostgre = Op => {
     }
   }
 
+  /**
+   *  clone all query params without size, sort and page
+   * @param {Object} query
+   *                  all query params (req.query)
+   * @returns {Object} all query params without size , sort and page
+   */
   function cloneQueryWitoutSizeSortPage(query) {
     const { size, sort, page, ...clone } = query
     return clone
@@ -93,6 +99,12 @@ export const SearchUtilsPostgre = Op => {
     }
   }
 
+  /**
+   *  Generate a where who will send a sequelize
+   * @param {Object} query
+   *                    all query params (req.query)
+   * @returns {Object} object where who will send a sequelize
+   */
   function generateWhere(query) {
     const clone = cloneQueryWitoutSizeSortPage(query)
     let where = {}
