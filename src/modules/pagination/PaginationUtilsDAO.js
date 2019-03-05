@@ -1,5 +1,5 @@
 import { SearchUtilsMongo } from '../search/searchUtilsMongo'
-import { BusinessException, ErreurDO } from '@ugieiris/iris-common'
+import { BusinessException, ErreurDO } from '@u-iris/iris-common'
 
 /**
  * Generates object to sort

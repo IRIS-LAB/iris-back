@@ -1,5 +1,5 @@
 import { TypeUtils } from '../type/typeUtils'
-import { BusinessException, ErreurDO } from '@ugieiris/iris-common'
+import { BusinessException, ErreurDO } from '@u-iris/iris-common'
 
 /**
  * Permits searching on a string with wildcards(*)
