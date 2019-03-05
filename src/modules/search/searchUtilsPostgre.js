@@ -5,8 +5,8 @@
  * @param {Operator} Op
  *                  Operator of sequelize (Sequelize.op)
  */
-export const SearchUtilsPostgre = (objectWhere, Op) => {
-  return { searchMin, searchMax, searchString, searchList }
+export const SearchUtilsPostgre = Op => {
+  return { searchMin, searchMax, searchString, searchList, generateWhere }
 
   /**
    * Add the search greater than or equal for a property
@@ -15,7 +15,7 @@ export const SearchUtilsPostgre = (objectWhere, Op) => {
    * @param {TypeOfProp} param
    *                  parameter for this property
    */
-  function searchMin(prop, param) {
+  function searchMin(prop, param, objectWhere) {
     checkObjectExist(objectWhere, prop)
     objectWhere[prop][Op.gte] = param
   }
@@ -29,7 +29,7 @@ export const SearchUtilsPostgre = (objectWhere, Op) => {
    * @param {Object} objectWhere
    *              JSON object that will be sent to sequelize
    */
-  function searchMax(prop, param) {
+  function searchMax(prop, param, objectWhere) {
     checkObjectExist(objectWhere, prop)
     objectWhere[prop][Op.lte] = param
   }
@@ -41,7 +41,7 @@ export const SearchUtilsPostgre = (objectWhere, Op) => {
    * @param {String} param
    * 					the string who is searching with wildcards
    */
-  function searchString(prop, param) {
+  function searchString(prop, param, objectWhere) {
     if (param.includes('*')) {
       param = param.replace(RegExp(/\*/, 'g'), '%')
       checkObjectExist(objectWhere, prop)
@@ -58,7 +58,7 @@ export const SearchUtilsPostgre = (objectWhere, Op) => {
    * @param {String} param
    * 					the string who is searching with wildcards
    */
-  function searchList(prop, param) {
+  function searchList(prop, param, objectWhere) {
     if (typeof param === 'string') {
       objectWhere[prop] = param
     } else if (typeof param === 'object') {
@@ -74,5 +74,33 @@ export const SearchUtilsPostgre = (objectWhere, Op) => {
     if (!object[prop]) {
       object[prop] = {}
     }
+  }
+
+  function cloneQueryWitoutSizeSortPage(query) {
+    const { size, sort, page, ...clone } = query
+    return clone
+  }
+
+  function conditionForWhere(where, object, param) {
+    if (param.includes('min') || param.includes('after')) {
+      const prop = param.replace(RegExp(/^(min|after)+/, 'g'), '')
+      searchMin(prop, object[param], where)
+    } else if (param.includes('max') || param.includes('before')) {
+      const prop = param.replace(RegExp(/^(max|before)+/, 'g'), '')
+      searchMax(prop, object[param], where)
+    } else {
+      searchList(param, object[param], where)
+    }
+  }
+
+  function generateWhere(query) {
+    const clone = cloneQueryWitoutSizeSortPage(query)
+    let where = {}
+    for (const key in clone) {
+      if (clone.hasOwnProperty(key)) {
+        conditionForWhere(where, clone, key)
+      }
+    }
+    return where
   }
 }
