@@ -1,6 +1,6 @@
 import fs from 'fs'
 import { google } from 'googleapis'
-import { TechnicalException, ErreurDO } from '@ugieiris/iris-common'
+import { TechnicalException, ErreurDO } from '@u-iris/iris-common'
 
 /**
  * Return a helper to get a google token

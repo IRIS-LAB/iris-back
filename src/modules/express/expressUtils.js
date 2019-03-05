@@ -5,7 +5,7 @@ import {
   TechnicalException,
   ErreurDO,
   BusinessException
-} from '@ugieiris/iris-common'
+} from '@u-iris/iris-common'
 
 /**
  * @returns severals utils middlewares for express

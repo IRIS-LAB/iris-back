@@ -1,5 +1,5 @@
 import eActuator from 'express-actuator'
-import { TechnicalException, ErreurDO } from '@ugieiris/iris-common'
+import { TechnicalException, ErreurDO } from '@u-iris/iris-common'
 
 /**
  * @param {*} logger winston logger object

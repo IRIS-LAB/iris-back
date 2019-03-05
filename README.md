@@ -25,7 +25,7 @@ npm test
 
 ```bash
 # install dependency
-npm i @ugieiris/iris-back --save
+npm i @u-iris/iris-back --save
 ```
 
 ## Actuator
@@ -33,7 +33,7 @@ npm i @ugieiris/iris-back --save
 If you want add actuator for your Express Api :
 
 ```js
-import { actuator } from '@ugieiris/iris-back'
+import { actuator } from '@u-iris/iris-back'
 
 const app = express()
 actuator(logger).route(app)
@@ -50,7 +50,7 @@ Severals middleware for Express are availables :
 - returnApplicationJson: add to the header the content-type application/json
 
 ```js
-import { expressUtils } from '@ugieiris/iris-back'
+import { expressUtils } from '@u-iris/iris-back'
 
 const utils = expressUtils(logger)
 const app = express()
@@ -62,7 +62,7 @@ app.use(utils.parseJSON)
 You can create a logger that log in a file and in the console like that :
 
 ```js
-import { Logger } from '@ugieiris/iris-back'
+import { Logger } from '@u-iris/iris-back'
 
 const logger = Logger.create('debug', 'd:\\temp\\myAppLog.log')
 logger.info('my first log')
@@ -75,7 +75,7 @@ The library `winston` is used to create the logger.
 You can use that to change variable's type
 
 ```js
-import { TypeUtils } from '@ugieiris/iris-back'
+import { TypeUtils } from '@u-iris/iris-back'
 
 let int = '8'
 console.log(typeof int) //string
@@ -90,7 +90,7 @@ console.log(typeof int) //number
 You can use searchUtils to use a advanced search (min, max , wildcard, list). If you want search with wildcard:
 
 ```js
-import { SearchUtils } from '@ugieiris/iris-back'
+import { SearchUtils } from '@u-iris/iris-back'
 
 //Your search's object
 let object = {
@@ -113,7 +113,7 @@ object {
 To use an advanced search, you must have Sequelize
 
 ```js
-import SearchUtilsPostgre from '@ugieiris/searchUtilsPostgre'
+import SearchUtilsPostgre from '@u-iris/searchUtilsPostgre'
   async function findAll(query) {
     let where = {}
     const searchUtilsPostgre = SearchUtilsPostgre(where, Sequelize.Op)
@@ -138,7 +138,7 @@ import SearchUtilsPostgre from '@ugieiris/searchUtilsPostgre'
 To call the api google, you can use googleAuth to get a google authentification token
 
 ```js
-import { googleAuth } from '@ugieiris/iris-back'
+import { googleAuth } from '@u-iris/iris-back'
 
 const myGoogleAuth = googleAuth(
   {
@@ -160,7 +160,7 @@ To use pagination you need to change your function that exposes your route (EBS)
 The EBS pagination will allow you to check the size and page requested by the customer, but also to return an appropriate header.
 
 ```js
-import { PaginationUtilsEBS } from '@ugieiris/iris-back'
+import { PaginationUtilsEBS } from '@u-iris/iris-back'
 
 commandesRouter.get('/', async (req, res) => {
   try {
@@ -187,7 +187,7 @@ commandesRouter.get('/', async (req, res) => {
 ### Pagination DAO
 
 ```js
-import { PaginationUtilsDAO } from '@ugieiris/iris-back'
+import { PaginationUtilsDAO } from '@u-iris/iris-back'
 
 export const findCommandes = async (query) => {
 	try {

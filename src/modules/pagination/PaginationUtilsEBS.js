@@ -3,7 +3,7 @@ import {
     ErreurDO,
     BusinessException,
     TechnicalException
-} from '@ugieiris/iris-common'
+} from '@u-iris/iris-common'
 
 /**
  * Generates headers for pagination
