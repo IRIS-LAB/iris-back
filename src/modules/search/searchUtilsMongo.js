@@ -1,3 +1,8 @@
+/**
+ * advanced search for mongoDb
+ * @module search/SearchUtilsmongodb
+ */
+
 import { TypeUtils } from '../type/typeUtils'
 import { BusinessException, ErreurDO } from '@ugieiris/iris-common'
 
@@ -127,10 +132,10 @@ async function checkNoInjection(param) {
   }
 }
 
-export const SearchUtilsMongo = {
+export default (SearchUtilsMongo = {
   checkNoInjection: checkNoInjection,
   searchList: searchList,
   searchMin: searchMin,
   searchMax: searchMax,
   searchStringObject: searchStringObject
-}
+})
