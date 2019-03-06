@@ -330,7 +330,51 @@ async function findAll(query) {
     "maxCapacity"= 220,
     "minCapacity"= 200
   }*/
-  let whereGenerate = SearchUtilsPostgre.generateWhere(query)
+  let whereGenerate = await SearchUtilsPostgre.generateWhere(query)
+  /*Now object whereGenerate is:
+  {
+    "capacity": {
+      [Sequelize.Op.lte]: 220,
+      [Sequelize.Op.gte]: 200
+      },
+    "title":{
+      [Sequelize.Op.iLike]: "%ui%"
+    }
+  }*/
+
+  //Resource is model of sequelize
+  return await Resource.findall({ where: whereGenerate })
+}
+```
+
+But if you want choose attribute to use advanced search, you can use a function like this:
+
+```js
+import SearchUtilsPostgre from '@u-iris/searchUtilsPostgre'
+async function findAll(query) {
+  let whereGenerate = {}
+  //you want your customer can search on min and max of capacity and search on a title with wildcard and search a mail's list
+  /*You received this URI : https://app/resources?size=10&page=2&title=*ui*&maxCapacity=220&MinCapacity=200
+  So your object query is :
+  
+    "size": 10,
+    "page": 2,
+    "title": "*ui*",
+    "maxCapacity"= 220,
+    "minCapacity"= 200
+  }*/
+  if (query.minCapacity) {
+    searchUtilsPostgre.searchMin('capacity', Number(query.minCapacity), whereGenerate)
+  }
+  if (query.maxCapacity) {
+    searchUtilsPostgre.searchMax('capacity', Number(query.maxCapacity), whereGenerate)
+  }
+  if (query.title) {
+    searchUtilsPostgre.searchString('title', query.title, whereGenerate)
+  }
+  if (query.mail) {
+    searchUtilsPostgre.searchList('mail', query.mail, whereGenerate)
+  }
   /*Now object whereGenerate is:
   {
     "capacity": {
