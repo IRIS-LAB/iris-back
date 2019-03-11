@@ -110,21 +110,25 @@ object {
 */
 ```
 
-## on PostgreSQL
+## on PostgreSQL with Sequelize 
 
 To use an advanced search, you must have Sequelize. Advanced search allows you to search on list, on string with wildcard, between two numbers (min, max) or dates (after, before)
 
 ```js
 import SearchUtilsPostgre from '@u-iris/searchUtilsPostgre'
 async function findAll(query) {
-  /*You received this URI : https://app/resources?size=10&page=2&title=*ui*&maxCapacity=220&MinCapacity=200
+  /*You received this URI : https://app/resources?title=*ui*&maxCapacity=220&MinCapacity=200&afterDeliveryDate=2019-02-28&beforeDeliveryDate=2019-03-31&list=a&list=b&list=c OR
+  You received this URI : https://app/resources?title=*ui*&maxCapacity=220&MinCapacity=200&afterDeliveryDate=2019-02-28&beforeDeliveryDate=2019-03-31&list=a,b,c
+  */
   So your object query is :
   {
-    "size": 10,
-    "page": 2,
     "title": "*ui*",
-    "maxCapacity"= 220,
-    "minCapacity"= 200
+    "maxCapacity": 220,
+    "minCapacity": 200,
+    "afterDeliveryDate": "2019-02-28",
+    "beforeDeliveryDate": "2019-03-31",
+    "list": [a,b,c]
+    
   }*/
   let whereGenerate = await SearchUtilsPostgre.generateWhere(query)
   /*Now object whereGenerate is:
@@ -135,7 +139,13 @@ async function findAll(query) {
       },
     "title":{
       [Sequelize.Op.iLike]: "%ui%"
-    }
+    },
+    "deliveryDate": {
+      [Sequelize.Op.lte]: 2019-03-31,
+      [Sequelize.Op.gte]: 2019-02-28
+      },
+     "list": { 
+      [Sequelize.Op.Or]: [a,b,c]
   }*/
 
   //Resource is model of sequelize
