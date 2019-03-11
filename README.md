@@ -119,7 +119,7 @@ import SearchUtilsPostgre from '@u-iris/searchUtilsPostgre'
 async function findAll(query) {
   /*You received this URI : https://app/resources?size=10&page=2&title=*ui*&maxCapacity=220&MinCapacity=200
   So your object query is :
-  
+  {
     "size": 10,
     "page": 2,
     "title": "*ui*",
@@ -152,7 +152,7 @@ async function findAll(query) {
   //you want your customer can search on min and max of capacity and search on a title with wildcard and search a mail's list
   /*You received this URI : https://app/resources?size=10&page=2&title=*ui*&maxCapacity=220&MinCapacity=200
   So your object query is :
-  
+  {
     "size": 10,
     "page": 2,
     "title": "*ui*",
