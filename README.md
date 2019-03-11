@@ -316,7 +316,7 @@ object {
 
 ## on PostgreSQL
 
-To use an advanced search, you must have Sequelize. Advanced search allows you to search on list, on string with wildcard, between two number(min, max) or date(after, before)
+To use an advanced search, you must have Sequelize. Advanced search allows you to search on list, on string with wildcard, between two numbers (min, max) or dates (after, before)
 
 ```js
 import SearchUtilsPostgre from '@u-iris/searchUtilsPostgre'
