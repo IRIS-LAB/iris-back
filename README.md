@@ -119,7 +119,6 @@ import SearchUtilsPostgre from '@u-iris/searchUtilsPostgre'
 async function findAll(query) {
   /*You received this URI : https://app/resources?title=*ui*&maxCapacity=220&MinCapacity=200&afterDeliveryDate=2019-02-28&beforeDeliveryDate=2019-03-31&list=a&list=b&list=c OR
   You received this URI : https://app/resources?title=*ui*&maxCapacity=220&MinCapacity=200&afterDeliveryDate=2019-02-28&beforeDeliveryDate=2019-03-31&list=a,b,c
-  */
   So your object query is :
   {
     "title": "*ui*",
