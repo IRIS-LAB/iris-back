@@ -364,11 +364,9 @@ import SearchUtilsPostgre from '@u-iris/searchUtilsPostgre'
 async function findAll(query) {
   let whereGenerate = {}
   //you want your customer can search on min and max of capacity and search on a title with wildcard and search a mail's list
-  /*You received this URI : https://app/resources?size=10&page=2&title=*ui*&maxCapacity=220&MinCapacity=200
+  /*You received this URI : https://api/resources?title=*ui*&maxCapacity=220&minCapacity=200&mail=mail1@gmail.com,mail=mail2@gmail.com
   So your object query is :
   {
-    "size": 10,
-    "page": 2,
     "title": "*ui*",
     "maxCapacity"= 220,
     "minCapacity"= 200
@@ -393,7 +391,9 @@ async function findAll(query) {
       },
     "title":{
       [Sequelize.Op.iLike]: "%ui%"
-    }
+    },
+    "mail": { 
+      [Sequelize.Op.Or]: [mail1@gmail.com,b,mail2@gmail.com]
   }*/
 
   //Resource is model of sequelize
