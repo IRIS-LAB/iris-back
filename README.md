@@ -368,8 +368,9 @@ async function findAll(query) {
   So your object query is :
   {
     "title": "*ui*",
-    "maxCapacity"= 220,
-    "minCapacity"= 200
+    "maxCapacity": 220,
+    "minCapacity": 200,
+    "mail": [mail1@gmail.com,b,mail2@gmail.com]
   }*/
   if (query.minCapacity) {
     searchUtilsPostgre.searchMin('capacity', Number(query.minCapacity), whereGenerate)
