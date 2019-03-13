@@ -51,9 +51,17 @@ const paginationUtilsPostgreDAOError = {
     }
 }
 
+const paginationUtilsMongoDAOError = {
+    findWithPagination = {
+        code: 'paginationUtilsMongoDAOError.findWithPagination.internal.error',
+        label: 'internal error'
+    }
+}
+
 export default {
     typeUtilsError,
     SearchUtilsmongodbError,
     paginationUtilsEBSError,
     paginationUtilsPostgreDAOError,
+    paginationUtilsMongoDAOError,
 }

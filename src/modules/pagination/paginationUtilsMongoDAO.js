@@ -1,5 +1,6 @@
 import { SearchUtilsMongo } from '../search/searchUtilsMongo'
-import { BusinessException, ErreurDO } from '@u-iris/iris-common'
+import { ErreurDO, TechnicalException } from '@u-iris/iris-common'
+import { paginationUtilsMongoDAOError } from '../../error'
 
 /**
  * Generates object to sort
@@ -43,23 +44,33 @@ async function createObjectForSortString(sortString) {
  *                      query paramater
  * @returns Object that contains response of find and a count
  */
-async function searchInDb(collection, connectionDb, find, query) {
-  const sortMongo = query.sort ? await createObjectForSort(query.sort) : null
-  let response = {}
+async function findWithPagination(collection, connectionDb, find, query) {
+  try {
+    const sortMongo = query.sort ? await createObjectForSort(query.sort) : null
+    let response = {}
 
-  response.response = await connectionDb
-    .collection(collection)
-    .find(find)
-    .sort(sortMongo)
-    .skip(query.size * query.page)
-    .limit(query.size)
-    .toArray()
+    response.response = await connectionDb
+      .collection(collection)
+      .find(find)
+      .sort(sortMongo)
+      .skip(query.size * query.page)
+      .limit(query.size)
+      .toArray()
 
-  response.count = await connectionDb.collection(collection).countDocuments(find)
-  return response
+    response.count = await connectionDb.collection(collection).countDocuments(find)
+    return response
+  } catch (error) {
+    throw new TechnicalException(
+      new ErreurDO(
+        '',
+        paginationUtilsMongoDAOError.findWithPagination.code,
+        paginationUtilsMongoDAOError.findWithPagination.label
+      )
+    )
+  }
 }
 
 export const PaginationUtilsDAO = {
   createObjectForSort,
-  searchInDb,
+  findWithPagination,
 }
