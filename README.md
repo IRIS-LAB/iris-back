@@ -94,7 +94,7 @@ import { SearchUtils } from '@u-iris/iris-back'
 
 //Your search's object
 let object = {
-  id: 1
+  id: 1,
 }
 
 SearchUtils.searchStringObject(object, 'libelle', '*ui*')
@@ -110,7 +110,7 @@ object {
 */
 ```
 
-## on PostgreSQL with Sequelize 
+## on PostgreSQL with Sequelize
 
 To use an advanced search, you must have Sequelize. Advanced search allows you to search on list, on string with wildcard, between two numbers (min, max) or dates (after, before)
 
@@ -207,7 +207,7 @@ import { googleAuth } from '@u-iris/iris-back'
 const myGoogleAuth = googleAuth(
   {
     secretPath: 'd:/temp/mySecret.json',
-    tokenPath: 'd:/temp/myToken.json'
+    tokenPath: 'd:/temp/myToken.json',
   },
   logger,
   exceptions
@@ -229,7 +229,7 @@ import { PaginationUtilsEBS } from '@u-iris/iris-back'
 commandesRouter.get('/', async (req, res) => {
   try {
     //StartOnPagination check if size and page are a number and check too Accept-Range
-    await PaginationUtilsEBS.startOnPagination(req.query, 50)
+    await PaginationUtilsEBS.checkPagination(req.query, 50)
     const response = await commandesLBS.findCommandes(req.query)
     //generatesResponse generate a header and a status of response
     await PaginationUtilsEBS.generatesResponse(
