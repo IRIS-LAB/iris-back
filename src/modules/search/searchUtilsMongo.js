@@ -1,21 +1,18 @@
 /**
  * advanced search for mongoDb
- * @module search/SearchUtilsmongodb
+ * @module SearchUtilsmongodb
  */
 
-import { TypeUtils } from '../type/typeUtils'
 import { BusinessException, ErreurDO } from '@ugieiris/iris-common'
+import { TypeUtils } from '../type/typeUtils'
 
 /**
  * Permits searching on a string with wildcards(*)
- * @param {Object} object
- * 					JSON object that will be sent to mongo
- * @param {String} prop
- * 					name of property
- * @param {String} param
- * 					the string who is searching with wildcards
+ * @param {String} prop - name of property
+ * @param {String} param - the string who is searching with wildcards
+ * @param {Object} object - JSON object that will be sent to mongo
  */
-async function searchStringObject(object, prop, param) {
+async function searchString(prop, param, object) {
   try {
     await checkNoInjection(param)
     const startWith = RegExp(/\*$/)
@@ -47,15 +44,10 @@ async function searchStringObject(object, prop, param) {
 
 /**
  * Add the search less than or equal for a property
- * @param {Object} object
- * 					JSON object that will be sent to mongo
- * @param {String} prop
- * 					name of property
- * @param {String} param
- * 					parameter for this property
- * @param {TYPE} type
- * 					parameter's type
- *
+ * @param {Object} object - JSON object that will be sent to mongo
+ * @param {String} prop - name of property
+ * @param {String} param - parameter for this property
+ * @param {TYPE} type - parameter's type
  */
 async function searchMax(object, prop, param, type) {
   try {
@@ -72,15 +64,10 @@ async function searchMax(object, prop, param, type) {
 
 /**
  * Add the search greater than or equal for a property
- * @param {Object} object
- * 					JSON object that will be sent to mongo
- * @param {String} prop
- * 					name of property
- * @param {String} param
- * 					parameter for this property
- * @param {TYPE} type
- * 					parameter's type
- *
+ * @param {Object} object - JSON object that will be sent to mongo
+ * @param {String} prop - name of property
+ * @param {String} param - parameter for this property
+ * @param {TYPE} type - parameter's type
  */
 async function searchMin(object, prop, param, type) {
   try {
@@ -97,15 +84,10 @@ async function searchMin(object, prop, param, type) {
 
 /**
  * Add the search for a list for a property
- * @param {Object} object
- * 					JSON object that will be sent to mongo
- * @param {String} prop
- * 					name of property
- * @param {String[]} param
- * 					parameter for this property
- * @param {TYPE} type
- * 					parameter's type
- *
+ * @param {Object} object - JSON object that will be sent to mongo
+ * @param {String} prop - name of property
+ * @param {String[]} param - parameter for this property
+ * @param {TYPE} type - parameter's type
  */
 async function searchList(object, prop, param, type) {
   try {
@@ -123,8 +105,7 @@ async function searchList(object, prop, param, type) {
 }
 /**
  * Make sure there are no brackets.
- * @param {String} param
- * 					paramater check
+ * @param {String} param - paramater check
  */
 async function checkNoInjection(param) {
   if (RegExp(/[{}]/).test(param)) {
@@ -133,9 +114,9 @@ async function checkNoInjection(param) {
 }
 
 export default (SearchUtilsMongo = {
-  checkNoInjection: checkNoInjection,
-  searchList: searchList,
-  searchMin: searchMin,
-  searchMax: searchMax,
-  searchStringObject: searchStringObject
+  checkNoInjection,
+  searchList,
+  searchMin,
+  searchMax,
+  searchString
 })
