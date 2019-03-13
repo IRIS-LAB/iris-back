@@ -1,5 +1,3 @@
-import { BusinessException } from "@u-iris/iris-common";
-
 const typeUtilsError = {
     defineType = { 
      code: 'typeUtils.defineType.type.bad',
@@ -40,8 +38,22 @@ const paginationUtilsEBSError = {
     }
 }
 
+const paginationUtilsPostgreDAOError = {
+    findWithPagination = {
+        business = {
+            code: 'paginationUtilsPostgreDAO.findWithPagination.params.bad',
+            label: 'bad params'
+        },
+        technical = {
+            code: 'paginationUtilsPostgreDAO.findWithPagination.internal.error',
+            label: 'internal error'
+        }
+    }
+}
+
 export default {
     typeUtilsError,
     SearchUtilsmongodbError,
     paginationUtilsEBSError,
+    paginationUtilsPostgreDAOError,
 }

@@ -140,7 +140,10 @@ function checkDefaultSizeAndPage(defaultSize, queryParams) {
     queryParams.page = queryParams.page ? await TypeUtils.stringToIntBase10(queryParams.page) : 0
     queryParams.size = queryParams.size ? await TypeUtils.stringToIntBase10(queryParams.size) : defaultSize
     if (queryParams.size === 0) {
-      throw new BusinessException(new ErreurDO(paginationUtilsEBSError.checkDefaultSizeAndPage.field, paginationUtilsEBSError.checkDefaultSizeAndPage.code, paginationUtilsEBSError.checkDefaultSizeAndPage.label))
+      throw new BusinessException(new ErreurDO(
+         paginationUtilsEBSError.checkDefaultSizeAndPage.field,
+         paginationUtilsEBSError.checkDefaultSizeAndPage.code,
+         paginationUtilsEBSError.checkDefaultSizeAndPage.label))
     }
   } catch (error) {
       throw error
