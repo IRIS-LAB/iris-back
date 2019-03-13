@@ -5,6 +5,7 @@
 
 import { BusinessException, ErreurDO } from '@ugieiris/iris-common'
 import { TypeUtils } from '../type/typeUtils'
+import { SearchUtilsmongodbError } from '../../error'
 
 /**
  * Permits searching on a string with wildcards(*)
@@ -38,7 +39,7 @@ async function searchString(prop, param, object) {
       object[prop] = param
     }
   } catch (error) {
-    throw new BusinessException(new ErreurDO(prop, 'search.' + prop + '.string'))
+    throw new BusinessException(new ErreurDO(prop))
   }
 }
 
@@ -58,7 +59,7 @@ async function searchMax(object, prop, param, type) {
     }
     object[prop]['$lte'] = param
   } catch (error) {
-    throw new BusinessException(new ErreurDO(prop, 'search.' + prop + '.' + error.message))
+    throw new BusinessException(new ErreurDO(prop, error.codeErreur, error.libelleErreur))
   }
 }
 
@@ -78,7 +79,7 @@ async function searchMin(object, prop, param, type) {
     }
     object[prop]['$gte'] = param
   } catch (error) {
-    throw new BusinessException(new ErreurDO(prop, 'search.' + prop + '.' + error.message))
+    throw new BusinessException(new ErreurDO(prop, error.codeErreur, error.libelleErreur))
   }
 }
 
@@ -100,7 +101,7 @@ async function searchList(object, prop, param, type) {
       object.$or.push({ [prop]: element })
     }
   } catch (error) {
-    throw new BusinessException(new ErreurDO(prop, 'search.' + prop + '.' + error.message))
+    throw new BusinessException(new ErreurDO(prop, error.codeErreur, error.libelleErreur))
   }
 }
 /**
@@ -109,7 +110,13 @@ async function searchList(object, prop, param, type) {
  */
 async function checkNoInjection(param) {
   if (RegExp(/[{}]/).test(param)) {
-    throw new Error('injection')
+    throw new BusinessException(
+      new ErreurDO(
+        '',
+        SearchUtilsmongodbError.checkNoInjection.code,
+        SearchUtilsmongodbError.checkNoInjection.label
+      )
+    )
   }
 }
 
@@ -118,5 +125,5 @@ export default (SearchUtilsMongo = {
   searchList,
   searchMin,
   searchMax,
-  searchString
+  searchString,
 })
