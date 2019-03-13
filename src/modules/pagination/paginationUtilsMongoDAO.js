@@ -15,8 +15,6 @@ async function createObjectForSort(sorts) {
     for (let sort in sorts) {
       responseSort = { ...responseSort, ...(await createObjectForSortString(sorts[sort])) }
     }
-  } else {
-    throw new BusinessException(new ErreurDO('sort', 'pagination.sort.type'))
   }
   return responseSort
 }
