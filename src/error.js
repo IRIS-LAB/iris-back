@@ -22,7 +22,26 @@ const SearchUtilsmongodbError = {
     }
 }
 
+const paginationUtilsEBSError = {
+    checkDefaultSizeAndPage = {
+        field: 'size',
+        code: 'paginationUtilsEBS.checkDefaultSizeAndPage.pagination.size.bad', 
+        label: 'size must greater than 0'
+    },
+    checkAcceptRange = {
+        field: 'Accept-Range',
+        code: 'paginationUtilsEBS.checkAcceptRange.bad',
+        label: 'accept range exceeded'
+    },
+    createUrl = {
+        field: 'url',
+        code: 'paginationUtilsEBS.createUrl.string',
+        label: 'url is not strint'
+    }
+}
+
 export default {
     typeUtilsError,
     SearchUtilsmongodbError,
+    paginationUtilsEBSError,
 }

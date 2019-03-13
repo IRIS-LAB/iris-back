@@ -63,5 +63,5 @@ async function searchInDb(collection, connectionDb, find, query) {
 
 export const PaginationUtilsDAO = {
   createObjectForSort,
-  searchInDb
+  searchInDb,
 }
