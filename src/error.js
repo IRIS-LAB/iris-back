@@ -1,4 +1,4 @@
-import { BusinessException } from "@ugieiris/iris-common";
+import { BusinessException } from "@u-iris/iris-common";
 
 const typeUtilsError = {
     defineType = { 
