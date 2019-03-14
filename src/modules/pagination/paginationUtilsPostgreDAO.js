@@ -31,16 +31,16 @@ async function findWithPagination(models, size, page, where, sorts) {
         new ErrorDO(
           error.message,
           paginationUtilsPostgreDAOError.findWithPagination.business.code,
-          paginationUtilsPostgreDAOError.findWithPagination.business.label
-        )
+          paginationUtilsPostgreDAOError.findWithPagination.business.label,
+        ),
       )
     } else {
       throw new TechnicalException(
         new ErrorDO(
           '',
           paginationUtilsPostgreDAOError.findWithPagination.technical.code,
-          paginationUtilsPostgreDAOError.findWithPagination.technical.label
-        )
+          paginationUtilsPostgreDAOError.findWithPagination.technical.label,
+        ),
       )
     }
   }

@@ -1,15 +1,15 @@
 const typeUtilsError = {
     defineType = { 
-     code: 'typeUtils.defineType.type.bad',
+     code: 'typeUtils.defineType.type.wrong',
      label: 'The past type is not recognized',
     },
     stringToIntBase10 = {
-        code: 'typeUtils.stringToIntBase10.number.bad',
-        label: 'it is not a number',
+        code: 'typeUtils.stringToIntBase10.number.wrong',
+        label: 'The past param is not a number',
     },
     stringToDate = {
-        code: 'typeUtils.stringToDate.date.bad',
-        label: 'it is not a number',
+        code: 'typeUtils.stringToDate.date.wrong',
+        label: 'The past param is not a date',
     }
 }
 
@@ -24,29 +24,29 @@ const paginationUtilsEBSError = {
     checkDefaultSizeAndPage = {
         field: 'size',
         code: 'paginationUtilsEBS.checkDefaultSizeAndPage.pagination.size.bad', 
-        label: 'size must greater than 0'
+        label: 'size of query params must greater than 0'
     },
     checkAcceptRange = {
         field: 'Accept-Range',
-        code: 'paginationUtilsEBS.checkAcceptRange.bad',
-        label: 'accept range exceeded'
+        code: 'paginationUtilsEBS.checkAcceptRange.wrong',
+        label: 'size of query params must lesser than accept range'
     },
     createUrl = {
         field: 'url',
         code: 'paginationUtilsEBS.createUrl.string',
-        label: 'url is not strint'
+        label: 'url is not string'
     }
 }
 
 const paginationUtilsPostgreDAOError = {
     findWithPagination = {
         business = {
-            code: 'paginationUtilsPostgreDAO.findWithPagination.params.bad',
-            label: 'bad params'
+            code: 'paginationUtilsPostgreDAO.findWithPagination.params.wrong',
+            label: 'One or more given fields are false'
         },
         technical = {
             code: 'paginationUtilsPostgreDAO.findWithPagination.internal.error',
-            label: 'internal error'
+            label: 'Problem with database. Please contact your helpdesk if error persists'
         }
     }
 }
@@ -54,7 +54,7 @@ const paginationUtilsPostgreDAOError = {
 const paginationUtilsMongoDAOError = {
     findWithPagination = {
         code: 'paginationUtilsMongoDAOError.findWithPagination.internal.error',
-        label: 'internal error'
+        label: 'Problem with database. Please contact your helpdesk if error persists'
     }
 }
 
