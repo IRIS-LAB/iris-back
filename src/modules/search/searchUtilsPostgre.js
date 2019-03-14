@@ -103,7 +103,7 @@ function checkObjectExist(object, prop) {
  * @param {Object} query all query params (req.query)
  * @returns {Object} all query params without size , sort and page
  */
-function cloneQueryWitoutSizeSortPage(query) {
+function cloneQueryWithoutPaginationParamsPage(query) {
   const { size, sort, page, ...clone } = query
   return clone
 }
@@ -130,7 +130,7 @@ function conditionForWhere(where, object, param) {
  *
  */
 function generateWhere(query) {
-  const clone = cloneQueryWitoutSizeSortPage(query)
+  const clone = cloneQueryWithoutPaginationParamsPage(query)
   const where = {}
   for (const key in clone) {
     if (clone.hasOwnProperty(key)) {
