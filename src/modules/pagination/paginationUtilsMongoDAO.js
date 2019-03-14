@@ -64,8 +64,8 @@ async function findWithPagination(collection, connectionDb, find, query) {
       new ErreurDO(
         '',
         paginationUtilsMongoDAOError.findWithPagination.code,
-        paginationUtilsMongoDAOError.findWithPagination.label
-      )
+        paginationUtilsMongoDAOError.findWithPagination.label,
+      ),
     )
   }
 }

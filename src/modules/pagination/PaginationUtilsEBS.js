@@ -38,7 +38,7 @@ function generateHeader(
     link += '<' + createUrl(hostname, cloneQueryParams) + '>; rel="prev",'
   }
   // last and first link
-  let lastPage = 0
+  const lastPage = 0
   if (totalPages > 0) {
     lastPage = totalPages
   }
@@ -149,12 +149,8 @@ function checkDefaultSizeAndPage(defaultSize, queryParams) {
  * @param {Number} nbMaxAllow - maximum number allow and it's default size
  */
 function checkPagination(queryParams, nbMaxAllow) {
-  try {
     await checkDefaultSizeAndPage(nbMaxAllow, queryParams)
     await checkAcceptRange(queryParams.size, nbMaxAllow)
-  } catch (error) {
-    throw error
-  }
 }
 
 export default {
