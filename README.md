@@ -83,7 +83,7 @@ await TypeUtils.defineType(TypeUtils.TYPE.INT, int)
 console.log(typeof int) //number
 ```
 
-## Advanced search 
+## Advanced search
 
 ## on mongodb
 
@@ -94,7 +94,7 @@ import { SearchUtils } from '@u-iris/iris-back'
 
 //Your search's object
 let object = {
-    id: 1
+  id: 1,
 }
 
 SearchUtils.searchStringObject(object, 'libelle', '*ui*')
@@ -109,28 +109,92 @@ object {
 }
 */
 ```
-## on PostgreSQL
-To use an advanced search, you must have Sequelize
+
+## on PostgreSQL with Sequelize
+
+To use an advanced search, you must have Sequelize. Advanced search allows you to search on list, on string with wildcard, between two numbers (min, max) or dates (after, before)
 
 ```js
 import SearchUtilsPostgre from '@u-iris/searchUtilsPostgre'
-  async function findAll(query) {
-    let where = {}
-    const searchUtilsPostgre = SearchUtilsPostgre(where, Sequelize.Op)
-    if(query.minCapacity){
-      searchUtilsPostgre.searchMin('capacity', Number(query.minCapacity))
-    }
-    if(query.maxCapacity){
-      searchUtilsPostgre.searchMax('capacity', Number(query.maxCapacity))
-    }
-    if(query.title){
-      searchUtilsPostgre.searchString('title', query.title)
-    }
-    if(query.mail){
-      searchUtilsPostgre.searchList('mail', query.mail)
-    }
-    return await PaginationUtilsPostgreDAO.findWithPagination(Resource,query.size,query.page,where, query.sort)
+async function findAll(query) {
+  /*You received this URI : https://app/resources?title=*ui*&maxCapacity=220&MinCapacity=200&afterDeliveryDate=2019-02-28&beforeDeliveryDate=2019-03-31&list=a&list=b&list=c OR
+  You received this URI : https://app/resources?title=*ui*&maxCapacity=220&MinCapacity=200&afterDeliveryDate=2019-02-28&beforeDeliveryDate=2019-03-31&list=a,b,c
+  So your object query is :
+  {
+    "title": "*ui*",
+    "maxCapacity": 220,
+    "minCapacity": 200,
+    "afterDeliveryDate": "2019-02-28",
+    "beforeDeliveryDate": "2019-03-31",
+    "list": [a,b,c]
+    
+  }*/
+  let whereGenerate = await SearchUtilsPostgre.generateWhere(query)
+  /*Now object whereGenerate is:
+  {
+    "capacity": {
+      [Sequelize.Op.lte]: 220,
+      [Sequelize.Op.gte]: 200
+      },
+    "title":{
+      [Sequelize.Op.iLike]: "%ui%"
+    },
+    "deliveryDate": {
+      [Sequelize.Op.lte]: 2019-03-31,
+      [Sequelize.Op.gte]: 2019-02-28
+      },
+     "list": { 
+      [Sequelize.Op.Or]: [a,b,c]
+  }*/
+
+  //Resource is model of sequelize
+  return await Resource.findall({ where: whereGenerate })
+}
+```
+
+But if you want choose attribute to use advanced search, you can use a function like this:
+
+```js
+import SearchUtilsPostgre from '@u-iris/searchUtilsPostgre'
+async function findAll(query) {
+  let whereGenerate = {}
+  //you want your customer can search on min and max of capacity and search on a title with wildcard and search a mail's list
+  /*You received this URI : https://api/resources?title=*ui*&maxCapacity=220&minCapacity=200&mail=mail1@gmail.com,mail=mail2@gmail.com
+  So your object query is :
+  {
+    "title": "*ui*",
+    "maxCapacity": 220,
+    "minCapacity": 200,
+    "mail": [mail1@gmail.com,b,mail2@gmail.com]
+  }*/
+  if (query.minCapacity) {
+    searchUtilsPostgre.searchMin('capacity', Number(query.minCapacity), whereGenerate)
   }
+  if (query.maxCapacity) {
+    searchUtilsPostgre.searchMax('capacity', Number(query.maxCapacity), whereGenerate)
+  }
+  if (query.title) {
+    searchUtilsPostgre.searchString('title', query.title, whereGenerate)
+  }
+  if (query.mail) {
+    searchUtilsPostgre.searchList('mail', query.mail, whereGenerate)
+  }
+  /*Now object whereGenerate is:
+  {
+    "capacity": {
+      [Sequelize.Op.lte]: 220,
+      [Sequelize.Op.gte]: 200
+      },
+    "title":{
+      [Sequelize.Op.iLike]: "%ui%"
+    },
+    "mail": { 
+      [Sequelize.Op.Or]: [mail1@gmail.com,b,mail2@gmail.com]
+  }*/
+
+  //Resource is model of sequelize
+  return await Resource.findall({ where: whereGenerate })
+}
 ```
 
 ## Google Auth
@@ -143,10 +207,10 @@ import { googleAuth } from '@u-iris/iris-back'
 const myGoogleAuth = googleAuth(
   {
     secretPath: 'd:/temp/mySecret.json',
-    tokenPath: 'd:/temp/myToken.json'
+    tokenPath: 'd:/temp/myToken.json',
   },
   logger,
-  exceptions
+  exceptions,
 )
 const authClient = googleAuth.getGoogleAuthClient()
 ```
@@ -165,7 +229,7 @@ import { PaginationUtilsEBS } from '@u-iris/iris-back'
 commandesRouter.get('/', async (req, res) => {
   try {
     //StartOnPagination check if size and page are a number and check too Accept-Range
-    await PaginationUtilsEBS.startOnPagination(req.query, 50)
+    await PaginationUtilsEBS.checkPagination(req.query, 50)
     const response = await commandesLBS.findCommandes(req.query)
     //generatesResponse generate a header and a status of response
     await PaginationUtilsEBS.generatesResponse(
@@ -175,7 +239,7 @@ commandesRouter.get('/', async (req, res) => {
       response.response.length,
       req.headers.host + req.originalUrl,
       req.query,
-      res
+      res,
     )
     res.send(response.response)
   } catch (error) {
@@ -184,7 +248,7 @@ commandesRouter.get('/', async (req, res) => {
 })
 ```
 
-### Pagination DAO
+### Pagination Mongo DAO
 
 ```js
 import { PaginationUtilsDAO } from '@u-iris/iris-back'
@@ -199,4 +263,20 @@ export const findCommandes = async (query) => {
 	} catch (error) {
 		throw error
 	}
+```
+
+### Pagination Postgre DAO
+
+To use a pagination for postgre, you must have 'sequelize'.
+
+```js
+import { PaginationUtilsPostgreDAO } from '@ugieiris/iris-back'
+import Sequelize from 'sequelize'
+
+
+export const findCommandes = async (query) => {
+  async function findAll(query) {
+    return await PaginationUtilsPostgreDAO.findWithPagination(models, query, where)
+  }
+
 ```
