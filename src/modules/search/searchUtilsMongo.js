@@ -1,16 +1,19 @@
+/**
+ * advanced search for mongoDb
+ * @module SearchUtilsmongodb
+ */
+
+import { BusinessException, ErreurDO } from '@ugieiris/iris-common'
 import { TypeUtils } from '../type/typeUtils'
-import { BusinessException, ErreurDO } from '@u-iris/iris-common'
+import { SearchUtilsmongodbError } from '../../error'
 
 /**
  * Permits searching on a string with wildcards(*)
- * @param {Object} object
- * 					JSON object that will be sent to mongo
- * @param {String} prop
- * 					name of property
- * @param {String} param
- * 					the string who is searching with wildcards
+ * @param {String} prop - name of property
+ * @param {String} param - the string who is searching with wildcards
+ * @param {Object} object - JSON object that will be sent to mongo
  */
-async function searchStringObject(object, prop, param) {
+async function searchString(prop, param, object) {
   try {
     await checkNoInjection(param)
     const startWith = RegExp(/\*$/)
@@ -36,21 +39,16 @@ async function searchStringObject(object, prop, param) {
       object[prop] = param
     }
   } catch (error) {
-    throw new BusinessException(new ErreurDO(prop, 'search.' + prop + '.string'))
+    throw new BusinessException(new ErreurDO(prop))
   }
 }
 
 /**
  * Add the search less than or equal for a property
- * @param {Object} object
- * 					JSON object that will be sent to mongo
- * @param {String} prop
- * 					name of property
- * @param {String} param
- * 					parameter for this property
- * @param {TYPE} type
- * 					parameter's type
- *
+ * @param {Object} object - JSON object that will be sent to mongo
+ * @param {String} prop - name of property
+ * @param {String} param - parameter for this property
+ * @param {TYPE} type - parameter's type
  */
 async function searchMax(object, prop, param, type) {
   try {
@@ -61,21 +59,16 @@ async function searchMax(object, prop, param, type) {
     }
     object[prop]['$lte'] = param
   } catch (error) {
-    throw new BusinessException(new ErreurDO(prop, 'search.' + prop + '.' + error.message))
+    throw new BusinessException(new ErreurDO(prop, error.codeErreur, error.libelleErreur))
   }
 }
 
 /**
  * Add the search greater than or equal for a property
- * @param {Object} object
- * 					JSON object that will be sent to mongo
- * @param {String} prop
- * 					name of property
- * @param {String} param
- * 					parameter for this property
- * @param {TYPE} type
- * 					parameter's type
- *
+ * @param {Object} object - JSON object that will be sent to mongo
+ * @param {String} prop - name of property
+ * @param {String} param - parameter for this property
+ * @param {TYPE} type - parameter's type
  */
 async function searchMin(object, prop, param, type) {
   try {
@@ -86,21 +79,16 @@ async function searchMin(object, prop, param, type) {
     }
     object[prop]['$gte'] = param
   } catch (error) {
-    throw new BusinessException(new ErreurDO(prop, 'search.' + prop + '.' + error.message))
+    throw new BusinessException(new ErreurDO(prop, error.codeErreur, error.libelleErreur))
   }
 }
 
 /**
  * Add the search for a list for a property
- * @param {Object} object
- * 					JSON object that will be sent to mongo
- * @param {String} prop
- * 					name of property
- * @param {String[]} param
- * 					parameter for this property
- * @param {TYPE} type
- * 					parameter's type
- *
+ * @param {Object} object - JSON object that will be sent to mongo
+ * @param {String} prop - name of property
+ * @param {String[]} param - parameter for this property
+ * @param {TYPE} type - parameter's type
  */
 async function searchList(object, prop, param, type) {
   try {
@@ -113,24 +101,29 @@ async function searchList(object, prop, param, type) {
       object.$or.push({ [prop]: element })
     }
   } catch (error) {
-    throw new BusinessException(new ErreurDO(prop, 'search.' + prop + '.' + error.message))
+    throw new BusinessException(new ErreurDO(prop, error.codeErreur, error.libelleErreur))
   }
 }
 /**
  * Make sure there are no brackets.
- * @param {String} param
- * 					paramater check
+ * @param {String} param - paramater check
  */
 async function checkNoInjection(param) {
   if (RegExp(/[{}]/).test(param)) {
-    throw new Error('injection')
+    throw new BusinessException(
+      new ErreurDO(
+        '',
+        SearchUtilsmongodbError.checkNoInjection.code,
+        SearchUtilsmongodbError.checkNoInjection.label,
+      ),
+    )
   }
 }
 
-export const SearchUtilsMongo = {
-  checkNoInjection: checkNoInjection,
-  searchList: searchList,
-  searchMin: searchMin,
-  searchMax: searchMax,
-  searchStringObject: searchStringObject
+export default {
+  checkNoInjection,
+  searchList,
+  searchMin,
+  searchMax,
+  searchString,
 }

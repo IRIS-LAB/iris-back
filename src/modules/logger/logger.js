@@ -35,14 +35,14 @@ export const Logger = {
         handleExceptions: true,
         humanReadableUnhandledException: true,
         maxsize: 52428800, // 50MB
-        maxFiles: 5
+        maxFiles: 5,
       },
       console: {
         level: logLevel,
         handleExceptions: true,
         humanReadableUnhandledException: true,
-        format: combine(colorize(), myFormat)
-      }
+        format: combine(colorize(), myFormat),
+      },
     }
 
     // disable console if mode = production
@@ -55,7 +55,7 @@ export const Logger = {
       level: logLevel,
       format: combine(appendTimestamp({ tz: localTimeZone }), splat(), myFormat),
       transports: loggerTransports,
-      exitOnError: false // do not exit on handled exceptions
+      exitOnError: false, // do not exit on handled exceptions
     })
-  }
+  },
 }

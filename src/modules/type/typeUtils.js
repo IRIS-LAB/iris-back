@@ -1,5 +1,17 @@
+<<<<<<< HEAD
+<<<<<<< HEAD
 import { BusinessException } from '@u-iris/iris-common'
 var moment = require('moment')
+=======
+import { BusinessException, ErreurDO } from '@u-iris/iris-common'
+import moment from moment
+import { typeUtilsError } from '../../error'
+>>>>>>> answer of typeUtils in PR
+=======
+import { BusinessException, ErreurDO } from '@u-iris/iris-common'
+import moment from moment
+import { typeUtilsError } from '../../error'
+>>>>>>> db868f70f911c3a7ae4080dd027aa4bc9757f987
 
 /**
  * Enum type
@@ -7,17 +19,16 @@ var moment = require('moment')
 const TYPE = {
   STRING: 'string',
   INT: 'int',
-  DATE: 'date'
+  DATE: 'date',
 }
 
 /**
  * Allows to transform the parameter into the type provided
  * @param {TYPE} type
  * @param {String} param
- *
  * @returns param with a good type
  */
-async function defineType(type, param) {
+function defineType(type, param) {
   switch (type) {
     case TYPE.STRING:
       break
@@ -28,35 +39,33 @@ async function defineType(type, param) {
       param = stringToIntBase10(param)
       break
     default:
-      throw new BusinessException('bad type')
+      throw new BusinessException(new ErreurDO('', typeUtilsError.defineType.code, typeUtilsError.defineType.label))
   }
   return param
 }
 
 /**
  * Transforms string to int
- * @param {String} param
- * 					a number
+ * @param {String} param - a number
  * @returns number
  */
-async function stringToIntBase10(param) {
+function stringToIntBase10(param) {
   const regInt = RegExp(/^\d+$/, 'g')
   if (!regInt.test(param)) {
-    throw new Error('number')
+    throw new BusinessException(new ErreurDO('', typeUtilsError.stringToIntBase10.code, typeUtilsError.stringToIntBase10.label))
   }
   return parseInt(param)
 }
 
 /**
  * Transforms string to date
- * @param {String} param
- * 					a date
+ * @param {String} param - a date
  * @returns date
  */
-async function stringToDate(param) {
+function stringToDate(param) {
   try {
     if (!moment(param, moment.HTML5_FMT.DATETIME_LOCAL_MS, true).isValid()) {
-      throw new Error('date')
+      throw new BusinessException(new ErreurDO('', typeUtilsError.stringToDate.code, typeUtilsError.stringToDate.label))
     }
     return new Date(param)
   } catch (error) {
@@ -64,9 +73,9 @@ async function stringToDate(param) {
   }
 }
 
-export const TypeUtils = {
-  TYPE: TYPE,
-  defineType: defineType,
-  stringToIntBase10: stringToIntBase10,
-  stringToDate: stringToDate
+export default {
+  TYPE,
+  defineType,
+  stringToIntBase10,
+  stringToDate,
 }

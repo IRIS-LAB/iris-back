@@ -1,20 +1,22 @@
 import fs from 'fs'
 import { google } from 'googleapis'
 import { TechnicalException, ErreurDO } from '@u-iris/iris-common'
+import { OAuth2Client } from 'googleapis-common'
 
 /**
  * Return a helper to get a google token
- * @param secretPath and tokenPath
- * @param logger
- * @param exceptions classes
+ * @param {Object} secretPath and tokenPath
+ * @param {Object} logger
+ * @name googleAuth
  */
 export const googleAuth = ({ secretPath, tokenPath }, logger) => {
   return {
-    getGoogleAuthClient
+    getGoogleAuthClient: getGoogleAuthClient
   }
 
   /**
    * Return a google auth token
+   * @returns {OAuth2Client}
    */
   async function getGoogleAuthClient() {
     try {
