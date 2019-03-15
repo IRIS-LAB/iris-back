@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { BusinessException } from '@u-iris/iris-common'
 var moment = require('moment')
 =======
@@ -6,6 +7,11 @@ import { BusinessException, ErreurDO } from '@u-iris/iris-common'
 import moment from moment
 import { typeUtilsError } from '../../error'
 >>>>>>> answer of typeUtils in PR
+=======
+import { BusinessException, ErreurDO } from '@u-iris/iris-common'
+import moment from moment
+import { typeUtilsError } from '../../error'
+>>>>>>> db868f70f911c3a7ae4080dd027aa4bc9757f987
 
 /**
  * Enum type

@@ -4,11 +4,7 @@ import {
   EntityNotFoundBusinessException,
   TechnicalException,
   ErreurDO,
-<<<<<<< HEAD
   BusinessException
-=======
-  BusinessException,
->>>>>>> update error
 } from '@u-iris/iris-common'
 
 /**
@@ -42,7 +38,7 @@ export const expressUtils = logger => ({
     let errors = err.errors
     if (errors) {
       result = {
-        errors: Array.isArray(errors) ? errors : [errors],
+        errors: Array.isArray(errors) ? errors : [errors]
       }
     }
     // init status
@@ -72,5 +68,5 @@ export const expressUtils = logger => ({
   returnApplicationJson: (req, res, next) => {
     res.set('Content-Type', 'application/json')
     next()
-  },
+  }
 })

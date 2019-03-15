@@ -3,17 +3,9 @@
  * @module SearchUtilsmongodb
  */
 
-<<<<<<< HEAD
-import { TypeUtils } from '../type/typeUtils'
-import { BusinessException, ErreurDO } from '@u-iris/iris-common'
-=======
 import { BusinessException, ErreurDO } from '@ugieiris/iris-common'
 import { TypeUtils } from '../type/typeUtils'
-<<<<<<< HEAD
->>>>>>> answer of searchUtilsPostgre in PR
-=======
 import { SearchUtilsmongodbError } from '../../error'
->>>>>>> answer of typeUtils in PR
 
 /**
  * Permits searching on a string with wildcards(*)
@@ -122,8 +114,8 @@ async function checkNoInjection(param) {
       new ErreurDO(
         '',
         SearchUtilsmongodbError.checkNoInjection.code,
-        SearchUtilsmongodbError.checkNoInjection.label
-      )
+        SearchUtilsmongodbError.checkNoInjection.label,
+      ),
     )
   }
 }

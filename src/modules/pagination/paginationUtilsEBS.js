@@ -1,14 +1,10 @@
 import { TypeUtils } from '../type/typeUtils'
-<<<<<<< HEAD
 import { 
     ErreurDO,
     BusinessException,
-    TechnicalException
+    TechnicalException,
 } from '@u-iris/iris-common'
-=======
-import { ErreurDO, BusinessException, TechnicalException } from '@u-iris/iris-common'
 import { paginationUtilsEBSError } from '../../error'
->>>>>>> answer of paginationUtilsEBS for PR
 
 /**
  * Generates headers for pagination
