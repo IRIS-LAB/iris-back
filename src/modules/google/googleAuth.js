@@ -1,10 +1,7 @@
 import fs from 'fs'
 import { google } from 'googleapis'
 import { TechnicalException, ErreurDO } from '@u-iris/iris-common'
-<<<<<<< HEAD
-=======
 import { OAuth2Client } from 'googleapis-common'
->>>>>>> fix @ugieiris -> @u-iris
 
 /**
  * Return a helper to get a google token
@@ -14,7 +11,7 @@ import { OAuth2Client } from 'googleapis-common'
  */
 export const googleAuth = ({ secretPath, tokenPath }, logger) => {
   return {
-    getGoogleAuthClient: getGoogleAuthClient,
+    getGoogleAuthClient: getGoogleAuthClient
   }
 
   /**
@@ -32,7 +29,7 @@ export const googleAuth = ({ secretPath, tokenPath }, logger) => {
       const errorDo = new ErreurDO(
         null,
         'error.google.authentification',
-        'Unable to get google authentification',
+        'Unable to get google authentification'
       )
       throw new TechnicalException(errorDo)
     }
