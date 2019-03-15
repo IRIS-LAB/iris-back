@@ -120,10 +120,10 @@ async function checkNoInjection(param) {
   }
 }
 
-export default (SearchUtilsMongo = {
+export default {
   checkNoInjection,
   searchList,
   searchMin,
   searchMax,
   searchString,
-})
+}

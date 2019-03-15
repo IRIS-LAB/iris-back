@@ -16,7 +16,7 @@ const typeUtilsError = {
 const SearchUtilsmongodbError = {
     checkNoInjection = {
         code: 'SearchUtilsmongodb.checkNoInjection.injection',
-        label: 'attempted injection',
+        label: 'Attempted injection',
     }
 }
 
@@ -24,17 +24,17 @@ const paginationUtilsEBSError = {
     checkDefaultSizeAndPage = {
         field: 'size',
         code: 'paginationUtilsEBS.checkDefaultSizeAndPage.pagination.size.bad', 
-        label: 'size of query params must greater than 0'
+        label: 'The size query params must be greater than 0'
     },
     checkAcceptRange = {
         field: 'Accept-Range',
         code: 'paginationUtilsEBS.checkAcceptRange.wrong',
-        label: 'size of query params must lesser than accept range'
+        label: 'The size query params must be lesser than accept range'
     },
     createUrl = {
         field: 'url',
         code: 'paginationUtilsEBS.createUrl.string',
-        label: 'url is not string'
+        label: 'Url is not string'
     }
 }
 
