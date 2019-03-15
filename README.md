@@ -25,5 +25,258 @@ npm test
 
 ```bash
 # install dependency
-npm i iris-back --save
+npm i @u-iris/iris-back --save
+```
+
+## Actuator
+
+If you want add actuator for your Express Api :
+
+```js
+import { actuator } from '@u-iris/iris-back'
+
+const app = express()
+actuator(logger).route(app)
+```
+
+## Express Utils
+
+Severals middleware for Express are availables :
+
+- parseJSON: transform body request to a JSON object
+- logRequests: log debug request
+- errorHandler: log the error and return the good status
+- enableCors: enable cors with cors plugin
+- returnApplicationJson: add to the header the content-type application/json
+
+```js
+import { expressUtils } from '@u-iris/iris-back'
+
+const utils = expressUtils(logger)
+const app = express()
+app.use(utils.parseJSON)
+```
+
+## Logger
+
+You can create a logger that log in a file and in the console like that :
+
+```js
+import { Logger } from '@u-iris/iris-back'
+
+const logger = Logger.create('debug', 'd:\\temp\\myAppLog.log')
+logger.info('my first log')
+```
+
+The library `winston` is used to create the logger.
+
+## TypeUtils
+
+You can use that to change variable's type
+
+```js
+import { TypeUtils } from '@u-iris/iris-back'
+
+let int = '8'
+console.log(typeof int) //string
+await TypeUtils.defineType(TypeUtils.TYPE.INT, int)
+console.log(typeof int) //number
+```
+
+## Advanced search
+
+## on mongodb
+
+You can use searchUtils to use a advanced search (min, max , wildcard, list). If you want search with wildcard:
+
+```js
+import { SearchUtils } from '@u-iris/iris-back'
+
+//Your search's object
+let object = {
+  id: 1,
+}
+
+SearchUtils.searchStringObject(object, 'libelle', '*ui*')
+
+console.log(object)
+/*
+object {
+    id: 1,
+    libelle: {
+        $regex: `ui`i
+    }
+}
+*/
+```
+
+## on PostgreSQL with Sequelize
+
+To use an advanced search, you must have Sequelize. Advanced search allows you to search on list, on string with wildcard, between two numbers (min, max) or dates (after, before)
+
+```js
+import SearchUtilsPostgre from '@u-iris/searchUtilsPostgre'
+async function findAll(query) {
+  /*You received this URI : https://app/resources?title=*ui*&maxCapacity=220&MinCapacity=200&afterDeliveryDate=2019-02-28&beforeDeliveryDate=2019-03-31&list=a&list=b&list=c OR
+  You received this URI : https://app/resources?title=*ui*&maxCapacity=220&MinCapacity=200&afterDeliveryDate=2019-02-28&beforeDeliveryDate=2019-03-31&list=a,b,c
+  So your object query is :
+  {
+    "title": "*ui*",
+    "maxCapacity": 220,
+    "minCapacity": 200,
+    "afterDeliveryDate": "2019-02-28",
+    "beforeDeliveryDate": "2019-03-31",
+    "list": [a,b,c]
+    
+  }*/
+  let whereGenerate = await SearchUtilsPostgre.generateWhere(query)
+  /*Now object whereGenerate is:
+  {
+    "capacity": {
+      [Sequelize.Op.lte]: 220,
+      [Sequelize.Op.gte]: 200
+      },
+    "title":{
+      [Sequelize.Op.iLike]: "%ui%"
+    },
+    "deliveryDate": {
+      [Sequelize.Op.lte]: 2019-03-31,
+      [Sequelize.Op.gte]: 2019-02-28
+      },
+     "list": { 
+      [Sequelize.Op.Or]: [a,b,c]
+  }*/
+
+  //Resource is model of sequelize
+  return await Resource.findall({ where: whereGenerate })
+}
+```
+
+But if you want choose attribute to use advanced search, you can use a function like this:
+
+```js
+import SearchUtilsPostgre from '@u-iris/searchUtilsPostgre'
+async function findAll(query) {
+  let whereGenerate = {}
+  //you want your customer can search on min and max of capacity and search on a title with wildcard and search a mail's list
+  /*You received this URI : https://api/resources?title=*ui*&maxCapacity=220&minCapacity=200&mail=mail1@gmail.com,mail=mail2@gmail.com
+  So your object query is :
+  {
+    "title": "*ui*",
+    "maxCapacity": 220,
+    "minCapacity": 200,
+    "mail": [mail1@gmail.com,b,mail2@gmail.com]
+  }*/
+  if (query.minCapacity) {
+    searchUtilsPostgre.searchMin('capacity', Number(query.minCapacity), whereGenerate)
+  }
+  if (query.maxCapacity) {
+    searchUtilsPostgre.searchMax('capacity', Number(query.maxCapacity), whereGenerate)
+  }
+  if (query.title) {
+    searchUtilsPostgre.searchString('title', query.title, whereGenerate)
+  }
+  if (query.mail) {
+    searchUtilsPostgre.searchList('mail', query.mail, whereGenerate)
+  }
+  /*Now object whereGenerate is:
+  {
+    "capacity": {
+      [Sequelize.Op.lte]: 220,
+      [Sequelize.Op.gte]: 200
+      },
+    "title":{
+      [Sequelize.Op.iLike]: "%ui%"
+    },
+    "mail": { 
+      [Sequelize.Op.Or]: [mail1@gmail.com,b,mail2@gmail.com]
+  }*/
+
+  //Resource is model of sequelize
+  return await Resource.findall({ where: whereGenerate })
+}
+```
+
+## Google Auth
+
+To call the api google, you can use googleAuth to get a google authentification token
+
+```js
+import { googleAuth } from '@u-iris/iris-back'
+
+const myGoogleAuth = googleAuth(
+  {
+    secretPath: 'd:/temp/mySecret.json',
+    tokenPath: 'd:/temp/myToken.json',
+  },
+  logger,
+  exceptions,
+)
+const authClient = googleAuth.getGoogleAuthClient()
+```
+
+## Pagination
+
+To use pagination you need to change your function that exposes your route (EBS) and your function that makes the request to the database (DAO).
+
+### Pagination EBS
+
+The EBS pagination will allow you to check the size and page requested by the customer, but also to return an appropriate header.
+
+```js
+import { PaginationUtilsEBS } from '@u-iris/iris-back'
+
+commandesRouter.get('/', async (req, res) => {
+  try {
+    //StartOnPagination check if size and page are a number and check too Accept-Range
+    await PaginationUtilsEBS.checkPagination(req.query, 50)
+    const response = await commandesLBS.findCommandes(req.query)
+    //generatesResponse generate a header and a status of response
+    await PaginationUtilsEBS.generatesResponse(
+      'commande',
+      50,
+      response.count,
+      response.response.length,
+      req.headers.host + req.originalUrl,
+      req.query,
+      res,
+    )
+    res.send(response.response)
+  } catch (error) {
+    res.send(error)
+  }
+})
+```
+
+### Pagination Mongo DAO
+
+```js
+import { PaginationUtilsDAO } from '@u-iris/iris-back'
+
+export const findCommandes = async (query) => {
+	try {
+		let commandeFind = {}
+        const commandesDB = await connect()
+        //searchInDB create query and response paged
+		return await PaginationUtilsDAO.searchInDb('commandes' , commandesDB ,commandeFind , query)
+
+	} catch (error) {
+		throw error
+	}
+```
+
+### Pagination Postgre DAO
+
+To use a pagination for postgre, you must have 'sequelize'.
+
+```js
+import { PaginationUtilsPostgreDAO } from '@ugieiris/iris-back'
+import Sequelize from 'sequelize'
+
+
+export const findCommandes = async (query) => {
+  async function findAll(query) {
+    return await PaginationUtilsPostgreDAO.findWithPagination(models, query, where)
+  }
+
 ```
