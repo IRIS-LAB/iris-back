@@ -4,7 +4,8 @@ import {
   EntityNotFoundBusinessException,
   TechnicalException,
   ErreurDO,
-  BusinessException
+  BusinessException,
+  SecurityException,
 } from '@u-iris/iris-common'
 
 /**
@@ -38,7 +39,7 @@ export const expressUtils = logger => ({
     let errors = err.errors
     if (errors) {
       result = {
-        errors: Array.isArray(errors) ? errors : [errors]
+        errors: Array.isArray(errors) ? errors : [errors],
       }
     }
     // init status
@@ -51,6 +52,9 @@ export const expressUtils = logger => ({
         break
       case TechnicalException:
         status = 500
+        break
+      case SecurityException:
+        status = result.errors[0].codeErreur.startsWith('security.authentification') ? 401 : 403
         break
       default:
         result = { errors: [new ErreurDO(null, 'error', msg)] }
@@ -68,5 +72,5 @@ export const expressUtils = logger => ({
   returnApplicationJson: (req, res, next) => {
     res.set('Content-Type', 'application/json')
     next()
-  }
+  },
 })
