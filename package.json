@@ -1,6 +1,6 @@
 {
   "name": "@u-iris/iris-back",
-  "version": "1.0.13-0",
+  "version": "1.0.13-1",
   "description": "A back common js module",
   "main": "dist/index.js",
   "files": [
@@ -28,7 +28,7 @@
     "rollup-plugin-multi-entry": "^2.0.2"
   },
   "dependencies": {
-    "@u-iris/iris-common": "^1.0.7",
+    "@u-iris/iris-common": "^1.0.11-1",
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
     "express-actuator": "^1.1.0",
@@ -37,6 +37,7 @@
     "mime": "^1.4.1",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.23",
+    "sequelize": "^5.2.1",
     "winston": "^3.1.0"
   }
 }
