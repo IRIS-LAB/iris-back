@@ -1,10 +1,12 @@
-import cors from 'cors'
 import bodyParser from 'body-parser'
+import compression from 'compression'
+import cors from 'cors'
+import helmet from 'helmet'
 import {
   EntityNotFoundBusinessException,
   TechnicalException,
   ErreurDO,
-  BusinessException
+  BusinessException,
 } from '@u-iris/iris-common'
 
 /**
@@ -38,7 +40,7 @@ export const expressUtils = logger => ({
     let errors = err.errors
     if (errors) {
       result = {
-        errors: Array.isArray(errors) ? errors : [errors]
+        errors: Array.isArray(errors) ? errors : [errors],
       }
     }
     // init status
@@ -63,10 +65,18 @@ export const expressUtils = logger => ({
    */
   enableCors: cors(),
   /**
+   * Enable compression with cors plugin
+   */
+  enableCompression: compression(),
+  /**
+   * Enable security with cors plugin
+   */
+  enableSecurity: helmet(),
+  /**
    * Add to the header the content-type application/json
    */
   returnApplicationJson: (req, res, next) => {
     res.set('Content-Type', 'application/json')
     next()
-  }
+  },
 })

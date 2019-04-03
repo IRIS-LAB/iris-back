@@ -28,12 +28,14 @@
     "rollup-plugin-multi-entry": "^2.0.2"
   },
   "dependencies": {
-    "@u-iris/iris-common": "^1.0.11-1",
+    "@u-iris/iris-common": "^1.0.11",
     "body-parser": "^1.18.3",
+    "compression": "^1.7.4",
     "cors": "^2.8.5",
     "express-actuator": "^1.1.0",
     "fresh": "^0.5.2",
     "googleapis": "^37.1.0",
+    "helmet": "^3.16.0",
     "mime": "^1.4.1",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.23",
