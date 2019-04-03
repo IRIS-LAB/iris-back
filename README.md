@@ -47,6 +47,8 @@ Severals middleware for Express are availables :
 - logRequests: log debug request
 - errorHandler: log the error and return the good status
 - enableCors: enable cors with cors plugin
+- enableCompression: enable compression with compression plugin
+- enableSecurity: enable security with helmet plugin
 - returnApplicationJson: add to the header the content-type application/json
 
 ```js
