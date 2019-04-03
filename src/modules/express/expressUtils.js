@@ -1,5 +1,7 @@
-import cors from 'cors'
 import bodyParser from 'body-parser'
+import compression from 'compression'
+import cors from 'cors'
+import helmet from 'helmet'
 import {
   EntityNotFoundBusinessException,
   TechnicalException,
@@ -66,6 +68,14 @@ export const expressUtils = logger => ({
    * Enable cors with cors plugin
    */
   enableCors: cors(),
+  /**
+   * Enable compression with cors plugin
+   */
+  enableCompression: compression(),
+  /**
+   * Enable security with cors plugin
+   */
+  enableSecurity: helmet(),
   /**
    * Add to the header the content-type application/json
    */
