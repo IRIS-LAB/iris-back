@@ -1,4 +1,4 @@
-import TypeUtils from '../type/typeUtils'
+import { typeUtils } from '../type/typeUtils'
 import { ErreurDO, BusinessException, TechnicalException } from '@u-iris/iris-common'
 import { paginationUtilsEBSError } from '../../error'
 
@@ -133,9 +133,9 @@ function checkAcceptRange(size, nbMaxAllow) {
  */
 function checkDefaultSizeAndPage(defaultSize, queryParams) {
   try {
-    queryParams.page = queryParams.page ? TypeUtils.stringToIntBase10(queryParams.page) : 0
+    queryParams.page = queryParams.page ? typeUtils.stringToIntBase10(queryParams.page) : 0
     queryParams.size = queryParams.size
-      ? TypeUtils.stringToIntBase10(queryParams.size)
+      ? typeUtils.stringToIntBase10(queryParams.size)
       : defaultSize
     if (queryParams.size === 0) {
       throw new BusinessException(
