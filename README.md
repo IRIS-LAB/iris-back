@@ -230,8 +230,8 @@ import { PaginationUtilsEBS } from '@u-iris/iris-back'
 
 commandesRouter.get('/', async (req, res) => {
   try {
-    //StartOnPagination check if size and page are a number and check too Accept-Range
-    await PaginationUtilsEBS.checkPagination(req.query, 50)
+    //StartOnPagination check if size and page are a number and check too Accept-Range and set default's size
+    await PaginationUtilsEBS.checkPagination(req.query, 50, 20)
     const response = await commandesLBS.findCommandes(req.query)
     //generatesResponse generate a header and a status of response
     await PaginationUtilsEBS.generatesResponse(
@@ -239,8 +239,7 @@ commandesRouter.get('/', async (req, res) => {
       50,
       response.count,
       response.response.length,
-      req.headers.host + req.originalUrl,
-      req.query,
+      req,
       res,
     )
     res.send(response.response)
