@@ -31,7 +31,7 @@ function generateHeader(type, nbMaxAllow, elementCount, lengthResponse, hostname
     link += '<' + createUrl(hostname, cloneQueryParams) + '>; rel="prev",'
   }
   // last and first link
-  const lastPage = 0
+  let lastPage = 0
   if (totalPages > 0) {
     lastPage = totalPages
   }
@@ -76,7 +76,7 @@ function generateResponse(type, nbMaxAllow, elementCount, lengthResponse, req, r
       elementCount,
       lengthResponse,
       req.headers.host + req.originalUrl,
-      req.queryParams,
+      req.query,
     ),
   )
   res.status(generateStatus(nbMaxAllow, elementCount))
