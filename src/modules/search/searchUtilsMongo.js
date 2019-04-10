@@ -4,7 +4,7 @@
  */
 
 import { BusinessException, ErreurDO } from '@u-iris/iris-common'
-import TypeUtils from '../type/typeUtils'
+import { typeUtils } from '../type/typeUtils'
 import { searchUtilsMongodbError } from '../../error'
 
 /**
@@ -53,7 +53,7 @@ async function searchString(prop, param, object) {
 async function searchMax(object, prop, param, type) {
   try {
     await checkNoInjection(param)
-    param = await TypeUtils.defineType(type, param)
+    param = await typeUtils.defineType(type, param)
     if (!object[prop]) {
       object[prop] = {}
     }
@@ -73,7 +73,7 @@ async function searchMax(object, prop, param, type) {
 async function searchMin(object, prop, param, type) {
   try {
     await checkNoInjection(param)
-    param = await TypeUtils.defineType(type, param)
+    param = await typeUtils.defineType(type, param)
     if (!object[prop]) {
       object[prop] = {}
     }
@@ -97,7 +97,7 @@ async function searchList(object, prop, param, type) {
     }
     for (let index = 0; index < param.length; index++) {
       checkNoInjection(param)
-      const element = await TypeUtils.defineType(type, param[index])
+      const element = await typeUtils.defineType(type, param[index])
       object.$or.push({ [prop]: element })
     }
   } catch (error) {
@@ -120,7 +120,7 @@ async function checkNoInjection(param) {
   }
 }
 
-export default {
+export const searchUtilsMongo = {
   checkNoInjection,
   searchList,
   searchMin,

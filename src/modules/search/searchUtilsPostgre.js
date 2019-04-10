@@ -140,7 +140,7 @@ function generateWhere(query) {
   return where
 }
 
-export default {
+export const searchUtilsPostgre = {
   searchMin,
   searchMax,
   searchString,

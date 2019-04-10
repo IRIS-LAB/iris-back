@@ -70,6 +70,6 @@ function createObjectSort(sorts) {
   return responseSort
 }
 
-export default {
+export const paginationUtilsPostgreDAO = {
   findWithPagination,
 }

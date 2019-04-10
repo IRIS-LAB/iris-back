@@ -1,4 +1,4 @@
-import SearchUtilsMongo from '../search/searchUtilsMongo'
+import { searchUtilsMongo } from '../search/searchUtilsMongo'
 import { ErreurDO, TechnicalException } from '@u-iris/iris-common'
 import { paginationUtilsMongoDAOError } from '../../error'
 
@@ -22,7 +22,7 @@ async function createObjectForSort(sorts) {
 
 async function createObjectForSortString(sortString) {
   try {
-    await SearchUtilsMongo.checkNoInjection(sortString)
+    await searchUtilsMongo.checkNoInjection(sortString)
     const tab = sortString.split(',')
     let objectSort = {}
     objectSort[tab[0]] = tab[1] === 'asc' ? 1 : -1
@@ -70,7 +70,7 @@ async function findWithPagination(collection, connectionDb, find, query) {
   }
 }
 
-export const PaginationUtilsDAO = {
+export const PaginationUtilsMongoDAO = {
   createObjectForSort,
   findWithPagination,
 }
