@@ -35,6 +35,7 @@
     "fresh": "^0.5.2",
     "googleapis": "^37.1.0",
     "helmet": "^3.16.0",
+    "lodash": "^4.17.11",
     "mime": "^1.4.1",
     "moment": "^2.24.0",
     "sequelize": "^5.2.1",

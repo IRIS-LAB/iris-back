@@ -1,5 +1,6 @@
-import { BusinessException, ErrorDO, TechnicalException } from '@u-iris/iris-common'
+import { BusinessException, ErreurDO, TechnicalException } from '@u-iris/iris-common'
 import { paginationUtilsPostgreDAOError } from '../../error'
+import { isUndefined } from 'lodash'
 
 /**
  * Find all with pagination
@@ -11,14 +12,14 @@ import { paginationUtilsPostgreDAOError } from '../../error'
 async function findWithPagination(models, size, page, where, sorts) {
   try {
     let offset = 0
-    if (page !== 0) {
+    if (!isUndefined(page)) {
       offset = (page - 1) * size
     }
     let objectFindAll = {}
-    if (where && where !== null) {
+    if (!isUndefined(where)) {
       objectFindAll.where = where
     }
-    if (sorts && sorts !== null) {
+    if (!isUndefined(sorts)) {
       objectFindAll.order = createObjectSort(sorts)
     }
     objectFindAll.offset = offset
@@ -28,7 +29,7 @@ async function findWithPagination(models, size, page, where, sorts) {
   } catch (error) {
     if (error.parent && error.parent.routine === 'errorMissingColumn') {
       throw new BusinessException(
-        new ErrorDO(
+        new ErreurDO(
           error.message,
           paginationUtilsPostgreDAOError.findWithPagination.business.code,
           paginationUtilsPostgreDAOError.findWithPagination.business.label,
@@ -36,7 +37,7 @@ async function findWithPagination(models, size, page, where, sorts) {
       )
     } else {
       throw new TechnicalException(
-        new ErrorDO(
+        new ErreurDO(
           '',
           paginationUtilsPostgreDAOError.findWithPagination.technical.code,
           paginationUtilsPostgreDAOError.findWithPagination.technical.label,
