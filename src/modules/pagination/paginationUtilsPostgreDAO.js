@@ -1,6 +1,6 @@
 import { BusinessException, ErreurDO, TechnicalException } from '@u-iris/iris-common'
 import { paginationUtilsPostgreDAOError } from '../../error'
-import { isUndefined } from 'lodash'
+import { isUndefined, isEmpty } from 'lodash'
 
 /**
  * Find all with pagination
@@ -18,7 +18,7 @@ async function findWithPagination(models, size, page, where, sorts) {
       offset = page * size
     }
     let objectFindAll = {}
-    if (!lodash.isEmpty(where)) {
+    if (!isEmpty(where)) {
       objectFindAll.where = where
     }
     if (!isUndefined(sorts)) {
