@@ -72,7 +72,7 @@ function stringToDate(param) {
   }
 }
 
-export default {
+export const typeUtils = {
   TYPE,
   defineType,
   stringToIntBase10,

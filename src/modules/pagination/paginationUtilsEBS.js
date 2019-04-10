@@ -163,7 +163,7 @@ function checkPagination(queryParams, nbMaxAllow, defaultSize) {
   checkAcceptRange(queryParams.size, nbMaxAllow)
 }
 
-export default {
+export const paginationUtilsEBS = {
   generateHeader,
   generateStatus,
   generateResponse,

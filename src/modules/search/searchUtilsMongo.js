@@ -120,7 +120,7 @@ async function checkNoInjection(param) {
   }
 }
 
-export default {
+export const searchUtilsmongodb = {
   checkNoInjection,
   searchList,
   searchMin,
