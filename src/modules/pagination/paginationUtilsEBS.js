@@ -65,19 +65,20 @@ function generateStatus(nbMaxElement, nbElement) {
  * @param {Number} nbMaxAllow - maximum number allow
  * @param {Number} elementCount - total number of elements
  * @param {Number} lengthResponse - number of elements in the answer
- * @param {Object} queryParams - all query params (req.query)
- * @param {Object} res -response
+ * @param {Object} req - request (req)
+ * @param {Object} res -response (res)
  */
-function generateResponse(
-  type,
-  nbMaxAllow,
-  elementCount,
-  lengthResponse,
-  hostname,
-  queryParams,
-  res,
-) {
-  res.set(generateHeader(type, nbMaxAllow, elementCount, lengthResponse, hostname, queryParams))
+function generateResponse(type, nbMaxAllow, elementCount, lengthResponse, req, res) {
+  res.set(
+    generateHeader(
+      type,
+      nbMaxAllow,
+      elementCount,
+      lengthResponse,
+      req.headers.host + req.originalUrl,
+      req.queryParams,
+    ),
+  )
   res.status(generateStatus(nbMaxAllow, elementCount))
 }
 
@@ -155,9 +156,10 @@ function checkDefaultSizeAndPage(defaultSize, queryParams) {
  * checks if the size is less than the maximum number
  * @param {Object} queryParams - all query params (req.query)
  * @param {Number} nbMaxAllow - maximum number allow and it's default size
+ * @param {Number} defaultSize - default's size
  */
-function checkPagination(queryParams, nbMaxAllow) {
-  checkDefaultSizeAndPage(nbMaxAllow, queryParams)
+function checkPagination(queryParams, nbMaxAllow, defaultSize) {
+  checkDefaultSizeAndPage(defaultSize, queryParams)
   checkAcceptRange(queryParams.size, nbMaxAllow)
 }
 
