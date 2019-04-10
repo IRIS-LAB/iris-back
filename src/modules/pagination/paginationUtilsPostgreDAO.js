@@ -5,18 +5,20 @@ import { isUndefined } from 'lodash'
 /**
  * Find all with pagination
  * @param {object} models - it's a sequelize model
- * @param {object} query - query paramater
+ * @param {number} size - query.size
+ * @param {number} page - query.page
  * @param {Object} where - object that is being researched
+ * @param {Object | String} sorts - sort
  * @returns {Object} who composed by response and count (ex {response: , count: })
  */
 async function findWithPagination(models, size, page, where, sorts) {
   try {
     let offset = 0
     if (!isUndefined(page)) {
-      offset = (page - 1) * size
+      offset = page * size
     }
     let objectFindAll = {}
-    if (!isUndefined(where)) {
+    if (!lodash.isEmpty(where)) {
       objectFindAll.where = where
     }
     if (!isUndefined(sorts)) {

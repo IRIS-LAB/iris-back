@@ -133,7 +133,7 @@ function checkAcceptRange(size, nbMaxAllow) {
  */
 function checkDefaultSizeAndPage(defaultSize, queryParams) {
   try {
-    queryParams.page = queryParams.page ? typeUtils.stringToIntBase10(queryParams.page) : 0
+    queryParams.page = queryParams.page ? typeUtils.stringToIntBase10(queryParams.page) : undefined
     queryParams.size = queryParams.size
       ? typeUtils.stringToIntBase10(queryParams.size)
       : defaultSize
