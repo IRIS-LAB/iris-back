@@ -79,7 +79,7 @@ function generateResponse(type, nbMaxAllow, elementCount, lengthResponse, req, r
       req.query,
     ),
   )
-  res.status(generateStatus(nbMaxAllow, elementCount))
+  res.status(generateStatus(elementCount, lengthResponse))
 }
 
 /**
