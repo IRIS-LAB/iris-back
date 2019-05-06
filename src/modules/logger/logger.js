@@ -58,20 +58,9 @@ export const Logger = {
       transports: loggerTransports,
       exitOnError: false, // do not exit on handled exceptions
     })
-
-    // create withMorganStream() function utility to bind winston logger to morgan (see example above)
-    // app.use(require("morgan")("combined", { "stream": logger.stream }));
-    logger.withMorganStream = function () {
-      logger.stream = {
-        write: function (message, encoding) {
-          logger.info(message)
-        }
-      }
-      return logger
-    }
     return logger
   },
   createDefault: () => {
-    return this.create(process.env.LOG_LEVEL || 'debug', process.env.PATH_LOG_FILENAME || null).withMorganStream()
+    return this.create(process.env.LOG_LEVEL || 'debug', process.env.PATH_LOG_FILENAME || null)
   }
 }
