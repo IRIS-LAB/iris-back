@@ -11,7 +11,7 @@ export const Logger = {
    * @param {String} pathFileName : path of the log file
    * @returns Winston Object Logger
    */
-  create(logLevel, pathFileName) {
+  create(logLevel, pathFileName = null) {
     const localTimeZone = 'Europe/Paris'
     const { splat, combine, timestamp, printf, colorize } = format
 
@@ -46,16 +46,29 @@ export const Logger = {
     }
 
     // disable console if mode = production
-    const loggerTransports = [new transports.File(options.file)]
+    const loggerTransports = []
+    if (options.file.filename) loggerTransports.push(new transports.File(options.file))
     if (process.env.NODE_ENV !== 'production') {
       loggerTransports.push(new transports.Console(options.console))
-    }
+    } else if (!options.file.filename) throw new Error('You must set a pathFileName in production environment')
 
-    return createLogger({
+    let logger = createLogger({
       level: logLevel,
       format: combine(appendTimestamp({ tz: localTimeZone }), splat(), myFormat),
       transports: loggerTransports,
       exitOnError: false, // do not exit on handled exceptions
     })
+
+    // create withMorganStream() function utility to bind winston logger to morgan (see example above)
+    // app.use(require("morgan")("combined", { "stream": logger.stream }));
+    logger.withMorganStream = function () {
+      logger.stream = {
+        write: function (message, encoding) {
+          logger.info(message)
+        }
+      }
+      return logger
+    }
+    return logger
   },
 }
