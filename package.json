@@ -1,6 +1,6 @@
 {
   "name": "@u-iris/iris-back",
-  "version": "1.0.20-4",
+  "version": "1.0.20-5",
   "description": "A back common js module",
   "main": "dist/index.js",
   "files": [
