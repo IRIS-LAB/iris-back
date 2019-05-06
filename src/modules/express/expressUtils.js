@@ -23,7 +23,7 @@ export const expressUtils = logger => ({
    * Log debug request
    */
   logRequests: (req, res, next) => {
-    logger.debug(`verb=${req.method},uri=${req.url},queryParams=${req.params},ip=${req.ip},`)
+    logger.debug(`verb=${req.method},uri=${req.url},queryParams=${JSON.stringify(req.params)},ip=${req.ip},`)
     next()
   },
   /**
