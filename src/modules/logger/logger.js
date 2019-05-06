@@ -71,4 +71,7 @@ export const Logger = {
     }
     return logger
   },
+  createDefault: () => {
+    return this.create(process.env.LOG_LEVEL || 'debug', process.env.PATH_LOG_FILENAME || null).withMorganStream()
+  }
 }
