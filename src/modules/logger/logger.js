@@ -4,7 +4,7 @@ import { createLogger, format, transports } from 'winston'
 /**
  * Object to create a logger
  */
-export const Logger = {
+class LoggerUtils {
   /**
    * Create a new Logger
    * @param {String} logLevel (debug, info, error)
@@ -52,15 +52,17 @@ export const Logger = {
       loggerTransports.push(new transports.Console(options.console))
     } else if (!options.file.filename) throw new Error('You must set a pathFileName in production environment')
 
-    let logger = createLogger({
+    return createLogger({
       level: logLevel,
       format: combine(appendTimestamp({ tz: localTimeZone }), splat(), myFormat),
       transports: loggerTransports,
       exitOnError: false, // do not exit on handled exceptions
     })
-    return logger
-  },
-  createDefault: () => {
+  }
+
+  createDefault() {
     return this.create(process.env.LOG_LEVEL || 'debug', process.env.PATH_LOG_FILENAME || null)
   }
 }
+
+export const Logger = new LoggerUtils()
