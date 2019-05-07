@@ -4,14 +4,14 @@ import { createLogger, format, transports } from 'winston'
 /**
  * Object to create a logger
  */
-export const Logger = {
+class LoggerUtils {
   /**
    * Create a new Logger
    * @param {String} logLevel (debug, info, error)
    * @param {String} pathFileName : path of the log file
    * @returns Winston Object Logger
    */
-  create(logLevel, pathFileName) {
+  create(logLevel, pathFileName = null) {
     const localTimeZone = 'Europe/Paris'
     const { splat, combine, timestamp, printf, colorize } = format
 
@@ -46,10 +46,11 @@ export const Logger = {
     }
 
     // disable console if mode = production
-    const loggerTransports = [new transports.File(options.file)]
+    const loggerTransports = []
+    if (options.file.filename) loggerTransports.push(new transports.File(options.file))
     if (process.env.NODE_ENV !== 'production') {
       loggerTransports.push(new transports.Console(options.console))
-    }
+    } else if (!options.file.filename) throw new Error('You must set a pathFileName in production environment')
 
     return createLogger({
       level: logLevel,
@@ -57,5 +58,11 @@ export const Logger = {
       transports: loggerTransports,
       exitOnError: false, // do not exit on handled exceptions
     })
-  },
+  }
+
+  createDefault() {
+    return this.create(process.env.LOG_LEVEL || 'debug', process.env.PATH_LOG_FILENAME || null)
+  }
 }
+
+export const Logger = new LoggerUtils()
