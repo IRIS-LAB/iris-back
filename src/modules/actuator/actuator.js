@@ -11,12 +11,13 @@ export const actuator = logger => {
   /**
    * Add actuator for the App express
    * @param {App} app express
+   * @param {defaultRoute} route to access to actuator , '/actuator' by default
    */
-  async function route(app) {
+  async function route(app, defaultRoute = '/actuator') {
     try {
       // actuator
-      app.get('/actuator/health', health)
-      app.use(eActuator('/actuator'))
+      app.get(`${defaultRoute}/health`, health)
+      app.use(eActuator(defaultRoute))
     } catch (error) {
       logger.error(error)
       const errorDo = new ErreurDO(null, 'error.actuator.init', 'Unable to init Actuator')
