@@ -40,7 +40,7 @@ function generateHeader(type, nbMaxAllow, elementCount, lengthResponse, hostname
   cloneQueryParams.page = 0
   link += '<' + createUrl(hostname, cloneQueryParams) + '>; rel="first"'
   return {
-    'Accept-Range': type + nbMaxAllow,
+    'Accept-Range': type + ' ' + nbMaxAllow,
     'Content-Range': minIndex + '-' + maxIndex + '/' + elementCount,
     'X-Page-Element-Count': lengthResponse,
     'X-Total-Element': elementCount,
