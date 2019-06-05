@@ -9,15 +9,16 @@ import { isUndefined, isEmpty } from 'lodash'
  * @param {number} page - query.page
  * @param {Object} where - object that is being researched
  * @param {Object | String} sorts - sort
+ * @param {Object} [{}] - An object contains include or other parameters for the query
  * @returns {Object} who composed by response and count (ex {response: , count: })
  */
-async function findWithPagination(models, size, page, where, sorts) {
+async function findWithPagination(models, size, page, where, sorts, options = {}) {
   try {
     let offset = 0
     if (!isUndefined(page)) {
       offset = page * size
     }
-    let objectFindAll = {}
+    let objectFindAll = {...options}
     if (!isEmpty(where)) {
       objectFindAll.where = where
     }
