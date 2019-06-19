@@ -49,10 +49,16 @@ class TypeConverter {
    * @returns date
    */
   public stringToDate(param: string): Date {
-    if (!moment(param, moment.HTML5_FMT.DATETIME_LOCAL_MS, true).isValid()) {
+    let dateMoment
+    try {
+       dateMoment = moment(param, moment.ISO_8601, true)
+    } catch(e) {
+      // none
+    }
+    if (!dateMoment || !dateMoment.isValid()) {
       throw new BusinessException(new ErreurDO('', 'type.date.wrong', 'The past param is not a date'))
     }
-    return new Date(param)
+    return dateMoment.toDate()
   }
 }
 
