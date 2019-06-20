@@ -17,14 +17,15 @@ describe('Type converter', () => {
   })
   describe('stringToDate', () => {
     it('should convert string to date', () => {
+      expect(typeConverter.stringToDate('20171214')).toEqual(moment('20171214').toDate())
+      expect(typeConverter.stringToDate('2017-12-14')).toEqual(moment('2017-12-14').toDate())
+      expect(typeConverter.stringToDate('2017-12-14T00:00:00')).toEqual(moment('2017-12-14T00:00:00').toDate())
       expect(typeConverter.stringToDate('2017-12-14T16:34:10.234')).toEqual(moment('2017-12-14T16:34:10.234').toDate())
       expect(typeConverter.stringToDate('2017-12-14T00:00:00.000')).toEqual(moment('2017-12-14').toDate())
     })
     it('should throw error', () => {
       expect(() => typeConverter.stringToDate('5 1')).toThrow(BusinessException)
-      expect(() => typeConverter.stringToDate('20171214')).toThrow(BusinessException)
-      expect(() => typeConverter.stringToDate('2017-12-14')).toThrow(BusinessException)
-      expect(() => typeConverter.stringToDate('2017-12-14T00:00:00')).toThrow(BusinessException)
+      expect(() => typeConverter.stringToDate('01/01/2020')).toThrow(BusinessException)
     })
   })
   describe('convertToType', () => {
