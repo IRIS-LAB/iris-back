@@ -61,6 +61,7 @@ export class RelationOptionsInterceptor<T> implements NestInterceptor<any, any> 
       for (const propertyKey of Object.keys(object)) {
         const propertyPath = `${path ? `${path}.` : ''}${propertyKey}`
 
+
         if (typeof object[propertyKey] !== 'undefined') {
 
           let done = false
@@ -68,36 +69,43 @@ export class RelationOptionsInterceptor<T> implements NestInterceptor<any, any> 
           const relationMetadata = relations ? relations[propertyKey] : undefined
 
           if (typeof relationMetadata !== 'undefined') {
-            switch (relationMetadata.relation) {
-              case RelationEntity.NONE:
-                if (!this.optionExists(propertyPath, options)) {
-                  delete object[propertyKey]
-                  done = true
-                }
-                break
-              case RelationEntity.ASSOCIATION:
-                if (!this.optionExists(`${propertyPath}`, options)) {
-                  if (typeof object[propertyKey] !== 'undefined') {
-                    if (typeof object[propertyKey] !== 'object') {
-                      throw getErrorProvider().createTechnicalException(propertyKey, 'relation.invalid', new Error(), { relation: 'ASSOCIATION' })
-                    }
-                    object[propertyKey] = Array.isArray(object[propertyKey]) ? object[propertyKey].map(i => ({ id: i.id })) : { id: object[propertyKey].id }
+
+            // If @NotExposed() then we delete object
+            if (relationMetadata.notExposed) {
+              delete object[propertyKey]
+              done = true
+            } else {
+              switch (relationMetadata.relation) {
+                case RelationEntity.NONE:
+                  if (!this.optionExists(propertyPath, options)) {
+                    delete object[propertyKey]
                     done = true
                   }
-                }
-                break
+                  break
+                case RelationEntity.ASSOCIATION:
+                  if (!this.optionExists(`${propertyPath}`, options)) {
+                    if (typeof object[propertyKey] !== 'undefined') {
+                      if (typeof object[propertyKey] !== 'object') {
+                        throw getErrorProvider().createTechnicalException(propertyKey, 'relation.invalid', new Error(), { relation: 'ASSOCIATION' })
+                      }
+                      object[propertyKey] = Array.isArray(object[propertyKey]) ? object[propertyKey].map(i => ({ id: i.id })) : { id: object[propertyKey].id }
+                      done = true
+                    }
+                  }
+                  break
+              }
             }
           }
 
           if (!done) {
             let propertyPrototype
             if (!propertyPrototype && relationMetadata && relationMetadata.type && relationMetadata.type.prototype) {
-              propertyPrototype = relationMetadata.type.prototype
+              propertyPrototype = relationMetadata.type
             }
             if (!propertyPrototype && type && type.constructor && type.constructor.prototype) {
               propertyPrototype = Reflect.getMetadata('design:type', type.constructor.prototype, propertyKey)
             }
-            object[propertyKey] = this.filterRelation(propertyPrototype, object[propertyKey], options, `${propertyPath}`)
+            object[propertyKey] = this.filterRelation(propertyPrototype ? propertyPrototype.prototype : null, object[propertyKey], options, `${propertyPath}`)
           }
 
         }
