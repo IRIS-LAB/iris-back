@@ -3,18 +3,14 @@ import request from 'supertest'
 import { BodyParam } from '../../../src/decorators'
 import { IrisModule } from '../../../src/modules/iris-module'
 import { irisModuleOptionsForTests } from '../../commons/message-factory-for-tests'
+import { CommandBE } from '../../commons/objects/business/be/CommandBE'
 import { TestUtils } from '../../commons/test.utils'
-
-class ObjectBE {
-  public id: number
-  public name: string
-}
 
 @Controller('/default')
 class DefaultEBS {
 
   @Post('/')
-  public getDate(@BodyParam() object: ObjectBE) {
+  public getDate(@BodyParam() object: CommandBE) {
     return object
   }
 }
@@ -43,15 +39,38 @@ describe('@BodyParam', () => {
   })
 
   it('should return body as sent', () => {
+    const command: CommandBE = {
+      amount: 5,
+      billingAddress: {
+        line1: 'line1',
+        country: 'FRANCE',
+      },
+      commandLines: [],
+      customer: {
+        id: 45,
+      },
+      reference: 'REF.1',
+
+    }
     return request(app.getHttpServer())
       .post('/default')
-      .send({
-        id: 2501,
-        name: 'name',
-      })
+      .send(command)
       .expect(201)
       .expect(response => {
-        expect(response.body).toEqual({ id: 2501, name: 'name' })
+        expect(response.body).toEqual({
+            amount: 5,
+            billingAddress: {
+              line1: 'line1',
+              country: 'FRANCE',
+            },
+            commandLines: [],
+            customer: {
+              id: 45,
+            },
+            reference: 'REF.1',
+
+          },
+        )
       })
   })
 })

@@ -5,12 +5,11 @@ import {
   EntityOptionsQueryParam,
   EnumQueryParam,
   NumberQueryParam,
-  PaginatedResourcesQueryParam,
+  PaginatedEntitiesQueryParam,
   PathParam,
   StringQueryParam,
 } from '../../../../src/decorators'
-import { EntityOptions, PaginatedResourcesOptions } from '../../../../src/interfaces'
-import { PaginatedEntitiesOptionsFactory } from '../../../../src/modules/iris-module/commons'
+import { EntityOptions, PaginatedEntitiesOptions } from '../../../../src/interfaces'
 import { PaginatedResources, Resource, ResourceController } from '../../../../src/modules/iris-module/decorators'
 import { PaginatedListResult } from '../../../../src/modules/iris-module/interfaces'
 import { CommandBE } from '../../objects/business/be/CommandBE'
@@ -25,26 +24,26 @@ export class CommandEBS {
 
   @Get('/')
   @PaginatedResources(10, 100)
-  public async findAll(@PaginatedResourcesQueryParam() paginatedResourcesOptions: PaginatedResourcesOptions,
+  public async findAll(@PaginatedEntitiesQueryParam() paginatedResourcesOptions: PaginatedEntitiesOptions,
                        @NumberQueryParam('customer.id') idClient: number,
                        @EnumQueryParam({
                          type: CommandStateEnum,
                          key: 'commandState',
-                       }) statutCommande: CommandStateEnum,
+                       }) commandState: CommandStateEnum,
                        @StringQueryParam('reference') reference: string,
-                       @DateQueryParam('deliveryDatas.deliveryDate.gte') afterDateLivraison: Date,
+                       @DateQueryParam('deliveryDatas.deliveryDate.gte') deliveryDateGte: Date,
                        @DateQueryParam('deliveryDatas.deliveryDate.lte') beforeDateLivraison: Date,
   ): Promise<PaginatedListResult<CommandBE>> {
-    return this.commandLBS.findWithPaginationResult(PaginatedEntitiesOptionsFactory.withFilters(paginatedResourcesOptions, {
+    return this.commandLBS.findWithPaginationResult(paginatedResourcesOptions, {
         'customer.id': idClient,
         'reference': reference,
-        'state': statutCommande,
+        'state': commandState,
         'deliveryDatas.deliveryDate': {
-          gte: afterDateLivraison,
+          gte: deliveryDateGte,
           lte: beforeDateLivraison,
-        }
+        },
       },
-    ))
+    )
   }
 
   @Get('/:id')

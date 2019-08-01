@@ -1,4 +1,5 @@
-import { Nested } from 'tsdv-joi'
+import { BusinessValidator } from '@u-iris/iris-common'
+import { Joi } from 'tsdv-joi/core'
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 import { AllowedOptions, Relation } from '../../../../../src/decorators'
 import { RelationEntity } from '../../../../../src/enums'
@@ -16,37 +17,39 @@ export class CommandBE {
   public id?: number
 
   @Column({ name: 'REFERENCE', length: 10 })
+  @BusinessValidator(Joi.string().required())
   public reference: string
 
   @Column({ name: 'MONTANT', nullable: true, type: 'float' })
+  @BusinessValidator(Joi.number())
   public amount?: number
 
   @Column({ name: 'STATE', nullable: false })
+  @BusinessValidator(Joi.string().equal(Object.keys(CommandStateEnum).map(k => CommandStateEnum[k])))
   public state?: CommandStateEnum
 
   @Relation(RelationEntity.ASSOCIATION, CommandLineBE)
   @OneToMany(type => CommandLineBE, commandLines => commandLines.command, {
     eager: false,
-    cascade: true
+    cascade: true,
   })
   public commandLines: CommandLineBE[]
 
   @Relation(RelationEntity.ENTITY)
   @ManyToOne(type => AddressBE, {
     eager: true,
-    cascade: true
+    cascade: true,
   })
   public billingAddress: AddressBE
 
   @Column(type => DeliveryDatasBEP, {
-    prefix: ''
+    prefix: '',
   })
   public deliveryDatas?: DeliveryDatasBEP
 
   @Relation(RelationEntity.ASSOCIATION)
   @Column(type => CustomerXBE, {
-    prefix: ''
+    prefix: '',
   })
-  @Nested()
   public customer: CustomerXBE
 }

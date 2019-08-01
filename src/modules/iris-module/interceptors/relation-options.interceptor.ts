@@ -27,7 +27,6 @@ export class RelationOptionsInterceptor<T> implements NestInterceptor<any, any> 
     }
     const options = EntityOptionsFactory.getOptions(context.switchToHttp().getRequest())
 
-    // TODO : create BusinessEntityInterceptor to map result with @NotExposed()
     if (options) {
       // Check if option is valid
       for (const option of options) {

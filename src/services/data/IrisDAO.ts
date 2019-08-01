@@ -44,27 +44,30 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
   /**
    * Find entities matching filters with pagination and sort and return list and count.
    * @param query - The query
+   * @param filters - Functional filters
    */
-  public async findWithPaginationResult(query?: PaginatedEntitiesOptions<Q>): Promise<{ list: T[], count: number }> {
-    const list = await this.repository.find(this.getFindManyOptions(query))
-    const count = await this.repository.count(this.getFindManyOptions(query))
+  public async findWithPaginationResult(query?: PaginatedEntitiesOptions, filters?: Q): Promise<{ list: T[], count: number }> {
+    const list = await this.repository.find(this.getFindManyOptions(query, filters))
+    const count = await this.repository.count(this.getFindManyOptions(query, filters))
     return { list, count }
   }
 
   /**
    * Find entities matching filters with pagination and sort
    * @param query - The query
+   * @param filters - Functional filters
    */
-  public async find(query?: PaginatedEntitiesOptions<Q>): Promise<T[]> {
-    return this.repository.find(this.getFindManyOptions(query))
+  public async find(query?: PaginatedEntitiesOptions, filters?: Q): Promise<T[]> {
+    return this.repository.find(this.getFindManyOptions(query, filters))
   }
 
   /**
    * Find entities in database matching query filters
    * @param query - Query passed by exposition service where filters are stored.
+   * @param filters - Functional filters
    */
-  public async count(query?: PaginatedEntitiesOptions<Q>): Promise<number> {
-    return this.repository.count(this.getFindManyOptions(query))
+  public async count(query?: PaginatedEntitiesOptions, filters?: Q): Promise<number> {
+    return this.repository.count(this.getFindManyOptions(query, filters))
   }
 
   /**
@@ -88,29 +91,30 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
 
   /**
    * Apply query filters
-   * @param options - Query options that will be passed to find and count methods
-   * @param query - Query passed by exposition service where filters are stored.
+   * @param query - Query options that will be passed to find and count methods
+   * @param filters = Functional filters
    */
-  protected applyQueryFilters(options: FindableQuery<T>, query?: PaginatedEntitiesOptions<Q>) {
-    if (query && query.filters) {
-      for (const key of Object.keys(query.filters)) {
-        const value = query.filters[key]
+  protected applyQueryFilters(query: FindableQuery<T>, filters?: Q) {
+    // TODO : throw exception if filter key is not valid
+    if (filters) {
+      for (const key of Object.keys(filters)) {
+        const value = filters[key]
 
         if (typeof value !== 'undefined') {
           // Build with modifier
           if (typeof value === 'object') {
             const objectValue: EntityFilterObject = value as EntityFilterObject
-            this.applyQueryOperator(options.where!, key, objectValue, 'gt', MoreThan)
-            this.applyQueryOperator(options.where!, key, objectValue, 'gte', MoreThanOrEqual)
-            this.applyQueryOperator(options.where!, key, objectValue, 'lt', LessThan)
-            this.applyQueryOperator(options.where!, key, objectValue, 'lte', LessThanOrEqual)
-            this.applyQueryOperator(options.where!, key, objectValue, 'like', Like)
-            this.applyQueryOperator(options.where!, key, objectValue, 'in', In)
-            this.applyQueryOperator(options.where!, key, objectValue, 'nin', Not, In)
-            this.applyQueryOperator(options.where!, key, objectValue, 'eq', Equal)
-            this.applyQueryOperator(options.where!, key, objectValue, 'ne', Not, Equal)
+            this.applyQueryOperator(query.where!, key, objectValue, 'gt', MoreThan)
+            this.applyQueryOperator(query.where!, key, objectValue, 'gte', MoreThanOrEqual)
+            this.applyQueryOperator(query.where!, key, objectValue, 'lt', LessThan)
+            this.applyQueryOperator(query.where!, key, objectValue, 'lte', LessThanOrEqual)
+            this.applyQueryOperator(query.where!, key, objectValue, 'like', Like)
+            this.applyQueryOperator(query.where!, key, objectValue, 'in', In)
+            this.applyQueryOperator(query.where!, key, objectValue, 'nin', Not, In)
+            this.applyQueryOperator(query.where!, key, objectValue, 'eq', Equal)
+            this.applyQueryOperator(query.where!, key, objectValue, 'ne', Not, Equal)
           } else {
-            this.setValueAsNestedField(options.where, key, value)
+            this.setValueAsNestedField(query.where, key, value)
           }
         }
       }
@@ -120,12 +124,13 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
   /**
    * Apply query filters, sort options, pagination options and loading options and return findable query.
    * @param query - Query passed by exposition service
+   * @param filters - Functional filters
    */
-  protected getFindManyOptions(query?: PaginatedEntitiesOptions<Q>): FindManyOptions<T> {
+  protected getFindManyOptions(query?: PaginatedEntitiesOptions, filters?: Q): FindManyOptions<T> {
 
     const options: FindableQuery<T> = { where: {} }
-    if (query && query.filters) {
-      this.applyQueryFilters(options, query)
+    if (filters) {
+      this.applyQueryFilters(options, filters)
     }
     this.setSortOptions(options, query)
     this.setPaginationOptions(options, query)
@@ -147,7 +152,7 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
    * @param options - Options where sortable fields are applied
    * @param query - Query passed by exposition service
    */
-  protected setSortOptions(options: FindableQuery<T>, query?: PaginatedEntitiesOptions<Q>): void {
+  protected setSortOptions(options: FindableQuery<T>, query?: PaginatedEntitiesOptions): void {
     if (query && query.sort) {
       if (!options.order) {
         options.order = {}
@@ -165,7 +170,7 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
    * @param options - Options where paginable options are applied
    * @param query - Query passed by exposition service
    */
-  protected setPaginationOptions(options: FindableQuery<T>, query?: PaginatedEntitiesOptions<Q>): void {
+  protected setPaginationOptions(options: FindableQuery<T>, query?: PaginatedEntitiesOptions): void {
     if (query && query.paginate) {
       options.skip = query.paginate.page * query.paginate.size
       options.take = query.paginate.size

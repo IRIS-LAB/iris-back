@@ -8,6 +8,7 @@ import * as constants from '../../../constants'
  * @param res - resource name
  */
 export const ResourceController = <T>(type: new(...args) => T, path: string, res?: string): ClassDecorator => {
+  // TODO : remove resource type here
   return (targetClass) => {
     const resource = res || path.split('/').find(r => r !== null && r.length > 0)
     Reflect.defineMetadata(constants.CONTROLLER_RESOURCE_TYPE_METADATA, { type, resource }, targetClass)

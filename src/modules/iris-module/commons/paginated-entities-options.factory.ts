@@ -1,17 +1,12 @@
 import express from 'express'
-import {
-  EntityFilterQuery,
-  PaginatedEntitiesOptions,
-  PaginatedResourcesOptions,
-  SortDirection,
-} from '../../../interfaces'
+import { PaginatedEntitiesOptions, SortDirection } from '../../../interfaces'
 import { PaginationUtils } from '../../../utils'
 import { getErrorProvider } from '../iris.context'
 import { EntityOptionsFactory } from './entity-options.factory'
 
 export class PaginatedEntitiesOptionsFactory {
 
-  public static build(request: express.Request): PaginatedResourcesOptions {
+  public static build(request: express.Request): PaginatedEntitiesOptions {
     let sort: Array<{ field: string, direction: SortDirection }> = []
     if (request.query.sort) {
       sort = []
@@ -32,9 +27,5 @@ export class PaginatedEntitiesOptionsFactory {
       sort,
       options: EntityOptionsFactory.getOptions(request),
     }
-  }
-
-  public static withFilters<T extends EntityFilterQuery>(queryable: PaginatedResourcesOptions, filters: T): PaginatedEntitiesOptions<T> {
-    return { ...queryable, filters }
   }
 }

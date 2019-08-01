@@ -1,7 +1,7 @@
 import { createParamDecorator } from '@nestjs/common'
-import { PaginatedResourcesOptions } from '../interfaces'
+import { PaginatedEntitiesOptions } from '../interfaces'
 import { PaginatedEntitiesOptionsFactory } from '../modules/iris-module/commons'
 
-export const PaginatedResourcesQueryParam = createParamDecorator((data, req): PaginatedResourcesOptions => {
+export const PaginatedEntitiesQueryParam = createParamDecorator((data, req): PaginatedEntitiesOptions => {
   return PaginatedEntitiesOptionsFactory.build(req)
 })

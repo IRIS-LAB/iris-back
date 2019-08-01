@@ -456,12 +456,15 @@ describe('CommandsEBS (e2e)', () => {
   })
 
   describe('/ (POST)', () => {
-    it('should return error because of empty libelle', () => {
+    it('should return error because of empty reference', () => {
       return request(app.getHttpServer())
         .post('/commands')
         .send({})
         .set('Accept', 'application/json')
-        .expect(500)
+        .expect(400)
+        .then(response => {
+          TestUtils.expectErreurReturned(response, {champErreur: 'reference', codeErreur: 'any.required'})
+        })
     })
 
     it('should return new command', () => {

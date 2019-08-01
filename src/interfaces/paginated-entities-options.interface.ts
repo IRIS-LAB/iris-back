@@ -1,6 +1,8 @@
-import { EntityFilterQuery } from './filter-query.interface'
-import { PaginatedResourcesOptions } from './paginated-resources-options.interface'
+import { EntityOptions } from './entity-options.interface'
+import { PaginationOptions } from './pagination-options.interface'
+import { SortableQuery } from './sortable-query.interface'
 
-export interface PaginatedEntitiesOptions<T extends EntityFilterQuery> extends PaginatedResourcesOptions {
-  filters: T
+export interface PaginatedEntitiesOptions extends EntityOptions {
+  paginate: PaginationOptions
+  sort: SortableQuery
 }

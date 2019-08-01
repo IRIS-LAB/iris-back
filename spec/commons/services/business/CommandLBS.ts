@@ -15,16 +15,16 @@ export class CommandLBS {
   constructor(private readonly businessValidatorProvider: BusinessValidatorProvider, private readonly commandDAO: CommandDAO, private readonly amountCalculator: AmountCalculator, private readonly errorProvider: ErrorProvider) {
   }
 
-  public async findAll(query?: PaginatedEntitiesOptions<CommandeFilterQuery>): Promise<CommandBE[]> {
-    return this.commandDAO.find(query)
+  public async findAll(query?: PaginatedEntitiesOptions, filters?: CommandeFilterQuery): Promise<CommandBE[]> {
+    return this.commandDAO.find(query, filters)
   }
 
-  public async count(query?: PaginatedEntitiesOptions<CommandeFilterQuery>): Promise<number> {
-    return this.commandDAO.count(query)
+  public async count(query?: PaginatedEntitiesOptions, filters?: CommandeFilterQuery): Promise<number> {
+    return this.commandDAO.count(query, filters)
   }
 
-  public async findWithPaginationResult(query?: PaginatedEntitiesOptions<CommandeFilterQuery>): Promise<PaginatedListResult<CommandBE>> {
-    return this.commandDAO.findWithPaginationResult(query)
+  public async findWithPaginationResult(query?: PaginatedEntitiesOptions, filters?: CommandeFilterQuery): Promise<PaginatedListResult<CommandBE>> {
+    return this.commandDAO.findWithPaginationResult(query, filters)
   }
 
   public async findById(id: number, query?: EntityOptions): Promise<CommandBE> {
