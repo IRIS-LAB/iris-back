@@ -14,7 +14,6 @@ export const BodyParam = (noMapping?: boolean, ...pipes: Array<Type<PipeTransfor
 }, ...pipes)
 
 function filterObject(object: any, prototype?: any): any {
-  // TODO : implement @ReadOnly()
   if (typeof object === 'object') {
 
     const joiMetadatas = Reflect.getMetadata('tsdv:working-schema', prototype)
@@ -29,8 +28,9 @@ function filterObject(object: any, prototype?: any): any {
       const joiMetadata = joiMetadatas ? joiMetadatas[propertyKey] : null
       const value = object[propertyKey]
 
-      if (typeof value !== 'undefined') {
-        if (relationMetadata) {
+      // If value is null or field is markes as readonly we don't map it to result
+      if (typeof value !== 'undefined' && (!relationMetadata || !relationMetadata.readOnly)) {
+        if (relationMetadata && relationMetadata.relation) {
           let propertyPrototype
           if (!propertyPrototype && relationMetadata && relationMetadata.type && relationMetadata.type.prototype) {
             propertyPrototype = relationMetadata.type

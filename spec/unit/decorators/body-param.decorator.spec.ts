@@ -2,7 +2,7 @@ import { Controller, INestApplication, Injectable, Post } from '@nestjs/common'
 import { BusinessValidator } from '@u-iris/iris-common'
 import request from 'supertest'
 import { Joi } from 'tsdv-joi/core'
-import { BodyParam } from '../../../src/decorators'
+import { BodyParam, ReadOnly } from '../../../src/decorators'
 import { IrisModule } from '../../../src/modules/iris-module'
 import { irisModuleOptionsForTests } from '../../commons/message-factory-for-tests'
 import { CommandBE } from '../../commons/objects/business/be/CommandBE'
@@ -13,11 +13,25 @@ class TestDateBE {
   public date: Date
 }
 
+class TestReadonlyBE {
+  @BusinessValidator(Joi.string())
+  public name: string
+
+  @BusinessValidator(Joi.string())
+  @ReadOnly()
+  public hiddenField: string
+}
+
 @Injectable()
 class DefaultLBS {
   public async assertDate(object: TestDateBE): Promise<TestDateBE> {
     return object
   }
+
+  public async assertReadOnly(object: TestReadonlyBE): Promise<TestReadonlyBE> {
+    return object
+  }
+
 }
 
 @Controller('/default')
@@ -35,6 +49,11 @@ class DefaultEBS {
   @Post('/assertDate')
   public assertDate(@BodyParam() object: TestDateBE): Promise<TestDateBE> {
     return this.defaultLBS.assertDate(object)
+  }
+
+  @Post('/assertReadOnly')
+  public assertReadOnly(@BodyParam() object: TestReadonlyBE): Promise<TestReadonlyBE> {
+    return this.defaultLBS.assertReadOnly(object)
   }
 }
 
@@ -115,6 +134,26 @@ describe('@BodyParam', () => {
       .expect(response => {
         expect(response.body).toEqual({
             date: date.toISOString(),
+          },
+        )
+      })
+  })
+
+  it('should avoid @ReadOnly fields', () => {
+    jest.spyOn(defaultLBS, 'assertReadOnly').mockImplementation(async (object: TestReadonlyBE) => {
+      expect(object).toBeDefined()
+      expect(object.name).toBeDefined()
+      expect(object.hiddenField).not.toBeDefined()
+      return object
+    })
+
+    return request(app.getHttpServer())
+      .post('/default/assertReadOnly')
+      .send({ name: 'name', hiddenField: 'hidden' })
+      .expect(201)
+      .expect(response => {
+        expect(response.body).toEqual({
+            name: 'name',
           },
         )
       })

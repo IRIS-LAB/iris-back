@@ -5,4 +5,5 @@ export interface RelationMetadata {
   relation?: RelationEntity
   allowedOption?: boolean
   notExposed?: boolean
+  readOnly?: boolean
 }
