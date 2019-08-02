@@ -4,7 +4,8 @@
     "strict": true,
     "target": "es5",
     "module": "commonjs",
-    "sourceMap": true,
+    "sourceMap": false,
+    "declaration" : true,
     "lib": [
       "es2015",
       "dom"

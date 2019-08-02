@@ -5,10 +5,11 @@
   "main": "dist/index.js",
   "types": "dist/types/index.d.ts",
   "files": [
-    "dist/"
+    "dist/",
+    "src"
   ],
   "scripts": {
-    "build": "node_modules/.bin/gulp build",
+    "build": "rm -rf dist/ && tsc -p tsconfig.build.json",
     "lint": "tslint -c tslint.json -p tsconfig.json",
     "test": "jest --collect-coverage",
     "test:unit": "jest spec/unit --collect-coverage",
