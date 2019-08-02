@@ -8,5 +8,7 @@ export interface CommandeFilterQuery extends EntityFilterQuery {
   'deliveryDatas.deliveryDate'?: {
     lte: Date
     gte: Date
-  }
+  },
+  'badfilter'?: string,
+  'deliveryDatas.badfilter'?: string
 }

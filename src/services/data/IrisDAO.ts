@@ -95,7 +95,6 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
    * @param filters = Functional filters
    */
   protected applyQueryFilters(query: FindableQuery<T>, filters?: Q) {
-    // TODO : throw exception if filter key is not valid
     if (filters) {
       for (const key of Object.keys(filters)) {
         const value = filters[key]
@@ -231,6 +230,9 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
    * @param value - value
    */
   protected setValueAsNestedField(o: any, fieldname: string, value: any) {
+    if (!this.fieldExists(fieldname)) {
+      throw this.errorProvider.createTechnicalException(fieldname, 'entity.field.invalid', new Error(), {type: typeof this.repository.target === 'function' ? this.repository.target.name : this.repository.target})
+    }
     let temp = o
     const fields = fieldname.split('.')
     for (let i = 0; i < fields.length; i++) {
@@ -259,4 +261,13 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
     }
   }
 
+  private fieldExists(field: string) {
+    return this.fieldExistsInMap(field, this.repository.metadata.propertiesMap)
+  }
+
+  private fieldExistsInMap(field: string, map: any): boolean {
+    const parts = field.split('.')
+    const firstPart = parts.shift()
+    return firstPart && map && map.hasOwnProperty(firstPart) && (parts.length === 0 || this.fieldExistsInMap(parts.join('.'), map[firstPart]))
+  }
 }

@@ -33,6 +33,8 @@ export class CommandEBS {
                        @StringQueryParam('reference') reference: string,
                        @DateQueryParam('deliveryDatas.deliveryDate.gte') deliveryDateGte: Date,
                        @DateQueryParam('deliveryDatas.deliveryDate.lte') beforeDateLivraison: Date,
+                       @StringQueryParam('badfilter') badfilter: string,
+                       @StringQueryParam('deliveryDatas.badfilter') deliveryDatasBadfilter: string,
   ): Promise<PaginatedListResult<CommandBE>> {
     return this.commandLBS.findWithPaginationResult(paginatedResourcesOptions, {
         'customer.id': idClient,
@@ -42,6 +44,8 @@ export class CommandEBS {
           gte: deliveryDateGte,
           lte: beforeDateLivraison,
         },
+        'badfilter': badfilter,
+        'deliveryDatas.badfilter': deliveryDatasBadfilter,
       },
     )
   }

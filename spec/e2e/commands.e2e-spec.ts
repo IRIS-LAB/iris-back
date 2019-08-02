@@ -278,7 +278,7 @@ describe('CommandsEBS (e2e)', () => {
         })
     })
 
-    it('should return error with commands filtered by deliveryDatas.deliveryDate between order by deliveryDate desc', async () => {
+    it('should return commands filtered by deliveryDatas.deliveryDate between order by deliveryDate desc', async () => {
 
       let command1: CommandBE = new CommandBE()
       command1.reference = 'CMD.1'
@@ -315,6 +315,16 @@ describe('CommandsEBS (e2e)', () => {
           expect(response.body).toHaveLength(2)
           expect(response.body[0].id).toEqual(command3.id)
           expect(response.body[1].id).toEqual(command2.id)
+        })
+    })
+
+    it('should return error because of bad filter', async () => {
+      return request(app.getHttpServer())
+        .get('/commands?badfilter=youhou')
+        .expect(500)
+        .expect('Content-Type', /json/)
+        .then(response => {
+          TestUtils.expectErreurReturned(response, {codeErreur: 'entity.field.invalid', champErreur: 'badfilter'})
         })
     })
   })
