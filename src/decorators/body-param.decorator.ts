@@ -2,6 +2,7 @@ import { ArgumentMetadata, Body, PipeTransform, Type } from '@nestjs/common'
 import * as constants from '../constants'
 import { RelationEntity } from '../enums'
 import { RelationMetadata } from '../interfaces/relation-metadata.interface'
+import { TypeUtils } from '../utils'
 
 export const BodyParam = (noMapping?: boolean, ...pipes: Array<Type<PipeTransform> | PipeTransform>) => Body({
   transform(value: any, metadata: ArgumentMetadata): any {
@@ -13,7 +14,6 @@ export const BodyParam = (noMapping?: boolean, ...pipes: Array<Type<PipeTransfor
 }, ...pipes)
 
 function filterObject(object: any, prototype?: any): any {
-  // TODO : convert Date
   // TODO : implement @ReadOnly()
   if (typeof object === 'object') {
 
@@ -28,6 +28,7 @@ function filterObject(object: any, prototype?: any): any {
       const relationMetadata = relationMetadatas ? relationMetadatas[propertyKey] : null
       const joiMetadata = joiMetadatas ? joiMetadatas[propertyKey] : null
       const value = object[propertyKey]
+
       if (typeof value !== 'undefined') {
         if (relationMetadata) {
           let propertyPrototype
@@ -50,12 +51,11 @@ function filterObject(object: any, prototype?: any): any {
           }
 
         } else if (joiMetadata) {
-          result[propertyKey] = value
+          result[propertyKey] = joiMetadata._type === 'date' ? TypeUtils.convertToType(TypeUtils.TYPE.DATE, value) : value
         }
       }
     }
     return result
-
   } else {
     return object
   }
