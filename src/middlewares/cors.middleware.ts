@@ -5,4 +5,4 @@ import { ExpressMiddleware } from '../interfaces'
 /**
  * Enable cors with cors plugin
  */
-export const enableCors: ExpressMiddleware = (logger: Logger) => cors()
+export const enableCors: ExpressMiddleware = (logger?: Logger) => cors()

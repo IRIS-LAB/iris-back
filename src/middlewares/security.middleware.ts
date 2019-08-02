@@ -5,4 +5,4 @@ import { ExpressMiddleware } from '../interfaces'
 /**
  * Enable security with cors plugin
  */
-export const enableSecurity: ExpressMiddleware = (logger: Logger) => helmet()
+export const enableSecurity: ExpressMiddleware = (logger?: Logger) => helmet()
