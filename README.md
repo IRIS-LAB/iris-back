@@ -1,5 +1,5 @@
 # iris-back
-iris-back is a set of tools for Typescript backend project, based on the powerfull frameworks like:
+iris-back is a set of tools for Typescript backend project, based on powerfull frameworks like:
 * [NestJS](https://nestjs.com/)
 * [TypeORM](https://typeorm.io/#/)
 * [Joi](https://github.com/hapijs/joi). 
@@ -43,9 +43,9 @@ $ npm install @u-iris/iris-back --save
 
 
 ### Before
-Please note that iris-back is built top of [NestJS](https://nestjs.com/) and [TypeORM](https://typeorm.io/#/). 
+Please note that iris-back is built on top of [NestJS](https://nestjs.com/) and [TypeORM](https://typeorm.io/#/). 
 
-Before starting to use iris-back, you should read official documentation of theses frameworks. 
+Before starting to use iris-back, you should read the official documentation of theses frameworks. 
 
 ### Application bootstrap
 To use iris-back in your NestJS application you should :
@@ -99,7 +99,7 @@ class AppModule implements NestModule {
 ```
 
 ### Application context
-Application is a global store used to access to injectable providers from outside a NestJS context. You must initialize application context by calling `setApplicationContext()` to use IrisModule.
+Application is a global store used to access injectable providers from outside a NestJS context. You must initialize application context by calling `setApplicationContext()` to use IrisModule.
 
 ```typescript
 import { setApplicationContext } from '@u-iris/iris-back'
@@ -118,8 +118,8 @@ Example:
 ```typescript
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 
-@Entity(`COMMANDE`)
-export class CommandBE {
+@Entity(`ORDER`)
+export class OrderBE {
 
   @PrimaryGeneratedColumn('increment')
   public id?: number
@@ -127,17 +127,17 @@ export class CommandBE {
   @Column({ name: 'REFERENCE', length: 10 })
   public reference: string
 
-  @Column({ name: 'MONTANT', nullable: true, type: 'float' })
+  @Column({ name: 'AMOUNT', nullable: true, type: 'float' })
   public amount?: number
 
   @Column({ name: 'STATE', nullable: false })
   public state?: CommandStateEnum
 
-  @OneToMany(type => CommandLineBE, commandLines => commandLines.command, {
+  @OneToMany(type => orderLineBE, orderLines => orderLines.order, {
     eager: false,
     cascade: true,
   })
-  public commandLines: CommandLineBE[]
+  public orderLines: OrderLineBE[]
 
   @ManyToOne(type => AddressBE, {
     eager: true,
@@ -147,10 +147,10 @@ export class CommandBE {
 
   // Part of business entity : all fields of BEP will be saved into the business entity. 
   // BEP is used for a logical organization of your model
-  @Column(type => DeliveryDatasBEP, {
+  @Column(type => DeliveryDataBEP, {
     prefix: '', // for embedded BEP, set typeorm prefix to ''
   })
-  public deliveryDatas?: DeliveryDatasBEP
+  public deliveryData?: DeliveryDataBEP
 
   // External business entity : content of XBE is not saved in your database. You just need its ID.
   // XBE generally provides from external API.
@@ -161,7 +161,7 @@ export class CommandBE {
 }
 ```
 #### Relations and allowed options
-**Relations** are used to define how your entity will be serialized from HTTP request and to HTTP response. A relation can be type of :
+**Relations** are used to define how your entity will be serialized from HTTP request and to HTTP response. A relation can be of type :
 * NONE : relation is removed from HTTP request and to HTTP response
 * ASSOCIATION : only ID of the related entity is kept from HTTP request and to HTTP response
 * ENTITY : all of the related entity is kept
@@ -182,9 +182,9 @@ Example:
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 import { AllowedOptions, Relation, RelationEntity } from '@u-iris/iris-back'
 
-@Entity(`COMMANDE`)
-@AllowedOptions('commandLines', 'commandLines.product', 'customer')
-export class CommandBE {
+@Entity(`ORDER`)
+@AllowedOptions('orderLines', 'orderLines.product', 'customer')
+export class OrderBE {
 
   @PrimaryGeneratedColumn('increment')
   public id?: number
@@ -192,19 +192,19 @@ export class CommandBE {
   @Column({ name: 'REFERENCE', length: 10 })
   public reference: string
 
-  @Column({ name: 'MONTANT', nullable: true, type: 'float' })
+  @Column({ name: 'AMOUNT', nullable: true, type: 'float' })
   public amount?: number
 
   @Column({ name: 'STATE', nullable: false })
   public state?: CommandStateEnum
 
   // @Relation() applied to a field typeof Array must declare the type of array in parameter. This is a technical constraint of typescript
-  @Relation(RelationEntity.ASSOCIATION, CommandLineBE)
-  @OneToMany(type => CommandLineBE, commandLines => commandLines.command, {
+  @Relation(RelationEntity.ASSOCIATION, OrderLineBE)
+  @OneToMany(type => OrderLineBE, orderLines => orderLines.command, {
     eager: false,
     cascade: true,
   })
-  public commandLines: CommandLineBE[]
+  public orderLines: OrderLineBE[]
 
   // When applied to an object type, typeof field is not required
   @Relation(RelationEntity.ENTITY)
@@ -214,10 +214,10 @@ export class CommandBE {
   })
   public billingAddress: AddressBE
 
-  @Column(type => DeliveryDatasBEP, {
+  @Column(type => DeliveryDataBEP, {
     prefix: '',
   })
-  public deliveryDatas?: DeliveryDatasBEP
+  public deliveryData?: DeliveryDataBEP
 
   @Relation(RelationEntity.ASSOCIATION)
   @Column(type => CustomerXBE, {
@@ -228,8 +228,8 @@ export class CommandBE {
 ```
 
 #### Business validator
-Business validation rules are required to serialize HTTP request. If no @Relation and no @BusinessValidator is defined on a business entity field, field from HTTP request will be ignore.
-Moreover business validator is used to define constraint validator.
+Business validation rules are required to serialize HTTP request. If no @Relation and no @BusinessValidator is defined on a business entity field, field from HTTP request will be ignored.
+Moreover, a business validator is used to define a constraint validator.
 
 Example:
 ```typescript
@@ -237,9 +237,9 @@ import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'ty
 import { AllowedOptions, Relation, RelationEntity, BusinessValidator } from '@u-iris/iris-back'
 import { Joi } from 'tsdv-joi/core'
 
-@Entity(`COMMANDE`)
-@AllowedOptions('commandLines', 'commandLines.product', 'customer')
-export class CommandBE {
+@Entity(`ORDER`)
+@AllowedOptions('orderLines', 'orderLines.product', 'customer')
+export class OrderBE {
 
   @PrimaryGeneratedColumn('increment')
   public id?: number
@@ -248,7 +248,7 @@ export class CommandBE {
   @BusinessValidator(Joi.string().required())
   public reference: string
 
-  @Column({ name: 'MONTANT', nullable: true, type: 'float' })
+  @Column({ name: 'AMOUNT', nullable: true, type: 'float' })
   @BusinessValidator(Joi.number())
   public amount?: number
 
@@ -257,12 +257,12 @@ export class CommandBE {
   @BusinessValidator(Joi.string().equal(Object.keys(CommandStateEnum).map(k => CommandStateEnum[k])))
   public state?: CommandStateEnum
 
-  @Relation(RelationEntity.ASSOCIATION, CommandLineBE)
-  @OneToMany(type => CommandLineBE, commandLines => commandLines.command, {
+  @Relation(RelationEntity.ASSOCIATION, OrderLineBE)
+  @OneToMany(type => OrderLineBE, orderLines => orderLines.command, {
     eager: false,
     cascade: true,
   })
-  public commandLines: CommandLineBE[]
+  public orderLines: OrderLineBE[]
 
   @Relation(RelationEntity.ENTITY)
   @ManyToOne(type => AddressBE, {
@@ -271,10 +271,10 @@ export class CommandBE {
   })
   public billingAddress: AddressBE
 
-  @Column(type => DeliveryDatasBEP, {
+  @Column(type => DeliveryDataBEP, {
     prefix: '',
   })
-  public deliveryDatas?: DeliveryDatasBEP
+  public deliveryData?: DeliveryDataBEP
 
   @Relation(RelationEntity.ASSOCIATION)
   @Column(type => CustomerXBE, {
@@ -296,7 +296,7 @@ export class CommandLBS {
   constructor(private readonly businessValidatorProvider: BusinessValidatorProvider) {
   }
 
-  public async validateCommande(command: CommandBE): Promise<CommandBE> {
+  public async validateCommande(command: OrderBE): Promise<OrderBE> {
     return this.businessValidatorProvider.validate(command) // if a constraint is not validated, a BusinessException will be thrown
   }
 }
@@ -307,7 +307,7 @@ export class CommandLBS {
 Exposition Business Service is used as NestJS Controller. It provides some features :
 * serialization (request and response)
 * interceptors for relations and options
-* interceptors for pagination response (with pagination datas in headers)
+* interceptors for pagination response (with pagination data in headers)
 
 #### Define routes
 First define your routes of EBS with default decorators from NestJS (@Controller, @Get, @Post, @Put, @Delete).
@@ -333,9 +333,9 @@ The method on which this decorator is applied must return a `Promise<T>` where T
 #### Get parameters from request
 To retrieve parameters from the HTTP request, use this parameter decorators :
 
-For **Query parameter**, use `@QueryParam(<datas>)` with :
-- `datas`: name of the parameter or an object like { key: 'name of the parameter', required: boolean } 
-in some cases, datas could contain other parameters.
+For **Query parameter**, use `@QueryParam(<data>)` with :
+- `data`: name of the parameter or an object like { key: 'name of the parameter', required: boolean } 
+in some cases, data could contain other parameters.
 
 If you want to cast the query parameter into a specific type :
 * `@DateQueryParam(<parameter_name>)` for a date (parameter must be in ISO format)
@@ -345,16 +345,16 @@ If you want to cast the query parameter into a specific type :
 
 For **Path parameter**, use @PathParam(<parameter_name>)
 
-If you want to cast the query parameter into a specific type :
+If you want to cast the path parameter into a specific type :
 
 * `@DatePathParam(<parameter_name>)` for a date (parameter must be in ISO format)
 * `@EnumPathParam({type: <type_of_enum>, key: <parameter_name>})` for an enum
 * `@NumberPathParam(<parameter_name>)` for a number
 * `@StringPathParam(<parameter_name>)` for a string
 
-For **Body datas**, use `@BodyParam()`
+For **Body data**, use `@BodyParam()`
 
-Object injected into the parameter of the method will be serialized to the type of entity you passed in `@PaginatedResources()` or `@Resource()`.
+Object injected into the method's parameter will be serialized into the type of entity you passed in `@PaginatedResources()` or `@Resource()`.
 
 
 Example:
@@ -383,7 +383,7 @@ export class CommandEBS {
   }
 
   @Get('/')
-  @PaginatedResources(CommandBE, 'commands', 10, 100)
+  @PaginatedResources(OrderBE, 'commands', 10, 100)
   public async findAll(@PaginatedEntitiesQueryParam() paginatedResourcesOptions: PaginatedEntitiesOptions,
                        @NumberQueryParam('customer.id') idClient: number,
                        @EnumQueryParam({
@@ -391,34 +391,34 @@ export class CommandEBS {
                          key: 'commandState',
                        }) commandState: CommandStateEnum,
                        @StringQueryParam('reference') reference: string,
-                       @DateQueryParam('deliveryDatas.deliveryDate.gte') deliveryDateGte: Date,
-                       @DateQueryParam('deliveryDatas.deliveryDate.lte') beforeDateLivraison: Date,
+                       @DateQueryParam('deliveryData.deliveryDate.gte') deliveryDateGte: Date,
+                       @DateQueryParam('deliveryData.deliveryDate.lte') beforeDateLivraison: Date,
                        @StringQueryParam('badfilter') badfilter: string,
-                       @StringQueryParam('deliveryDatas.badfilter') deliveryDatasBadfilter: string,
-  ): Promise<PaginatedListResult<CommandBE>> {
+                       @StringQueryParam('deliveryData.badfilter') deliveryDataBadfilter: string,
+  ): Promise<PaginatedListResult<OrderBE>> {
     return this.commandLBS.findWithPaginationResult(paginatedResourcesOptions, {
         'customer.id': idClient,
         'reference': reference,
         'state': commandState,
-        'deliveryDatas.deliveryDate': {
+        'deliveryData.deliveryDate': {
           gte: deliveryDateGte,
           lte: beforeDateLivraison,
         },
         'badfilter': badfilter,
-        'deliveryDatas.badfilter': deliveryDatasBadfilter,
+        'deliveryData.badfilter': deliveryDataBadfilter,
       },
     )
   }
 
   @Get('/:id')
-  @Resource(CommandBE)
-  public async findById(@EntityOptionsQueryParam() queryableParam: EntityOptions, @PathParam('id') id: number): Promise<CommandBE> {
+  @Resource(OrderBE)
+  public async findById(@EntityOptionsQueryParam() queryableParam: EntityOptions, @PathParam('id') id: number): Promise<OrderBE> {
     return this.commandLBS.findById(id, queryableParam)
   }
 
   @Post('/')
-  @Resource(CommandBE)
-  public async createCommande(@EntityOptionsQueryParam() queryableParam: EntityOptions, @BodyParam() newCommande: CommandBE): Promise<CommandBE> {
+  @Resource(OrderBE)
+  public async createCommande(@EntityOptionsQueryParam() queryableParam: EntityOptions, @BodyParam() newCommande: OrderBE): Promise<OrderBE> {
     return this.commandLBS.createCommande(newCommande, queryableParam)
   }
 }
@@ -427,9 +427,9 @@ export class CommandEBS {
 IrisModule exports some useful providers.
 
 #### Cls provider
-ClsProvider is a provider which implements [TraceContext specifications](https://www.w3.org/TR/trace-context/). You can store datas into ClsProvider to access them while the request is living. Datas stored by ClsProvider as specific to the request lifecycle.
+ClsProvider is a provider which implements [TraceContext specifications](https://www.w3.org/TR/trace-context/). You can store data into ClsProvider to access them while the request is living. Data stored by ClsProvider is specific to the request lifecycle.
 
-You can store datas as you could do that in JAVA with ThreadLocal. Javascript does not support ThreadLocal because NodeJS is working on a single thread. 
+You can store data as you could do that in JAVA with ThreadLocal. Javascript does not support ThreadLocal because NodeJS is working on a single thread. 
 Instead of that, NodeJS provide a feature called [Async hooks](https://github.com/nodejs/node/blob/master/doc/api/async_hooks.md). ClsProvider use [cls-hooked](https://github.com/jeff-lewis/cls-hooked) library to implements Trace context.
 
 
@@ -460,7 +460,7 @@ class AnotherService {
 #### Logger
 LoggerProvider allows you to log in Iris format (with trace-id and span-id from Trace context specifications).
 
-We recommend you to access to logger directly from application context. `getLogger()` returns a winston logger.
+We recommend to access the logger directly from the application context. `getLogger()` returns a winston logger.
 
 ```typescript
 import { getLogger } from '@u-iris/iris-back'
@@ -469,7 +469,7 @@ getLogger().debug('This is a debug log')
 ```
 
 #### Message provider
-MessageProvider allows you to get message from code by using .properties files.
+MessageProvider allows you to programmatically create messages/strings using a .properties file.
 
 You should define properties files in `IrisModule.forRoot()`. See [Application bootstrap](#application-bootstrap)
 
@@ -495,6 +495,7 @@ class MyService {
 
 #### Error provider
 ErrorProvider allows you to create `IrisException` and get label from `MessageProvider` automatically by checking the code of the error.
+// TODO : ajouter un exemple de fichier .properties 
 
 ```typescript
 import { Injectable } from '@nestjs/common'
@@ -530,7 +531,7 @@ export class AppModule implements NestModule {
   public configure(consumer: MiddlewareConsumer): MiddlewareConsumer | void {
     const middlewaresWithLogger = middlewares()
     consumer.apply(middlewaresWithLogger.enableCors).forRoutes('/') // Enable CORS
-    consumer.apply(middlewaresWithLogger.enableCompression).forRoutes('/') // Enable compressoin
+    consumer.apply(middlewaresWithLogger.enableCompression).forRoutes('/') // Enable compression
     consumer.apply(middlewaresWithLogger.enableSecurity).forRoutes('/') // Enable security with helmet
     consumer.apply(middlewaresWithLogger.actuator).forRoutes('/actuator') // Enable actuator
     return consumer
