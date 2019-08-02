@@ -5,26 +5,17 @@ import * as constants from '../../../constants'
 import { RelationEntity } from '../../../enums'
 import { RelationMetadata } from '../../../interfaces/relation-metadata.interface'
 import { EntityOptionsFactory } from '../commons'
-import { ControllerResourceTypeMetadata } from '../interfaces/controller-resource-type-metadata.interface'
 import { getErrorProvider } from '../iris.context'
 
 /**
  * NestJS Interceptor to remove fields for NONE or ASSOTIATION Relations. ENTITY Relation should be managed by typeorm Query.
  */
 export class RelationOptionsInterceptor<T> implements NestInterceptor<any, any> {
-  private type: new(...args) => T
 
-  constructor(private readonly targetClass) {
+  constructor(private readonly type: new(...args) => T) {
   }
 
   public intercept(context: ExecutionContext, next: CallHandler<any>): Observable<any> | Promise<Observable<any>> {
-    if (!this.type) {
-      const metadata: ControllerResourceTypeMetadata<T> = Reflect.getMetadata(constants.CONTROLLER_RESOURCE_TYPE_METADATA, this.targetClass.constructor)
-      if (!metadata) {
-        throw new Error('You must add @ResourceController decorator on your class to use @PaginatedResources')
-      }
-      this.type = metadata.type
-    }
     const options = EntityOptionsFactory.getOptions(context.switchToHttp().getRequest())
 
     if (options) {

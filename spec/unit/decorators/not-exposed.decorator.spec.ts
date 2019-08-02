@@ -1,11 +1,11 @@
-import { Get, INestApplication } from '@nestjs/common'
+import { Controller, Get, INestApplication } from '@nestjs/common'
 import '@u-iris/iris-common-test-utils'
 import 'reflect-metadata'
 import request from 'supertest'
 import { AllowedOptions, NotExposed, Relation } from '../../../src/decorators'
 import { RelationEntity } from '../../../src/enums'
 import { IrisModule } from '../../../src/modules/iris-module'
-import { Resource, ResourceController } from '../../../src/modules/iris-module/decorators'
+import { Resource } from '../../../src/modules/iris-module/decorators'
 import { irisModuleOptionsForTests } from '../../commons/message-factory-for-tests'
 import { TestUtils } from '../../commons/test.utils'
 
@@ -33,38 +33,38 @@ class DTOContainerNotExposed {
   public child: DTONotExposed
 }
 
-@ResourceController(DTOExposed, '/exposed')
+@Controller('/exposed')
 class ExposedEBS {
   @Get('/')
-  @Resource()
+  @Resource(DTOExposed)
   public async index(): Promise<DTOExposed> {
     return { id: 1, exposed: 'value' }
   }
 }
 
-@ResourceController(DTONotExposed, '/notExposed')
+@Controller('/notExposed')
 class NotExposedEBS {
 
   @Get('/')
-  @Resource()
+  @Resource(DTONotExposed)
   public async index(): Promise<DTONotExposed> {
     return { id: 1, notExposed: 'value' }
   }
 }
 
-@ResourceController(DTOContainerExposed, '/containerExposed')
+@Controller('/containerExposed')
 class ContainerExposedEBS {
   @Get('/')
-  @Resource()
+  @Resource(DTOContainerExposed)
   public async index(): Promise<DTOContainerExposed> {
     return { child: { id: 1, exposed: 'value' } }
   }
 }
 
-@ResourceController(DTOContainerNotExposed, '/containerNotExposed')
+@Controller('/containerNotExposed')
 class ContainerNotExposedEBS {
   @Get('/')
-  @Resource()
+  @Resource(DTOContainerNotExposed)
   public async index(): Promise<DTOContainerNotExposed> {
     return { child: { id: 1, notExposed: 'value' } }
   }

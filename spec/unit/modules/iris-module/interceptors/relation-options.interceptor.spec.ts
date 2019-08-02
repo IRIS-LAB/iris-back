@@ -1,4 +1,4 @@
-import { Get, INestApplication } from '@nestjs/common'
+import { Controller, Get, INestApplication } from '@nestjs/common'
 import '@u-iris/iris-common-test-utils'
 import request from 'supertest'
 import { NumberPathParam } from '../../../../../src/decorators'
@@ -8,13 +8,12 @@ import {
   PaginatedListResult,
   PaginatedResources,
   Resource,
-  ResourceController,
 } from '../../../../../src/modules/iris-module'
 import { irisModuleOptionsForTests } from '../../../../commons/message-factory-for-tests'
 import { CommandBE } from '../../../../commons/objects/business/be/CommandBE'
 import { TestUtils } from '../../../../commons/test.utils'
 
-@ResourceController(CommandBE, '/commands')
+@Controller('/commands')
 class DefaultEBS {
 
   private static getCommands(): CommandBE[] {
@@ -56,7 +55,7 @@ class DefaultEBS {
   }
 
   @Get('/:id')
-  @Resource()
+  @Resource(CommandBE)
   public async get(@NumberPathParam('id') id: number): Promise<CommandBE> {
     const command = DefaultEBS.getCommands().find(c => c.id === id)
     if (!command) {
@@ -66,7 +65,7 @@ class DefaultEBS {
   }
 
   @Get('/')
-  @PaginatedResources(10, 100)
+  @PaginatedResources(CommandBE, 'commands', 10, 100)
   public async index(@NumberPathParam('id') id: number): Promise<PaginatedListResult<CommandBE>> {
     const commands = DefaultEBS.getCommands()
     return { list: commands, count: commands.length }

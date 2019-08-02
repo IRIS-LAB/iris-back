@@ -1,22 +1,17 @@
-import { Get, INestApplication } from '@nestjs/common'
+import { Controller, Get, INestApplication } from '@nestjs/common'
 import '@u-iris/iris-common-test-utils'
 import request from 'supertest'
 import { PaginatedEntitiesQueryParam } from '../../../../../src/decorators'
 import { PaginatedEntitiesOptions } from '../../../../../src/interfaces'
-import {
-  IrisModule,
-  PaginatedListResult,
-  PaginatedResources,
-  ResourceController,
-} from '../../../../../src/modules/iris-module'
+import { IrisModule, PaginatedListResult, PaginatedResources } from '../../../../../src/modules/iris-module'
 import { irisModuleOptionsForTests } from '../../../../commons/message-factory-for-tests'
 import { TestUtils } from '../../../../commons/test.utils'
 
-@ResourceController(Number, '/number')
+@Controller('/number')
 class DefaultEBS {
 
   @Get('/')
-  @PaginatedResources(10, 100)
+  @PaginatedResources(Number, 'numbers', 10, 100)
   public async index(@PaginatedEntitiesQueryParam() queryableListParam: PaginatedEntitiesOptions): Promise<PaginatedListResult<number>> {
     const numbersInDatabase = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
     const results = numbersInDatabase.slice(queryableListParam.paginate.size * queryableListParam.paginate.page, queryableListParam.paginate.size * queryableListParam.paginate.page + queryableListParam.paginate.size)
