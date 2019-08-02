@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common'
 import { ModuleMetadata } from '@nestjs/common/interfaces'
-import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core'
+import { APP_INTERCEPTOR } from '@nestjs/core'
 import { Test, TestingModule } from '@nestjs/testing'
 import '@u-iris/iris-common-test-utils'
 import * as request from 'superagent'
@@ -25,16 +25,12 @@ export class TestUtils {
       metadata.providers = []
     }
     metadata.providers.unshift({
-        provide: APP_INTERCEPTOR,
-        useClass: TraceContextInterceptor,
-      }, {
-        provide: APP_INTERCEPTOR,
-        useClass: LoggingInterceptor,
-      },
-      {
-        provide: APP_FILTER,
-        useClass: ExceptionFilter,
-      })
+      provide: APP_INTERCEPTOR,
+      useClass: TraceContextInterceptor,
+    }, {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
+    })
     const module: TestingModule = await Test.createTestingModule(metadata).compile()
     const app = TestUtils.constructApplicationFromModule(module)
     return { app, module }
@@ -43,7 +39,6 @@ export class TestUtils {
   public static constructApplicationFromModule(module: TestingModule) {
     const app = module.createNestApplication()
     setApplicationContext(app)
-    // app.useGlobalInterceptors(new TraceContextInterceptor()) // error handler
     app.useGlobalFilters(new ExceptionFilter()) // error handler
     return app
   }
