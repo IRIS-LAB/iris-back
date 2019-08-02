@@ -1,5 +1,10 @@
 # iris-back
-iris-back is a set of tools for Typescript backend project, based on the powerfull frameworks like [NestJS](https://nestjs.com/), [TypeORM](https://typeorm.io/#/) and [Joi](https://github.com/hapijs/joi). 
+iris-back is a set of tools for Typescript backend project, based on the powerfull frameworks like:
+* [NestJS](https://nestjs.com/)
+* [TypeORM](https://typeorm.io/#/)
+* [Joi](https://github.com/hapijs/joi). 
+* [winston](https://github.com/winstonjs/winston)
+* [cls-hooked](https://github.com/jeff-lewis/cls-hooked)
 
 The main features are :
 * HTTP web services exposition with type serialization (**S**earch with pagination, **C**reate, **R**ead, **U**pdate, **D**elete)
@@ -18,16 +23,90 @@ $ npm install @u-iris/iris-back --save
 
 ## Usage
 
+* [Before](#before)
+* [Application bootstrap](#application-bootstrap)
+* [Application context](#application-context)
+* [Business Entity](#business-entity)
+    * [Database link](#database-link)
+    * [Relations and allowed options](#relations-and-allowed-options)
+    * [Business validator](#business-validator)
+* [Exposition Business Service (Controller)](#exposition-business-service-controller)
+    * [Define routes](#define-routes)
+    * [Apply resources incerceptors](#apply-resources-incerceptors)
+    * [Get parameters from request](#get-parameters-from-request)
+* [Providers](#providers)
+    * [Cls provider](#cls-provider)
+    * [Logger](#logger)
+    * [Message provider](#message-provider)
+    * [Error provider](#error-provider)
+* [Other middlewares](#other-middlewares)
+
+
 ### Before
 Please note that iris-back is built top of [NestJS](https://nestjs.com/) and [TypeORM](https://typeorm.io/#/). 
 
 Before starting to use iris-back, you should read official documentation of theses frameworks. 
 
 ### Application bootstrap
-TBD
+To use iris-back in your NestJS application you should :
+* Import IrisModule into your main module by calling `IrisModule.forRoot()`
+* Define `TraceContextInterceptor` as the first interceptor in your main module and provided as APP_INTERCEPTOR (very important)
+* Define `ExceptionFilter` as a global filter
+* Call `setApplicationContext()`
+
+Example:
+
+```typescript
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
+import { NestFactory, APP_INTERCEPTOR } from '@nestjs/core'
+import { IrisModule, LoggingInterceptor, TraceContextInterceptor, ExceptionFilter, setApplicationContext } from '@u-iris/iris-back'
+
+@Module({
+  imports: [
+    IrisModule.forRoot({
+         logger: {
+           appName: 'my-application',
+           appVersion: '1.0.0',
+           level: 'error',
+           enableConsole: true
+         },
+         messagesSources: '/path/to/i18n.properties'
+       })
+  ],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TraceContextInterceptor
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor
+    }]
+})
+class AppModule implements NestModule {
+  public configure(consumer: MiddlewareConsumer): MiddlewareConsumer | void {
+    return undefined
+  }
+}
+(async () => {
+    const app = await NestFactory.create(AppModule)
+    app.useGlobalFilters(new ExceptionFilter())
+    setApplicationContext(app)
+    app.listen(3000, () => {
+      console.log.info(`Server running at http://127.0.0.1:3000/`)
+    })
+})()
+```
 
 ### Application context
-TBD
+Application is a global store used to access to injectable providers from outside a NestJS context. You must initialize application context by calling `setApplicationContext()` to use IrisModule.
+
+```typescript
+import { setApplicationContext } from '@u-iris/iris-back'
+
+const app = await NestFactory.create(AppModule)
+setApplicationContext(app)
+```
 
 ### Business Entity
 A business entity is an object related to a database and/or a resource exposed by a controller.
@@ -230,8 +309,12 @@ Exposition Business Service is used as NestJS Controller. It provides some featu
 * interceptors for relations and options
 * interceptors for pagination response (with pagination datas in headers)
 
+#### Define routes
 First define your routes of EBS with default decorators from NestJS (@Controller, @Get, @Post, @Put, @Delete).
 
+see [NestJS documentation](https://docs.nestjs.com/controllers)
+
+#### Apply resources incerceptors
 Then you can apply resources interceptors (as NestJS interceptors) to manage the serialization and pagination of your business entities :
 
 * `@PaginatedResources(<entity_type>, <resource__name>, <default_page_size>, <max_page_size>)` for search api with pagination:
@@ -247,6 +330,7 @@ The method on which this decorator is applied must return a `Promise<PaginatedLi
     
 The method on which this decorator is applied must return a `Promise<T>` where T is the type of the entity you passed in `@Resource()`
 
+#### Get parameters from request
 To retrieve parameters from the HTTP request, use this parameter decorators :
 
 For **Query parameter**, use `@QueryParam(<datas>)` with :
@@ -339,142 +423,120 @@ export class CommandEBS {
   }
 }
 ```
+### Providers
+IrisModule exports some useful providers.
+
+#### Cls provider
+ClsProvider is a provider which implements [TraceContext specifications](https://www.w3.org/TR/trace-context/). You can store datas into ClsProvider to access them while the request is living. Datas stored by ClsProvider as specific to the request lifecycle.
+
+You can store datas as you could do that in JAVA with ThreadLocal. Javascript does not support ThreadLocal because NodeJS is working on a single thread. 
+Instead of that, NodeJS provide a feature called [Async hooks](https://github.com/nodejs/node/blob/master/doc/api/async_hooks.md). ClsProvider use [cls-hooked](https://github.com/jeff-lewis/cls-hooked) library to implements Trace context.
+
+
+Example:
+```typescript
+import { Injectable } from '@nestjs/common'
+import { ClsProvider } from '@u-iris/iris-back'
+
+@Injectable()
+class MyService {
+  public constructor(private readonly clsProvider: ClsProvider) {
+  }
+  public someAction() {
+    this.clsProvider.set('a_key', 'a_value')
+  } 
+}
+
+@Injectable()
+class AnotherService {
+  public constructor(private readonly clsProvider: ClsProvider) {
+  }
+  public someOtherAction() {
+    this.clsProvider.get('a_key') // === 'a_value'
+  } 
+}
+```
+
+#### Logger
+LoggerProvider allows you to log in Iris format (with trace-id and span-id from Trace context specifications).
+
+We recommend you to access to logger directly from application context. `getLogger()` returns a winston logger.
+
+```typescript
+import { getLogger } from '@u-iris/iris-back'
+
+getLogger().debug('This is a debug log')
+```
+
+#### Message provider
+MessageProvider allows you to get message from code by using .properties files.
+
+You should define properties files in `IrisModule.forRoot()`. See [Application bootstrap](#application-bootstrap)
+
+```typescript
+import { Injectable } from '@nestjs/common'
+import { MessageProvider } from '@u-iris/iris-back'
+
+@Injectable()
+class MyService {
+  public constructor(private readonly messageProvider: MessageProvider) {
+  }
+  public someAction() {
+    // Assuming you set a .properties file in IrisModule.forRoot()
+    
+    // file.properties
+    // hello_world=Hello $name
+
+    this.messageProvider.get('hello_world', {name: 'world'}) // returns 'Hello world'
+    this.messageProvider.has('other') // returns false
+  } 
+}
+```
+
+#### Error provider
+ErrorProvider allows you to create `IrisException` and get label from `MessageProvider` automatically by checking the code of the error.
+
+```typescript
+import { Injectable } from '@nestjs/common'
+import { ErrorProvider } from '@u-iris/iris-back'
+
+@Injectable()
+class MyService {
+  public constructor(private readonly errorProvider: ErrorProvider) {
+  }
+  public someAction() {
+    this.errorProvider.createBusinessException('field', 'code', {data1: 'val1'}) // create business exception
+    this.errorProvider.createSecurityException('field', 'code', {data1: 'val1'}) // create security exception
+    this.errorProvider.createTechnicalException('field', 'code', new Error()) // create technical exception
+    const idNotFound = 1056
+    this.errorProvider.createEntityNotFoundBusinessException('field', idNotFound) // create entity not found exception
+    
+  } 
+}
+```
 
 ### Other middlewares
 
-If you want use middlewares for your Express Api :
+You can use some middlewares in your application module configuration :
 
-```javascript
-import express from 'express'
-import { middlewares, Logger } from '@u-iris/iris-back'
+```typescript
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
+import { getLogger, IrisModule, LoggingInterceptor, middlewares, TraceContextInterceptor } from '@u-iris/iris-back'
 
-const app = express()
-
-// Get a winston logger
-const logger = Logger.createDefault()
-
-const middlewaresWithLogger = middlewares(logger)
-
-// JSON parser
-app.use('/actuator', middlewaresWithLogger.parseJSON)
-
-// Actuator
-app.use('/actuator', middlewaresWithLogger.actuator)
-
-// set your routes
-
-// Error handler
-app.use(middlewaresWithLogger.errorHandler)
-
-```
-
-Severals middleware for Express are availables :
-
-- actuator: expose technical web services for supervision
-- enableCors: enable cors with cors plugin
-- parseJSON: transform body request to a JSON object
-- logRequests: log request
-- enableCompression: enable compression with compression plugin
-- enableSecurity: enable security with helmet plugin
-
-You can use the default configuration by enabling all middlewares :
-
-```javascript
-// server.js
-import express from 'express'
-import { middlewares, Logger } from '@u-iris/iris-back'
-
-const options = {
-    expressApplication: null, // you can set your own application or let iris-back create it
-    disableCors: true, // You can disable cors (enabled by default)
-    disableCompression: true, // You can disable compression (enabled by default)
-    disableSecurity: true // You can disable helmet security (enabled by default)
+@Module({
+  ...
+})
+export class AppModule implements NestModule {
+  public configure(consumer: MiddlewareConsumer): MiddlewareConsumer | void {
+    const middlewaresWithLogger = middlewares()
+    consumer.apply(middlewaresWithLogger.enableCors).forRoutes('/') // Enable CORS
+    consumer.apply(middlewaresWithLogger.enableCompression).forRoutes('/') // Enable compressoin
+    consumer.apply(middlewaresWithLogger.enableSecurity).forRoutes('/') // Enable security with helmet
+    consumer.apply(middlewaresWithLogger.actuator).forRoutes('/actuator') // Enable actuator
+    return consumer
+  }
 }
-const app = middlewares.withMiddlewares((expressApplication) => {
-  // use expressApplication to set your api routes
-  expressApplication.use('/foo', (req, res) => {
-    res.send({ foo: 'bar' })
-  })
-}, Logger.createDefault(), options)
-export { app }
 ```
-
-### Logger
-
-You can create a winston logger that log to a file and/or to the console like that :
-
-```js
-import { Logger } from '@u-iris/iris-back'
-
-const logger = Logger.create('debug', {
-    appName: 'my-application', // app name
-    appVersion: '1.0.0', // app version
-    file: '/var/log/output.log', // output file
-    enableConsole: true // enable console output
-})
-logger.info('my first log')
-```
-
-Use createDefault() method to use environment variable
-
-```js
-import { Logger } from '@u-iris/iris-back'
-
-// process.env.LOG_LEVEL = 'debug'
-// process.env.APP_NAME = 'my application'
-// process.env.APP_VERSION = '1.0.0'
-// process.env.LOG_FILE = '/var/log/output.log'
-// console output is enabled
-const logger = Logger.createDefault()
-
-logger.info('my first log')
-```
-
-### TypeUtils
-
-You can use that to convert a string variable to another type
-
-```js
-import { TypeUtils } from '@u-iris/iris-back'
-
-let int = '8'
-console.log(typeof int) //string
-int = TypeUtils.convertToType(TypeUtils.TYPE.INT, int)
-console.log(typeof int) //number
-
-let date = '2017-12-14T16:34:10.234' // date must be formatted like YYYY-MM-DDTHH:mm:ss.SSS 
-console.log(typeof date) // string
-date = TypeUtils.convertToType(TypeUtils.TYPE.DATE, int)
-console.log(typeof date) // Date
-```
-
-### PaginationUtils
-
-PaginationUtils helps you to get pagination parameters from request and write response headers
-
-```js
-const app = express();
-app.get('/number', function (req, res) {
-    const defaultSize = 10;
-    const maxSize = 100;
-    
-    // get size and page query parameters and convert them to number
-    const params = paginationUtils.getPaginationParams(req, maxSize, defaultSize);
-    
-    // get list in database for offset params.size * params.page and count params.size
-    const results = databaseService.find(params.size * params.page, params.size);
-    
-    // get total count in database
-    const totalInDatabase = databaseService.count();
-    
-    // Write pagination headers and set response status (200 if results contains all items, 206 if results contains part of items)
-    paginationUtils.generateResponse('resource', maxSize, defaultSize, totalInDatabase, results.length, req, res);
-    
-    // send results list in response body
-    res.send(results);
-})
-```
-
 
 ## Contribution
 
