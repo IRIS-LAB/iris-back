@@ -19,15 +19,15 @@ export class ErrorProvider {
     return this.createIrisException(BusinessException, field, code, datas)
   }
 
-  public createSecurityException(field: string, code: string, datas?: object): BusinessException {
+  public createSecurityException(field: string, code: string, datas?: object): SecurityException {
     return this.createIrisException(SecurityException, field, code, datas)
   }
 
-  public createEntityNotFoundBusinessException(field: string, id: any, code: string = 'entity.not.found', datas?: object): BusinessException {
+  public createEntityNotFoundBusinessException(field: string, id: any, code: string = 'entity.not.found', datas?: object): EntityNotFoundBusinessException {
     return this.createIrisException(EntityNotFoundBusinessException, field, code, { id, ...datas })
   }
 
-  public createTechnicalException(field: string, code: string, e: Error, datas?: object): BusinessException {
+  public createTechnicalException(field: string, code: string, e: Error, datas?: object): TechnicalException {
     datas = { field, ...datas }
     return new TechnicalException(new ErreurDO(field, code, this.messageProvider.has(`${code}.${field}`) ? this.messageProvider.get(`${code}.${field}`, datas) : this.messageProvider.get(code, datas)), e)
   }
