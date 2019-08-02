@@ -29,7 +29,9 @@ import { FilterUtils } from '../../utils'
 
 
 /**
- * Super class for DAO.
+ * IrisDAO.
+ *
+ * This class should be the parent class of all DAOs. It provides utility methods to query the database with entity filters and pagination parameters.
  */
 export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
 
@@ -90,7 +92,9 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
 
 
   /**
-   * Apply query filters
+   * Apply query filters.
+   *
+   * If type of filters is formatted with keys corresponding to entity fields, this methods should not be overridden.
    * @param query - Query options that will be passed to find and count methods
    * @param filters = Functional filters
    */
@@ -250,7 +254,14 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
     }
   }
 
-
+  /**
+   * Transform filter EntityFilterObject to TypeORM Filter and apply it to where query.
+   * @param where - find conditions in TypeORM format
+   * @param key - key to filter
+   * @param filter - the filter
+   * @param filterOperator - the filter operator
+   * @param operators - TypeORM Operator
+   */
   private applyQueryOperator<K>(where: FindConditions<T>, key: string, filter: EntityFilterObject, filterOperator: keyof EntityFilterObject, ...operators: Array<(value: any | FindOperator<any>) => FindOperator<any>>) {
     if (FilterUtils.exists(filter, filterOperator)) {
       let o
@@ -261,10 +272,19 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
     }
   }
 
+  /**
+   * Check if a field exists in the model metadata
+   * @param field - the field
+   */
   private fieldExists(field: string) {
     return this.fieldExistsInMap(field, this.repository.metadata.propertiesMap)
   }
 
+  /**
+   * Check if a field exists in a propertiesMap.
+   * @param field - the field
+   * @param map - the propertiesMap
+   */
   private fieldExistsInMap(field: string, map: any): boolean {
     const parts = field.split('.')
     const firstPart = parts.shift()
