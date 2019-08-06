@@ -1,5 +1,5 @@
 # iris-back
-iris-back is a set of tools for Typescript backend project, based on powerfull frameworks like:
+iris-back is a set of tools for Typescript backend projects, based on powerfull frameworks like:
 * [NestJS](https://nestjs.com/)
 * [TypeORM](https://typeorm.io/#/)
 * [Joi](https://github.com/hapijs/joi). 
@@ -45,7 +45,7 @@ $ npm install @u-iris/iris-back --save
 ### Before
 Please note that iris-back is built on top of [NestJS](https://nestjs.com/) and [TypeORM](https://typeorm.io/#/). 
 
-Before starting to use iris-back, you should read the official documentation of theses frameworks. 
+Before starting to use iris-back, you should read the official documentations of these frameworks. 
 
 ### Application bootstrap
 To use iris-back in your NestJS application you should :
@@ -145,37 +145,37 @@ export class OrderBE {
   })
   public billingAddress: AddressBE
 
-  // Part of business entity : all fields of BEP will be saved into the business entity. 
-  // BEP is used for a logical organization of your model
+  // Business Entity Part : all fields of a BEP will be saved into the business entity. 
+  // BEP are used for a logical organization of your model
   @Column(type => DeliveryDataBEP, {
     prefix: '', // for embedded BEP, set typeorm prefix to ''
   })
   public deliveryData?: DeliveryDataBEP
 
-  // External business entity : content of XBE is not saved in your database. You just need its ID.
-  // XBE generally provides from external API.
+  // eXternal Business Entity : content of an XBE is not saved in your database. You just need its ID.
+  // XBE are generally provided from external APIs.
   @Column(type => CustomerXBE, {
-    prefix: '', // for embedded XBE entity from externe API, set typeorm prefix to ''
+    prefix: '', // for embedded XBE entity from external API, set typeorm prefix to ''
   })
   public customer: CustomerXBE
 }
 ```
 #### Relations and allowed options
-**Relations** are used to define how your entity will be serialized from HTTP request and to HTTP response. A relation can be of type :
+**Relations** are used to define how your entity will be serialized from HTTP request and to HTTP response. A relation type can be :
 * NONE : relation is removed from HTTP request and to HTTP response
 * ASSOCIATION : only ID of the related entity is kept from HTTP request and to HTTP response
 * ENTITY : all of the related entity is kept
 
 Decorate your relations with `@Relation(<relation-entity-type>[, <type>])` with:
-* `relation-entity-type`: one of RelationEntity.ASSOCIATION, RelationEntity.ENTITY, RelationEntity.NONE
-* `type`: type of array if your relation is a OneToMany or ManyToMany (type is required for an array because typescript does not provides a way to automatically detect a parameterized type)
+* `relation-entity-type`: either RelationEntity.ASSOCIATION, RelationEntity.ENTITY, or RelationEntity.NONE
+* `type`: type of array if your relation is a OneToMany or ManyToMany (type is required for an array because typescript does not provide a way to automatically detect a parameterized type)
 
 **Options** allow the consumer of your API to retrieve the content of the relations marked as ASSOCIATION or NONE.
 
 Decorate your business entity class with `@AllowedOptions(...<relation_path>)` with:
-* `relation_path`: list of the business entity relations you want to allow as options. You can define a child entity like `field.field_of_child` (in this case, all content of the field and the field_of_child will be returned)
+* `relation_path`: a list of the business entity relations you want to allow as options. You can define a child entity like `field.field_of_child` (in this case, all content of the field and the field_of_child will be returned)
 
-Please note that when relations are defined as ASSOCIATION or when options are enabled by API consumer, content of the relation is filled until the exposition interceptor is called to hide part of it.
+Please note that when relations are defined as ASSOCIATION or when options are enabled by the API consumer, content of the relation is filled until the exposition interceptor is called to hide part of it.
 
 Example:
 ```typescript
@@ -228,7 +228,7 @@ export class OrderBE {
 ```
 
 #### Business validator
-Business validation rules are required to serialize HTTP request. If no @Relation and no @BusinessValidator is defined on a business entity field, field from HTTP request will be ignored.
+Business validation rules are required to serialize HTTP request. If no @Relation and no @BusinessValidator is defined on a business entity field, this field will be ignored in the HTTP request.
 Moreover, a business validator is used to define a constraint validator.
 
 Example:
@@ -310,9 +310,9 @@ Exposition Business Service is used as NestJS Controller. It provides some featu
 * interceptors for pagination response (with pagination data in headers)
 
 #### Define routes
-First define your routes of EBS with default decorators from NestJS (@Controller, @Get, @Post, @Put, @Delete).
+First define your EBS routes with default decorators from NestJS (@Controller, @Get, @Post, @Put, @Delete).
 
-see [NestJS documentation](https://docs.nestjs.com/controllers)
+See [NestJS documentation](https://docs.nestjs.com/controllers)
 
 #### Apply resources incerceptors
 Then you can apply resources interceptors (as NestJS interceptors) to manage the serialization and pagination of your business entities :
@@ -323,19 +323,19 @@ Then you can apply resources interceptors (as NestJS interceptors) to manage the
     * `default_page_size`: Page size per default (if query parameter 'page' is not set)
     * `max_page_size`: Page max size (query parameter 'size' should not exceed this)
     
-The method on which this decorator is applied must return a `Promise<PaginatedListResult<T>>` where T is the type of the entity you passed in `@PaginatedResources()`
+Methods on which this decorator is applied must return a `Promise<PaginatedListResult<T>>` where T is the entity type you passed in `@PaginatedResources()`
 
-* `@Resource(<entity_type>)` for api that return an entity object :
+* `@Resource(<entity_type>)` for an api that returns an entity object :
     * `entity_type`: Type of your business entity
     
-The method on which this decorator is applied must return a `Promise<T>` where T is the type of the entity you passed in `@Resource()`
+Methods on which this decorator is applied must return a `Promise<T>` where T is the entity type you passed in `@Resource()`
 
 #### Get parameters from request
-To retrieve parameters from the HTTP request, use this parameter decorators :
+To retrieve parameters from the HTTP request, you can use the following parameter decorators :
 
 For **Query parameter**, use `@QueryParam(<data>)` with :
-- `data`: name of the parameter or an object like { key: 'name of the parameter', required: boolean } 
-in some cases, data could contain other parameters.
+- `data`: name of the parameter or an object like { key: 'name of the parameter', required: boolean }. 
+In some cases, data could contain other parameters.
 
 If you want to cast the query parameter into a specific type :
 * `@DateQueryParam(<parameter_name>)` for a date (parameter must be in ISO format)
@@ -343,7 +343,7 @@ If you want to cast the query parameter into a specific type :
 * `@NumberQueryParam(<parameter_name>)` for a number
 * `@StringQueryParam(<parameter_name>)` for a string
 
-For **Path parameter**, use @PathParam(<parameter_name>)
+For **Path parameter**, use `@PathParam(<parameter_name>)`
 
 If you want to cast the path parameter into a specific type :
 
@@ -354,7 +354,7 @@ If you want to cast the path parameter into a specific type :
 
 For **Body data**, use `@BodyParam()`
 
-Object injected into the method's parameter will be serialized into the type of entity you passed in `@PaginatedResources()` or `@Resource()`.
+The object injected into the method's parameter will be serialized into the type of entity you passed in `@PaginatedResources()` or `@Resource()`.
 
 
 Example:
@@ -376,14 +376,14 @@ import {
   PaginatedListResult
 } from '@u-iris/iris-back'
 
-@Controller(orders)
+@Controller('/orders')
 export class CommandEBS {
 
   constructor(private readonly commandLBS: CommandLBS) {
   }
 
   @Get('/')
-  @PaginatedResources(OrderBE, orders, 10, 100)
+  @PaginatedResources(OrderBE, 'orders', 10, 100)
   public async findAll(@PaginatedEntitiesQueryParam() paginatedResourcesOptions: PaginatedEntitiesOptions,
                        @NumberQueryParam('customer.id') idClient: number,
                        @EnumQueryParam({
@@ -427,9 +427,9 @@ export class CommandEBS {
 IrisModule exports some useful providers.
 
 #### Cls provider
-ClsProvider is a provider which implements [TraceContext specifications](https://www.w3.org/TR/trace-context/). You can store data into ClsProvider to access them while the request is living. Data stored by ClsProvider is specific to the request lifecycle.
+ClsProvider is a provider which implements [TraceContext specifications](https://www.w3.org/TR/trace-context/). You can store data into ClsProvider to access it while the request is living. Data stored by ClsProvider is specific to the request lifecycle.
 
-You can store data as you could do that in JAVA with ThreadLocal. Javascript does not support ThreadLocal because NodeJS is working on a single thread. 
+You can store data as you could do in JAVA with ThreadLocal. Javascript does not support ThreadLocal because NodeJS is working on a single thread. 
 Instead of that, NodeJS provide a feature called [Async hooks](https://github.com/nodejs/node/blob/master/doc/api/async_hooks.md). ClsProvider use [cls-hooked](https://github.com/jeff-lewis/cls-hooked) library to implements Trace context.
 
 
@@ -460,7 +460,7 @@ class AnotherService {
 #### Logger
 LoggerProvider allows you to log in Iris format (with trace-id and span-id from Trace context specifications).
 
-We recommend to access the logger directly from the application context. `getLogger()` returns a winston logger.
+We recommend to access the logger directly from the application context. `getLogger()` returns a [winston](https://github.com/winstonjs/winston) logger.
 
 ```typescript
 import { getLogger } from '@u-iris/iris-back'
@@ -494,8 +494,7 @@ class MyService {
 ```
 
 #### Error provider
-ErrorProvider allows you to create `IrisException` and get label from `MessageProvider` automatically by checking the code of the error.
-// TODO : ajouter un exemple de fichier .properties 
+ErrorProvider allows you to create `IrisException` and get label from `MessageProvider` automatically by checking the error's code .
 
 ```typescript
 import { Injectable } from '@nestjs/common'
