@@ -2,20 +2,20 @@ import { Test, TestingModule } from '@nestjs/testing'
 import '@u-iris/iris-common-test-utils'
 import moment from 'moment'
 import request from 'supertest'
-import { CommandBE } from '../commons/objects/business/be/CommandBE'
-import { CommandStateEnum } from '../commons/objects/business/be/CommandStateEnum'
-import { CommandLBS } from '../commons/services/business/CommandLBS'
-import { CommandDAO } from '../commons/services/data/CommandDAO'
+import { OrderBE } from '../commons/objects/business/be/OrderBE'
+import { OrderState } from '../commons/objects/business/be/OrderState'
+import { OrderLBS } from '../commons/services/business/order-l-b-s.service'
+import { OrderDAO } from '../commons/services/data/order-d-a-o.service'
 import { TestUtils } from '../commons/test.utils'
 import { DatabaseTestUtils } from './database-test-utils.service'
 import './e2e-config-loader'
 import { AppModule } from './module/testapp.module'
 
-describe('CommandsEBS (e2e)', () => {
+describe('OrderEBS (e2e)', () => {
   let app
-  let commandeLBS: CommandLBS
+  let orderLBS: OrderLBS
   let databaseTestUtils: DatabaseTestUtils
-  let commandeDAO: CommandDAO
+  let orderDAO: OrderDAO
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -23,8 +23,8 @@ describe('CommandsEBS (e2e)', () => {
       providers: [DatabaseTestUtils],
     }).compile()
     app = TestUtils.constructApplicationFromModule(moduleFixture)
-    commandeLBS = moduleFixture.get<CommandLBS>(CommandLBS)
-    commandeDAO = moduleFixture.get<CommandDAO>(CommandDAO)
+    orderLBS = moduleFixture.get<OrderLBS>(OrderLBS)
+    orderDAO = moduleFixture.get<OrderDAO>(OrderDAO)
     databaseTestUtils = moduleFixture.get<DatabaseTestUtils>(DatabaseTestUtils)
     await app.init()
   })
@@ -41,24 +41,24 @@ describe('CommandsEBS (e2e)', () => {
   describe('/ (GET)', () => {
     it('should return empty list', () => {
       return request(app.getHttpServer())
-        .get('/commands')
+        .get('/orders')
         .expect(200)
         .expect([])
     })
 
-    it('should return list with 2 commands', async () => {
-      const command1: CommandBE = new CommandBE()
-      command1.reference = 'CMD.1'
-      command1.customer = { id: 5 }
-      await commandeLBS.createCommande(command1)
+    it('should return list with 2 orders', async () => {
+      const order1: OrderBE = new OrderBE()
+      order1.reference = 'CMD.1'
+      order1.customer = { id: 5 }
+      await orderLBS.createOrder(order1)
 
-      const command2: CommandBE = new CommandBE()
-      command2.reference = 'CMD.2'
-      command2.customer = { id: 3 }
-      await commandeLBS.createCommande(command2)
+      const order2: OrderBE = new OrderBE()
+      order2.reference = 'CMD.2'
+      order2.customer = { id: 3 }
+      await orderLBS.createOrder(order2)
 
       return request(app.getHttpServer())
-        .get('/commands')
+        .get('/orders')
         .expect(200)
         .expect('Content-Type', /json/)
         .then(response => {
@@ -68,25 +68,25 @@ describe('CommandsEBS (e2e)', () => {
         })
     })
 
-    it('should return list with commands filtered by reference', async () => {
-      const command1: CommandBE = new CommandBE()
-      command1.reference = 'CMD.1'
-      command1.customer = { id: 5 }
-      await commandeLBS.createCommande(command1)
+    it('should return list with orders filtered by reference', async () => {
+      const order1: OrderBE = new OrderBE()
+      order1.reference = 'CMD.1'
+      order1.customer = { id: 5 }
+      await orderLBS.createOrder(order1)
 
-      const command2: CommandBE = new CommandBE()
-      command2.reference = 'CMD.2'
-      command2.customer = { id: 3 }
-      await commandeLBS.createCommande(command2)
+      const order2: OrderBE = new OrderBE()
+      order2.reference = 'CMD.2'
+      order2.customer = { id: 3 }
+      await orderLBS.createOrder(order2)
 
       return request(app.getHttpServer())
-        .get('/commands?reference=CMD.2')
+        .get('/orders?reference=CMD.2')
         .expect(200)
         .expect('Content-Type', /json/)
         .then(response => {
           expect(response.body).toHaveLength(1)
           expect(response.body).toContainObjectLike({ reference: 'CMD.2' })
-          expect(response.header['accept-range']).toEqual('commands 100')
+          expect(response.header['accept-range']).toEqual('orders 100')
           expect(response.header['content-range']).toEqual('0-0/1')
           expect(response.header['x-page-element-count']).toEqual('1')
           expect(response.header['x-total-element']).toEqual('1')
@@ -94,71 +94,71 @@ describe('CommandsEBS (e2e)', () => {
         })
     })
 
-    it('should return list with commands ordered by reference asc', async () => {
-      let command1: CommandBE = new CommandBE()
-      command1.reference = 'CMD.1'
-      command1.customer = { id: 5 }
-      command1 = await commandeLBS.createCommande(command1)
+    it('should return list with orders ordered by reference asc', async () => {
+      let order1: OrderBE = new OrderBE()
+      order1.reference = 'CMD.1'
+      order1.customer = { id: 5 }
+      order1 = await orderLBS.createOrder(order1)
 
-      let command2: CommandBE = new CommandBE()
-      command2.reference = 'CMD.2'
-      command2.customer = { id: 3 }
-      command2 = await commandeLBS.createCommande(command2)
+      let order2: OrderBE = new OrderBE()
+      order2.reference = 'CMD.2'
+      order2.customer = { id: 3 }
+      order2 = await orderLBS.createOrder(order2)
 
       return request(app.getHttpServer())
-        .get('/commands?sort=reference,asc')
+        .get('/orders?sort=reference,asc')
         .expect(200)
         .expect('Content-Type', /json/)
         .then(response => {
           expect(response.body).toHaveLength(2)
-          expect(response.body[0].id).toEqual(command1.id)
-          expect(response.body[1].id).toEqual(command2.id)
+          expect(response.body[0].id).toEqual(order1.id)
+          expect(response.body[1].id).toEqual(order2.id)
         })
     })
 
-    it('should return list with commands ordered by reference desc', async () => {
-      let command1: CommandBE = new CommandBE()
-      command1.reference = 'CMD.1'
-      command1.customer = { id: 5 }
-      command1 = await commandeLBS.createCommande(command1)
+    it('should return list with orders ordered by reference desc', async () => {
+      let order1: OrderBE = new OrderBE()
+      order1.reference = 'CMD.1'
+      order1.customer = { id: 5 }
+      order1 = await orderLBS.createOrder(order1)
 
-      let command2: CommandBE = new CommandBE()
-      command2.reference = 'CMD.2'
-      command2.customer = { id: 3 }
-      command2 = await commandeLBS.createCommande(command2)
+      let order2: OrderBE = new OrderBE()
+      order2.reference = 'CMD.2'
+      order2.customer = { id: 3 }
+      order2 = await orderLBS.createOrder(order2)
 
       return request(app.getHttpServer())
-        .get('/commands?sort=reference,desc')
+        .get('/orders?sort=reference,desc')
         .expect(200)
         .expect('Content-Type', /json/)
         .then(response => {
           expect(response.body).toHaveLength(2)
-          expect(response.body[0].id).toEqual(command2.id)
-          expect(response.body[1].id).toEqual(command1.id)
+          expect(response.body[0].id).toEqual(order2.id)
+          expect(response.body[1].id).toEqual(order1.id)
         })
     })
 
-    it('should return list with commands filtered by statut', async () => {
-      let command1: CommandBE = new CommandBE()
-      command1.reference = 'CMD.1'
-      command1.customer = { id: 5 }
-      command1 = await commandeLBS.createCommande(command1)
-      command1 = await commandeLBS.updateCommandState(command1.id as number, CommandStateEnum.PENDING)
+    it('should return list with orders filtered by statut', async () => {
+      let order1: OrderBE = new OrderBE()
+      order1.reference = 'CMD.1'
+      order1.customer = { id: 5 }
+      order1 = await orderLBS.createOrder(order1)
+      order1 = await orderLBS.updateOrderState(order1.id as number, OrderState.PENDING)
 
-      let command2: CommandBE = new CommandBE()
-      command2.reference = 'CMD.2'
-      command2.customer = { id: 3 }
-      command2 = await commandeLBS.createCommande(command2)
-      command2 = await commandeLBS.updateCommandState(command2.id as number, CommandStateEnum.PAID)
+      let order2: OrderBE = new OrderBE()
+      order2.reference = 'CMD.2'
+      order2.customer = { id: 3 }
+      order2 = await orderLBS.createOrder(order2)
+      order2 = await orderLBS.updateOrderState(order2.id as number, OrderState.PAID)
 
       return request(app.getHttpServer())
-        .get('/commands?commandState=PENDING')
+        .get('/orders?orderState=PENDING')
         .expect(200)
         .expect('Content-Type', /json/)
         .then(response => {
           expect(response.body).toHaveLength(1)
           expect(response.body).toContainObjectLike({ reference: 'CMD.1' })
-          expect(response.header['accept-range']).toEqual('commands 100')
+          expect(response.header['accept-range']).toEqual('orders 100')
           expect(response.header['content-range']).toEqual('0-0/1')
           expect(response.header['x-page-element-count']).toEqual('1')
           expect(response.header['x-total-element']).toEqual('1')
@@ -166,65 +166,65 @@ describe('CommandsEBS (e2e)', () => {
         })
     })
 
-    it('should return error with commands filtered by bad statut', async () => {
-      let command1: CommandBE = new CommandBE()
-      command1.reference = 'CMD.1'
-      command1.customer = { id: 5 }
-      command1 = await commandeLBS.createCommande(command1)
-      command1 = await commandeLBS.updateCommandState(command1.id as number, CommandStateEnum.PENDING)
+    it('should return error with orders filtered by bad statut', async () => {
+      let order1: OrderBE = new OrderBE()
+      order1.reference = 'CMD.1'
+      order1.customer = { id: 5 }
+      order1 = await orderLBS.createOrder(order1)
+      order1 = await orderLBS.updateOrderState(order1.id as number, OrderState.PENDING)
 
-      let command2: CommandBE = new CommandBE()
-      command2.reference = 'CMD.2'
-      command2.customer = { id: 3 }
-      command2 = await commandeLBS.createCommande(command2)
-      command2 = await commandeLBS.updateCommandState(command2.id as number, CommandStateEnum.PAID)
+      let order2: OrderBE = new OrderBE()
+      order2.reference = 'CMD.2'
+      order2.customer = { id: 3 }
+      order2 = await orderLBS.createOrder(order2)
+      order2 = await orderLBS.updateOrderState(order2.id as number, OrderState.PAID)
 
       return request(app.getHttpServer())
-        .get('/commands?commandState=NONE')
+        .get('/orders?orderState=NONE')
         .expect(400)
         .expect('Content-Type', /json/)
         .then(response => {
           TestUtils.expectErreurReturned(response, {
-            champErreur: 'commandState',
+            champErreur: 'orderState',
             codeErreur: 'parameter.type.invalid',
           })
         })
     })
 
-    it('should return error with commands filtered by customer.id', async () => {
-      let command1: CommandBE = new CommandBE()
-      command1.reference = 'CMD.1'
-      command1.customer = { id: 5 }
-      command1 = await commandeLBS.createCommande(command1)
+    it('should return error with orders filtered by customer.id', async () => {
+      let order1: OrderBE = new OrderBE()
+      order1.reference = 'CMD.1'
+      order1.customer = { id: 5 }
+      order1 = await orderLBS.createOrder(order1)
 
-      let command2: CommandBE = new CommandBE()
-      command2.reference = 'CMD.2'
-      command2.customer = { id: 3 }
-      command2 = await commandeLBS.createCommande(command2)
+      let order2: OrderBE = new OrderBE()
+      order2.reference = 'CMD.2'
+      order2.customer = { id: 3 }
+      order2 = await orderLBS.createOrder(order2)
 
       return request(app.getHttpServer())
-        .get('/commands?customer.id=3')
+        .get('/orders?customer.id=3')
         .expect(200)
         .expect('Content-Type', /json/)
         .then(response => {
           expect(response.body).toHaveLength(1)
-          expect(response.body[0].id).toEqual(command2.id)
+          expect(response.body[0].id).toEqual(order2.id)
         })
     })
 
-    it('should return error with commands filtered by bad customer.id', async () => {
-      let command1: CommandBE = new CommandBE()
-      command1.reference = 'CMD.1'
-      command1.customer = { id: 5 }
-      command1 = await commandeLBS.createCommande(command1)
+    it('should return error with orders filtered by bad customer.id', async () => {
+      let order1: OrderBE = new OrderBE()
+      order1.reference = 'CMD.1'
+      order1.customer = { id: 5 }
+      order1 = await orderLBS.createOrder(order1)
 
-      let command2: CommandBE = new CommandBE()
-      command2.reference = 'CMD.2'
-      command2.customer = { id: 3 }
-      command2 = await commandeLBS.createCommande(command2)
+      let order2: OrderBE = new OrderBE()
+      order2.reference = 'CMD.2'
+      order2.customer = { id: 3 }
+      order2 = await orderLBS.createOrder(order2)
 
       return request(app.getHttpServer())
-        .get('/commands?customer.id=fez51')
+        .get('/orders?customer.id=fez51')
         .expect(400)
         .expect('Content-Type', /json/)
         .then(response => {
@@ -232,95 +232,95 @@ describe('CommandsEBS (e2e)', () => {
         })
     })
 
-    it('should return error with commands filtered by deliveryDatas.deliveryDate after', async () => {
-      let command1: CommandBE = new CommandBE()
-      command1.reference = 'CMD.1'
-      command1.customer = { id: 5 }
-      command1.deliveryDatas = { deliveryDate: moment('2019-01-01').toDate() }
-      command1 = await commandeLBS.createCommande(command1)
+    it('should return error with orders filtered by deliveryData.deliveryDate after', async () => {
+      let order1: OrderBE = new OrderBE()
+      order1.reference = 'CMD.1'
+      order1.customer = { id: 5 }
+      order1.deliveryData = { deliveryDate: moment('2019-01-01').toDate() }
+      order1 = await orderLBS.createOrder(order1)
 
-      let command2: CommandBE = new CommandBE()
-      command2.reference = 'CMD.2'
-      command2.customer = { id: 3 }
-      command2.deliveryDatas = { deliveryDate: moment('2019-02-01').toDate() }
-      command2 = await commandeLBS.createCommande(command2)
+      let order2: OrderBE = new OrderBE()
+      order2.reference = 'CMD.2'
+      order2.customer = { id: 3 }
+      order2.deliveryData = { deliveryDate: moment('2019-02-01').toDate() }
+      order2 = await orderLBS.createOrder(order2)
 
       return request(app.getHttpServer())
-        .get('/commands?deliveryDatas.deliveryDate.gte=2019-01-15T00:00:00.000')
+        .get('/orders?deliveryData.deliveryDate.gte=2019-01-15T00:00:00.000')
         .expect(200)
         .expect('Content-Type', /json/)
         .then(response => {
           expect(response.body).toHaveLength(1)
-          expect(response.body[0].id).toEqual(command2.id)
+          expect(response.body[0].id).toEqual(order2.id)
         })
     })
 
-    it('should return error with commands filtered by deliveryDatas.deliveryDate before', async () => {
-      let command1: CommandBE = new CommandBE()
-      command1.reference = 'CMD.1'
-      command1.customer = { id: 5 }
-      command1.deliveryDatas = { deliveryDate: moment('2019-01-01').toDate() }
-      command1 = await commandeLBS.createCommande(command1)
+    it('should return error with orders filtered by deliveryData.deliveryDate before', async () => {
+      let order1: OrderBE = new OrderBE()
+      order1.reference = 'CMD.1'
+      order1.customer = { id: 5 }
+      order1.deliveryData = { deliveryDate: moment('2019-01-01').toDate() }
+      order1 = await orderLBS.createOrder(order1)
 
-      let command2: CommandBE = new CommandBE()
-      command2.reference = 'CMD.2'
-      command2.customer = { id: 3 }
-      command2.deliveryDatas = { deliveryDate: moment('2019-02-01').toDate() }
-      command2 = await commandeLBS.createCommande(command2)
+      let order2: OrderBE = new OrderBE()
+      order2.reference = 'CMD.2'
+      order2.customer = { id: 3 }
+      order2.deliveryData = { deliveryDate: moment('2019-02-01').toDate() }
+      order2 = await orderLBS.createOrder(order2)
 
       return request(app.getHttpServer())
-        .get('/commands?deliveryDatas.deliveryDate.lte=2019-01-15T00:00:00.000')
+        .get('/orders?deliveryData.deliveryDate.lte=2019-01-15T00:00:00.000')
         .expect(200)
         .expect('Content-Type', /json/)
         .then(response => {
           expect(response.body).toHaveLength(1)
-          expect(response.body[0].id).toEqual(command1.id)
+          expect(response.body[0].id).toEqual(order1.id)
         })
     })
 
-    it('should return commands filtered by deliveryDatas.deliveryDate between order by deliveryDate desc', async () => {
+    it('should return orders filtered by deliveryData.deliveryDate between order by deliveryDate desc', async () => {
 
-      let command1: CommandBE = new CommandBE()
-      command1.reference = 'CMD.1'
-      command1.customer = { id: 5 }
-      command1.deliveryDatas = { deliveryDate: moment('2019-01-01').toDate() }
-      command1 = await commandeLBS.createCommande(command1)
+      let order1: OrderBE = new OrderBE()
+      order1.reference = 'CMD.1'
+      order1.customer = { id: 5 }
+      order1.deliveryData = { deliveryDate: moment('2019-01-01').toDate() }
+      order1 = await orderLBS.createOrder(order1)
 
-      let command2: CommandBE = new CommandBE()
-      command2.reference = 'CMD.2'
-      command2.customer = { id: 3 }
-      command2.deliveryDatas = { deliveryDate: moment('2019-02-01').toDate() }
-      command2 = await commandeLBS.createCommande(command2)
+      let order2: OrderBE = new OrderBE()
+      order2.reference = 'CMD.2'
+      order2.customer = { id: 3 }
+      order2.deliveryData = { deliveryDate: moment('2019-02-01').toDate() }
+      order2 = await orderLBS.createOrder(order2)
 
-      let command3: CommandBE = new CommandBE()
-      command3.reference = 'CMD.3'
-      command3.customer = { id: 3 }
-      command3.deliveryDatas = { deliveryDate: moment('2019-03-01').toDate() }
-      command3 = await commandeLBS.createCommande(command3)
+      let order3: OrderBE = new OrderBE()
+      order3.reference = 'CMD.3'
+      order3.customer = { id: 3 }
+      order3.deliveryData = { deliveryDate: moment('2019-03-01').toDate() }
+      order3 = await orderLBS.createOrder(order3)
 
-      let command4: CommandBE = new CommandBE()
-      command4.reference = 'CMD.4'
-      command4.customer = { id: 5 }
-      command4.deliveryDatas = { deliveryDate: moment('2019-04-01').toDate() }
-      command4 = await commandeLBS.createCommande(command4)
+      let order4: OrderBE = new OrderBE()
+      order4.reference = 'CMD.4'
+      order4.customer = { id: 5 }
+      order4.deliveryData = { deliveryDate: moment('2019-04-01').toDate() }
+      order4 = await orderLBS.createOrder(order4)
 
-      if (commandeDAO) {
+      if (orderDAO) {
         // none
       }
       return request(app.getHttpServer())
-        .get('/commands?deliveryDatas.deliveryDate.gte=2019-01-15T00:00:00.000&deliveryDatas.deliveryDate.lte=2019-03-15T00:00:00.000&sort=deliveryDatas.deliveryDate,desc')
+        .get('/orders?deliveryData.deliveryDate.gte=2019-01-15T00:00:00.000&deliveryData.deliveryDate.lte=2019-03-15T00:00:00.000&sort=deliveryData.deliveryDate,desc')
         .expect(200)
         .expect('Content-Type', /json/)
         .then(response => {
           expect(response.body).toHaveLength(2)
-          expect(response.body[0].id).toEqual(command3.id)
-          expect(response.body[1].id).toEqual(command2.id)
+          expect(response.body[0].id).toEqual(order3.id)
+          expect(response.body[1].id).toEqual(order2.id)
         })
     })
 
     it('should return error because of bad filter', async () => {
       return request(app.getHttpServer())
-        .get('/commands?badfilter=youhou')
+        .get('/orders?badfilter=youhou')
         .expect(500)
         .expect('Content-Type', /json/)
         .then(response => {
@@ -332,17 +332,17 @@ describe('CommandsEBS (e2e)', () => {
   describe('/:id (GET)', () => {
     it('should return 404 http status code', () => {
       return request(app.getHttpServer())
-        .get('/commands/1')
+        .get('/orders/1')
         .expect(404)
         .then(response => {
-          TestUtils.expectErreurReturned(response, { champErreur: 'commands', codeErreur: 'entity.not.found' })
+          TestUtils.expectErreurReturned(response, { champErreur: 'orders', codeErreur: 'entity.not.found' })
         })
     })
 
-    it('should return the command', async () => {
-      let commande = new CommandBE()
-      commande.reference = 'CMD.1'
-      commande.commandLines = [
+    it('should return the order', async () => {
+      let order = new OrderBE()
+      order.reference = 'CMD.1'
+      order.orderLines = [
         {
           quantity: 1,
           product: {
@@ -358,40 +358,40 @@ describe('CommandsEBS (e2e)', () => {
           },
         },
       ]
-      commande.customer = {
+      order.customer = {
         id: 54,
         name: 'customer name',
       }
-      commande = await commandeLBS.createCommande(commande)
+      order = await orderLBS.createOrder(order)
 
       return request(app.getHttpServer())
-        .get('/commands/' + commande.id)
+        .get('/orders/' + order.id)
         .expect(200)
         .expect('Content-Type', /json/)
         .then(response => {
           expect(response.body).toBeDefined()
-          expect(response.body.id).toEqual(commande.id)
-          expect(response.body.reference).toEqual(commande.reference)
+          expect(response.body.id).toEqual(order.id)
+          expect(response.body.reference).toEqual(order.reference)
           expect(response.body.amount).toBeDefined()
           expect(response.body.customer).toBeDefined()
-          expect(response.body.customer.id).toEqual(commande.customer.id)
+          expect(response.body.customer.id).toEqual(order.customer.id)
           expect(response.body.customer.name).not.toBeDefined()
-          expect(response.body.commandLines).toBeDefined()
-          expect(response.body.commandLines).toHaveLength(2)
-          for (const commandLine of response.body.commandLines) {
-            expect(commandLine).toBeDefined()
-            expect(commandLine.id).toBeDefined()
-            expect(commandLine.quantity).not.toBeDefined()
-            expect(commandLine.product).not.toBeDefined()
+          expect(response.body.orderLines).toBeDefined()
+          expect(response.body.orderLines).toHaveLength(2)
+          for (const orderLine of response.body.orderLines) {
+            expect(orderLine).toBeDefined()
+            expect(orderLine.id).toBeDefined()
+            expect(orderLine.quantity).not.toBeDefined()
+            expect(orderLine.product).not.toBeDefined()
           }
         })
     })
 
-    // it('should return the command with lignesCommandes.produit', async () => {
-    //   let commande = new CommandBE()
-    //   commande.id = 1
-    //   commande.reference = 'CMD.1'
-    //   commande.lignesCommandes = [
+    // it('should return the order with orderLines.product', async () => {
+    //   let order = new CommandBE()
+    //   order.id = 1
+    //   order.reference = 'CMD.1'
+    //   order.lignesCommandes = [
     //     {
     //       id: 1,
     //       libelle: 'ligne 1',
@@ -413,26 +413,26 @@ describe('CommandsEBS (e2e)', () => {
     //       },
     //     },
     //   ]
-    //   commande.client = {
+    //   order.client = {
     //     id: 54,
     //     isMajeur: true,
     //     prenom: 'firstname',
     //     nom: 'lastname',
     //   }
-    //   commande = await commandeLBS.createCommande(commande)
+    //   order = await orderLBS.createOrder(order)
     //
     //   return request(app.getHttpServer())
-    //     .get('/commands/' + commande.id + '?options=lignesCommandes.produit')
+    //     .get('/orders/' + order.id + '?options=lignesCommandes.produit')
     //     .expect(200)
     //     .expect('Content-Type', /json/)
     //     .then(response => {
     //       expect(response.body).toBeDefined()
-    //       expect(response.body.id).toEqual(commande.id)
-    //       expect(response.body.libelle).toEqual(commande.libelle)
-    //       expect(response.body.reference).toEqual(commande.reference)
+    //       expect(response.body.id).toEqual(order.id)
+    //       expect(response.body.libelle).toEqual(order.libelle)
+    //       expect(response.body.reference).toEqual(order.reference)
     //       expect(response.body.montant).toBeDefined()
     //       expect(response.body.client).toBeDefined()
-    //       expect(response.body.client.id).toEqual(commande.client.id)
+    //       expect(response.body.client.id).toEqual(order.client.id)
     //       expect(response.body.lignesCommandes).toBeDefined()
     //       expect(response.body.lignesCommandes).toHaveLength(2)
     //       for (const ligneCommande of response.body.lignesCommandes) {
@@ -453,22 +453,22 @@ describe('CommandsEBS (e2e)', () => {
     //     })
     // })
 
-    // it('should return error because of option not allowed', async () => {
-    //   return request(app.getHttpServer())
-    //     .get('/commands/' + commande.id + '?options=client')
-    //     .expect(400)
-    //     .expect('Content-Type', /json/)
-    //     .then(response => {
-    //       TestUtils.expectErreurReturned(response, { champErreur: 'options', codeErreur: 'option.not.allowed' })
-    //     })
-    // })
+    it('should return error because of option not allowed', async () => {
+      return request(app.getHttpServer())
+        .get('/orders/5?options=unknown')
+        .expect(400)
+        .expect('Content-Type', /json/)
+        .then(response => {
+          TestUtils.expectErreurReturned(response, { champErreur: 'options', codeErreur: 'option.not.allowed' })
+        })
+    })
 
   })
 
   describe('/ (POST)', () => {
     it('should return error because of empty reference', () => {
       return request(app.getHttpServer())
-        .post('/commands')
+        .post('/orders')
         .send({})
         .set('Accept', 'application/json')
         .expect(400)
@@ -477,9 +477,9 @@ describe('CommandsEBS (e2e)', () => {
         })
     })
 
-    it('should return new command', () => {
+    it('should return new order', () => {
       return request(app.getHttpServer())
-        .post('/commands')
+        .post('/orders')
         .send({ reference: 'ref', customer: { id: 5 } })
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)

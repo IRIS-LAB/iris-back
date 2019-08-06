@@ -10,13 +10,13 @@ import {
   Resource,
 } from '../../../../../src/modules/iris-module'
 import { irisModuleOptionsForTests } from '../../../../commons/message-factory-for-tests'
-import { CommandBE } from '../../../../commons/objects/business/be/CommandBE'
+import { OrderBE } from '../../../../commons/objects/business/be/OrderBE'
 import { TestUtils } from '../../../../commons/test.utils'
 
-@Controller('/commands')
+@Controller('/orders')
 class DefaultEBS {
 
-  private static getCommands(): CommandBE[] {
+  private static listOrders(): OrderBE[] {
     return [
       {
         id: 1,
@@ -30,7 +30,7 @@ class DefaultEBS {
           id: 1,
           name: 'customer 1',
         },
-        commandLines: [
+        orderLines: [
           {
             id: 1,
             quantity: 1,
@@ -45,30 +45,30 @@ class DefaultEBS {
     ].map(DefaultEBS.calculateAmount)
   }
 
-  private static calculateAmount(command: CommandBE): CommandBE {
-    command.commandLines.forEach(line => line.amount = line.product.amount * line.quantity)
-    command.amount = command.commandLines.map(line => line.amount).reduce((amount, current) => amount! + current!, 0)!
-    return command
+  private static calculateAmount(order: OrderBE): OrderBE {
+    order.orderLines.forEach(line => line.amount = line.product.amount * line.quantity)
+    order.amount = order.orderLines.map(line => line.amount).reduce((amount, current) => amount! + current!, 0)!
+    return order
   }
 
   constructor(private readonly errorProvider: ErrorProvider) {
   }
 
   @Get('/:id')
-  @Resource(CommandBE)
-  public async get(@NumberPathParam('id') id: number): Promise<CommandBE> {
-    const command = DefaultEBS.getCommands().find(c => c.id === id)
-    if (!command) {
-      throw this.errorProvider.createEntityNotFoundBusinessException('commands', id)
+  @Resource(OrderBE)
+  public async get(@NumberPathParam('id') id: number): Promise<OrderBE> {
+    const order = DefaultEBS.listOrders().find(c => c.id === id)
+    if (!order) {
+      throw this.errorProvider.createEntityNotFoundBusinessException('orders', id)
     }
-    return command
+    return order
   }
 
   @Get('/')
-  @PaginatedResources(CommandBE, 'commands', 10, 100)
-  public async index(@NumberPathParam('id') id: number): Promise<PaginatedListResult<CommandBE>> {
-    const commands = DefaultEBS.getCommands()
-    return { list: commands, count: commands.length }
+  @PaginatedResources(OrderBE, 'orders', 10, 100)
+  public async index(@NumberPathParam('id') id: number): Promise<PaginatedListResult<OrderBE>> {
+    const orders = DefaultEBS.listOrders()
+    return { list: orders, count: orders.length }
   }
 }
 
@@ -97,7 +97,7 @@ describe('RelationOptionsInterceptor', () => {
 
   it('should return result with default parameters', () => {
     return request(app.getHttpServer())
-      .get('/commands/1')
+      .get('/orders/1')
       .expect(200)
       .expect((response) => {
         expect(response.body).toBeDefined()
@@ -110,7 +110,7 @@ describe('RelationOptionsInterceptor', () => {
               line1: 'address 1',
               country: 'France',
             },
-            commandLines: [
+            orderLines: [
               {
                 id: 1,
               },
@@ -123,9 +123,9 @@ describe('RelationOptionsInterceptor', () => {
       })
   })
 
-  it('should return result with option commandLines', () => {
+  it('should return result with option orderLines', () => {
     return request(app.getHttpServer())
-      .get('/commands/1?options=commandLines')
+      .get('/orders/1?options=orderLines')
       .expect(200)
       .expect((response) => {
         expect(response.body).toBeDefined()
@@ -138,7 +138,7 @@ describe('RelationOptionsInterceptor', () => {
               line1: 'address 1',
               country: 'France',
             },
-            commandLines: [
+            orderLines: [
               {
                 id: 1,
                 quantity: 1,
@@ -156,9 +156,9 @@ describe('RelationOptionsInterceptor', () => {
       })
   })
 
-  it('should return result with option commandLines.product', () => {
+  it('should return result with option orderLines.product', () => {
     return request(app.getHttpServer())
-      .get('/commands/1?options=commandLines.product')
+      .get('/orders/1?options=orderLines.product')
       .expect(200)
       .expect((response) => {
         expect(response.body).toBeDefined()
@@ -171,7 +171,7 @@ describe('RelationOptionsInterceptor', () => {
               line1: 'address 1',
               country: 'France',
             },
-            commandLines: [
+            orderLines: [
               {
                 id: 1,
                 quantity: 1,
@@ -193,7 +193,7 @@ describe('RelationOptionsInterceptor', () => {
 
   it('should return results with default parameters', () => {
     return request(app.getHttpServer())
-      .get('/commands')
+      .get('/orders')
       .expect(200)
       .expect((response) => {
         expect(response.body).toBeDefined()
@@ -206,7 +206,7 @@ describe('RelationOptionsInterceptor', () => {
               line1: 'address 1',
               country: 'France',
             },
-            commandLines: [
+            orderLines: [
               {
                 id: 1,
               },

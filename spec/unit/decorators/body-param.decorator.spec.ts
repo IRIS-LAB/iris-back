@@ -5,7 +5,7 @@ import { Joi } from 'tsdv-joi/core'
 import { BodyParam, ReadOnly } from '../../../src/decorators'
 import { IrisModule } from '../../../src/modules/iris-module'
 import { irisModuleOptionsForTests } from '../../commons/message-factory-for-tests'
-import { CommandBE } from '../../commons/objects/business/be/CommandBE'
+import { OrderBE } from '../../commons/objects/business/be/OrderBE'
 import { TestUtils } from '../../commons/test.utils'
 
 class TestDateBE {
@@ -42,7 +42,7 @@ class DefaultEBS {
   }
 
   @Post('/')
-  public getDate(@BodyParam() object: CommandBE) {
+  public getDate(@BodyParam() object: OrderBE) {
     return object
   }
 
@@ -83,13 +83,13 @@ describe('@BodyParam', () => {
   })
 
   it('should return body as sent', () => {
-    const command: CommandBE = {
+    const order: OrderBE = {
       amount: 5,
       billingAddress: {
         line1: 'line1',
         country: 'FRANCE',
       },
-      commandLines: [],
+      orderLines: [],
       customer: {
         id: 45,
       },
@@ -98,7 +98,7 @@ describe('@BodyParam', () => {
     }
     return request(app.getHttpServer())
       .post('/default')
-      .send(command)
+      .send(order)
       .expect(201)
       .expect(response => {
         expect(response.body).toEqual({
@@ -107,7 +107,7 @@ describe('@BodyParam', () => {
               line1: 'line1',
               country: 'FRANCE',
             },
-            commandLines: [],
+            orderLines: [],
             customer: {
               id: 45,
             },

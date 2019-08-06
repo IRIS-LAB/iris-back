@@ -1,7 +1,7 @@
 import { BusinessValidator } from '@u-iris/iris-common'
 import { Joi } from 'tsdv-joi/core'
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
-import { CommandBE } from './CommandBE'
+import { OrderBE } from './OrderBE'
 
 @Entity(`ADDRESS`)
 export class AddressBE {
@@ -21,9 +21,9 @@ export class AddressBE {
   @BusinessValidator(Joi.string().required())
   public country: string
 
-  @OneToMany(type => CommandBE, command => command.billingAddress, {
+  @OneToMany(type => OrderBE, order => order.billingAddress, {
     eager: false,
     cascade: false,
   })
-  public commands?: CommandBE[]
+  public orders?: OrderBE[]
 }

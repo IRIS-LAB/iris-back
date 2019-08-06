@@ -1,11 +1,11 @@
-import { CommandBE } from './objects/business/be/CommandBE'
+import { OrderBE } from './objects/business/be/OrderBE'
 
 export class FixturesUtils {
-  public static commandsFixtures(count: number): CommandBE[] {
-    const commands: CommandBE[] = []
-    while (commands.length < count) {
-      const id = commands.length + 1
-      commands.push({
+  public static ordersFixtures(count: number): OrderBE[] {
+    const orders: OrderBE[] = []
+    while (orders.length < count) {
+      const id = orders.length + 1
+      orders.push({
         id,
         amount: 0,
         billingAddress: {
@@ -14,7 +14,7 @@ export class FixturesUtils {
           line1: 'line 1',
           line2: 'line 2',
         },
-        commandLines: [
+        orderLines: [
           {
             id: id * 10 + 1,
             quantity: 1,
@@ -42,6 +42,6 @@ export class FixturesUtils {
         reference: `REF.${id}`,
       })
     }
-    return commands
+    return orders
   }
 }

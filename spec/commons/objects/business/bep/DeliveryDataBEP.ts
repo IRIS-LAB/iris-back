@@ -1,6 +1,6 @@
 import { Column } from 'typeorm'
 
-export class DeliveryDatasBEP {
+export class DeliveryDataBEP {
   @Column({ name: 'DELIVERY_DATE', nullable: true })
   public deliveryDate?: Date
 

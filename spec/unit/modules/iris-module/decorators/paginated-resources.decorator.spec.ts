@@ -5,17 +5,17 @@ import { IrisModule, PaginatedListResult, PaginatedResources } from '../../../..
 import { irisModuleOptionsForTests } from '../../../../commons/message-factory-for-tests'
 import { TestUtils } from '../../../../commons/test.utils'
 
-class CommandeBE {
+class OrderBE {
   public id: number
   public name: string
 }
 
-@Controller('/commandes')
-class CommandesEBS {
+@Controller('/orders')
+class OrderEBS {
 
   @Get('/')
-  @PaginatedResources(CommandeBE, 'commandes', 10, 100)
-  public async search(): Promise<PaginatedListResult<CommandeBE>> {
+  @PaginatedResources(OrderBE, 'orders', 10, 100)
+  public async search(): Promise<PaginatedListResult<OrderBE>> {
     return {
       list: [{ id: 1, name: 'name1' }, { id: 2, name: 'name2' }],
       count: 2,
@@ -32,7 +32,7 @@ describe('@PaginatedResources', () => {
         IrisModule.forRoot(irisModuleOptionsForTests),
       ],
       controllers: [
-        CommandesEBS,
+        OrderEBS,
       ],
       providers: [],
     })
@@ -48,11 +48,11 @@ describe('@PaginatedResources', () => {
 
   it('should return results with resource extracted from path', () => {
     return request(app.getHttpServer())
-      .get('/commandes')
+      .get('/orders')
       .expect(200)
       .expect((response) => {
         expect(response.body).toBeDefined()
-        expect(response.header['accept-range']).toEqual('commandes 100')
+        expect(response.header['accept-range']).toEqual('orders 100')
       })
   })
 })

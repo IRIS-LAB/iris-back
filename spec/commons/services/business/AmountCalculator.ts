@@ -1,20 +1,20 @@
 import { Injectable } from '@nestjs/common'
-import { CommandBE } from '../../objects/business/be/CommandBE'
-import { CommandLineBE } from '../../objects/business/be/CommandLineBE'
+import { OrderBE } from '../../objects/business/be/OrderBE'
+import { OrderLineBE } from '../../objects/business/be/OrderLineBE'
 
 @Injectable()
 export class AmountCalculator {
 
-  public calculateCommandAmount(command: CommandBE): void {
-    command.amount = command && command.commandLines ?
-      command.commandLines.reduce((sum: number, ligneCommande: CommandLineBE) => {
-        this.calculateCommandLineAmount(ligneCommande)
-        return sum + ligneCommande.amount!
+  public calculateOrderAmount(order: OrderBE): void {
+    order.amount = order && order.orderLines ?
+      order.orderLines.reduce((sum: number, orderLine: OrderLineBE) => {
+        this.calculateOrderLineAmount(orderLine)
+        return sum + orderLine.amount!
       }, 0)
       : 0
   }
 
-  private calculateCommandLineAmount(ligneCommande: CommandLineBE): void {
-    ligneCommande.amount = ligneCommande.product.amount * ligneCommande.quantity
+  private calculateOrderLineAmount(orderLine: OrderLineBE): void {
+    orderLine.amount = orderLine.product.amount * orderLine.quantity
   }
 }

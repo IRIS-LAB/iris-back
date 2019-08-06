@@ -3,15 +3,15 @@ import { Joi } from 'tsdv-joi/core'
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 import { AllowedOptions, Relation } from '../../../../../src/decorators'
 import { RelationEntity } from '../../../../../src/enums'
-import { DeliveryDatasBEP } from '../bep/DeliveryDatasBEP'
+import { DeliveryDataBEP } from '../bep/DeliveryDataBEP'
 import { CustomerXBE } from '../xbe/CustomerXBE'
 import { AddressBE } from './AddressBE'
-import { CommandLineBE } from './CommandLineBE'
-import { CommandStateEnum } from './CommandStateEnum'
+import { OrderLineBE } from './OrderLineBE'
+import { OrderState } from './OrderState'
 
-@Entity(`COMMANDE`)
-@AllowedOptions('commandLines', 'commandLines.product', 'customer')
-export class CommandBE {
+@Entity(`ORDER`)
+@AllowedOptions('orderLines', 'orderLines.product', 'customer')
+export class OrderBE {
 
   @PrimaryGeneratedColumn('increment')
   public id?: number
@@ -20,20 +20,20 @@ export class CommandBE {
   @BusinessValidator(Joi.string().required())
   public reference: string
 
-  @Column({ name: 'MONTANT', nullable: true, type: 'float' })
+  @Column({ name: 'AMOUNT', nullable: true, type: 'float' })
   @BusinessValidator(Joi.number())
   public amount?: number
 
   @Column({ name: 'STATE', nullable: false })
-  @BusinessValidator(Joi.string().equal(Object.keys(CommandStateEnum).map(k => CommandStateEnum[k])))
-  public state?: CommandStateEnum
+  @BusinessValidator(Joi.string().equal(Object.keys(OrderState).map(k => OrderState[k])))
+  public state?: OrderState
 
-  @Relation(RelationEntity.ASSOCIATION, CommandLineBE)
-  @OneToMany(type => CommandLineBE, commandLines => commandLines.command, {
+  @Relation(RelationEntity.ASSOCIATION, OrderLineBE)
+  @OneToMany(type => OrderLineBE, orderLines => orderLines.order, {
     eager: false,
     cascade: true,
   })
-  public commandLines: CommandLineBE[]
+  public orderLines: OrderLineBE[]
 
   @Relation(RelationEntity.ENTITY)
   @ManyToOne(type => AddressBE, {
@@ -42,10 +42,10 @@ export class CommandBE {
   })
   public billingAddress: AddressBE
 
-  @Column(type => DeliveryDatasBEP, {
+  @Column(type => DeliveryDataBEP, {
     prefix: '',
   })
-  public deliveryDatas?: DeliveryDatasBEP
+  public deliveryData?: DeliveryDataBEP
 
   @Relation(RelationEntity.ASSOCIATION)
   @Column(type => CustomerXBE, {

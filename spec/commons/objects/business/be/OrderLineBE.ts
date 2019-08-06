@@ -1,11 +1,11 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { Relation } from '../../../../../src/decorators'
 import { RelationEntity } from '../../../../../src/enums'
-import { CommandBE } from './CommandBE'
+import { OrderBE } from './OrderBE'
 import { ProductBE } from './ProductBE'
 
-@Entity(`COMMAND_LINE`)
-export class CommandLineBE {
+@Entity(`ORDER_LINE`)
+export class OrderLineBE {
 
   @PrimaryGeneratedColumn('increment')
   public id?: number
@@ -25,7 +25,7 @@ export class CommandLineBE {
   public product: ProductBE
 
 
-  @ManyToOne(type => CommandBE, command => command.commandLines)
-  @JoinColumn({ name: 'COMMAND_ID' })
-  public command?: CommandBE
+  @ManyToOne(type => OrderBE, order => order.orderLines)
+  @JoinColumn({ name: 'ORDER_ID' })
+  public order?: OrderBE
 }

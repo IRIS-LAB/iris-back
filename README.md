@@ -376,14 +376,14 @@ import {
   PaginatedListResult
 } from '@u-iris/iris-back'
 
-@Controller('/commands')
+@Controller(orders)
 export class CommandEBS {
 
   constructor(private readonly commandLBS: CommandLBS) {
   }
 
   @Get('/')
-  @PaginatedResources(OrderBE, 'commands', 10, 100)
+  @PaginatedResources(OrderBE, orders, 10, 100)
   public async findAll(@PaginatedEntitiesQueryParam() paginatedResourcesOptions: PaginatedEntitiesOptions,
                        @NumberQueryParam('customer.id') idClient: number,
                        @EnumQueryParam({
