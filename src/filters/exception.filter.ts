@@ -2,7 +2,7 @@ import { ArgumentsHost, Catch, ExceptionFilter as NestExceptionFilter } from '@n
 import {
   BusinessException,
   EntityNotFoundBusinessException,
-  ErreurDO,
+  ErrorDO,
   SecurityException,
   TechnicalException,
 } from '@u-iris/iris-common'
@@ -17,7 +17,7 @@ export class ExceptionFilter implements NestExceptionFilter {
     if (res.headersSent) {
       return next(err)
     }
-    let msg = err.message || (err.erreurs && err.erreurs.length ? err.erreurs[0].libelleErreur : 'Unknown errror')
+    let msg = err.message || (err.errors && err.errors.length ? err.errors[0].label : 'Unknown errror')
     let status = 500
     if (typeof msg === 'object' && msg.message && msg.statusCode) {
       status = msg.statusCode
@@ -34,7 +34,7 @@ export class ExceptionFilter implements NestExceptionFilter {
     logger.error(`${msg} : ${stack}`)
 
     let result = {
-      errors: err.erreurs,
+      errors: err.errors,
     }
 
     // init status
@@ -49,11 +49,11 @@ export class ExceptionFilter implements NestExceptionFilter {
         status = 500
         break
       case SecurityException:
-        status = result.errors.find((e: ErreurDO) => e.codeErreur.startsWith('security.authentication')) !== undefined ? 401 : 403
+        status = result.errors.find((e: ErrorDO) => e.code.startsWith('security.authentication')) !== undefined ? 401 : 403
         logger.error(JSON.stringify(result))
         break
       default:
-        result = { errors: [new ErreurDO('', 'error', msg)] }
+        result = { errors: [new ErrorDO('', 'error', msg)] }
     }
 
     res.status(status).send(result)

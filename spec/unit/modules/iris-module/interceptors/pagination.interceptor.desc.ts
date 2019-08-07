@@ -111,7 +111,7 @@ describe('Pagination interceptor', () => {
       .get('/number?size=101')
       .expect(400)
       .expect((response) => {
-        TestUtils.expectErreurReturned(response, { champErreur: 'size', codeErreur: 'max.exceeded' })
+        TestUtils.expectErreurReturned(response, { field: 'size', code: 'max.exceeded' })
       })
   })
   it('should return error cause of negative size', () => {
@@ -119,7 +119,7 @@ describe('Pagination interceptor', () => {
       .get('/number?size=-1')
       .expect(400)
       .expect((response) => {
-        TestUtils.expectErreurReturned(response, { champErreur: 'size', codeErreur: 'min.exceeded' })
+        TestUtils.expectErreurReturned(response, { field: 'size', code: 'min.exceeded' })
       })
   })
 })

@@ -1,5 +1,5 @@
 import { Controller, Get, INestApplication } from '@nestjs/common'
-import { BusinessException, ErreurDO } from '@u-iris/iris-common'
+import { BusinessException, ErrorDO } from '@u-iris/iris-common'
 import request from 'supertest'
 import { StringPathParam } from '../../../src/decorators/string.path-param.decorator'
 import { ErrorProvider, IrisModule } from '../../../src/modules/iris-module'
@@ -15,7 +15,7 @@ class DefaultEBS {
 
   @Get('/business')
   public businessException() {
-    throw new BusinessException(new ErreurDO('field', 'code', 'message'))
+    throw new BusinessException(new ErrorDO('field', 'code', 'message'))
   }
 
   @Get('/entity/:id')
@@ -68,9 +68,9 @@ describe('Exception filter', () => {
       .expect(404)
       .expect(response => {
         TestUtils.expectErreurReturned(response, {
-          champErreur: '',
-          codeErreur: 'error',
-          libelleErreur: 'Cannot GET /unknown',
+          field: '',
+          code: 'error',
+          label: 'Cannot GET /unknown',
         })
       })
   })
@@ -80,9 +80,9 @@ describe('Exception filter', () => {
       .expect(404)
       .expect(response => {
         TestUtils.expectErreurReturned(response, {
-          champErreur: 'entity',
-          codeErreur: 'entity.not.found',
-          libelleErreur: 'Cannot get entity entity with id 5',
+          field: 'entity',
+          code: 'entity.not.found',
+          label: 'Cannot get entity entity with id 5',
         })
       })
   })
@@ -91,7 +91,7 @@ describe('Exception filter', () => {
       .get('/default/business')
       .expect(400)
       .expect(response => {
-        TestUtils.expectErreurReturned(response, { champErreur: 'field', codeErreur: 'code' })
+        TestUtils.expectErreurReturned(response, { field: 'field', code: 'code' })
       })
   })
   it('should return error 500 because of technical exception', () => {
@@ -99,7 +99,7 @@ describe('Exception filter', () => {
       .get('/default/technical')
       .expect(500)
       .expect(response => {
-        TestUtils.expectErreurReturned(response, { champErreur: 'field', codeErreur: 'code' })
+        TestUtils.expectErreurReturned(response, { field: 'field', code: 'code' })
       })
   })
   it('should return error 403 because of security exception', () => {
@@ -107,7 +107,7 @@ describe('Exception filter', () => {
       .get('/default/security')
       .expect(403)
       .expect(response => {
-        TestUtils.expectErreurReturned(response, { champErreur: 'token', codeErreur: 'invalid' })
+        TestUtils.expectErreurReturned(response, { field: 'token', code: 'invalid' })
       })
   })
   it('should return error 401 because of security exception', () => {
@@ -115,7 +115,7 @@ describe('Exception filter', () => {
       .get('/default/auth')
       .expect(401)
       .expect(response => {
-        TestUtils.expectErreurReturned(response, { champErreur: 'token', codeErreur: 'security.authentication' })
+        TestUtils.expectErreurReturned(response, { field: 'token', code: 'security.authentication' })
       })
   })
 })

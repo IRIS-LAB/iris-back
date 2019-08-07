@@ -1,4 +1,4 @@
-import { ErreurDO, TechnicalException } from '@u-iris/iris-common'
+import { ErrorDO, TechnicalException } from '@u-iris/iris-common'
 import express from 'express'
 import eActuator from 'express-actuator'
 import { Logger } from 'winston'
@@ -17,7 +17,7 @@ export const actuator: ExpressMiddleware = (logger?: Logger) => {
   router.use(eActuator())
   router.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
     (logger || getLogger()).error(err)
-    throw new TechnicalException(new ErreurDO('', 'error.actuator.init', 'Unable to init Actuator'), err)
+    throw new TechnicalException(new ErrorDO('', 'error.actuator.init', 'Unable to init Actuator'), err)
   })
   return router
 }

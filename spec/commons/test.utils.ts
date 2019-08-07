@@ -2,15 +2,27 @@ import { INestApplication } from '@nestjs/common'
 import { ModuleMetadata } from '@nestjs/common/interfaces'
 import { APP_INTERCEPTOR } from '@nestjs/core'
 import { Test, TestingModule } from '@nestjs/testing'
+import { ErrorDO } from '@u-iris/iris-common'
 import '@u-iris/iris-common-test-utils'
 import * as request from 'superagent'
 import { ExceptionFilter } from '../../src/filters'
 import { cleanApplicationContext, setApplicationContext } from '../../src/modules/iris-module'
 import { LoggingInterceptor, TraceContextInterceptor } from '../../src/modules/iris-module/interceptors'
+// tslint:disable-next-line:no-var-requires
+// require('@u-iris/iris-common-test-utils')
+
+interface ErrorInResponse {
+  field?: ErrorDO['field']
+  code?: ErrorDO['code']
+  label?: ErrorDO['label']
+  path?: ErrorDO['path']
+  value?: ErrorDO['value']
+  limit?: ErrorDO['limit']
+}
 
 export class TestUtils {
 
-  public static expectErreurReturned(response: request.Response, ...erreurs: Array<{ champErreur?: string, codeErreur?: string, libelleErreur?: string }>) {
+  public static expectErreurReturned(response: request.Response, ...erreurs: ErrorInResponse[]) {
     expect(response.body).toBeDefined()
     expect(response.body.errors).toBeDefined()
     expect(response.body.errors).toBeInstanceOf(Array)

@@ -38,12 +38,16 @@ describe('@StringQueryParam', () => {
     TestUtils.cleanApplication()
   })
 
-  it('should return error with codeErreur = parameter.required and champErreur = filter', () => {
+  it('should return error with code = parameter.required and field = filter', () => {
     return request(app.getHttpServer())
       .get('/default/string')
       .expect(400)
       .expect(response => {
-        TestUtils.expectErreurReturned(response, { champErreur: 'filter', codeErreur: 'parameter.required', libelleErreur: 'Parameter filter is required' })
+        TestUtils.expectErreurReturned(response, {
+          field: 'filter',
+          code: 'parameter.required',
+          label: 'Parameter filter is required',
+        })
       })
 
   })

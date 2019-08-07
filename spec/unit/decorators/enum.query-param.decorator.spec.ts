@@ -62,20 +62,20 @@ describe('@EnumQueryParam', () => {
 
   describe('as int', () => {
 
-    it('should return error with codeErreur = parameter.required and champErreur = filter', () => {
+    it('should return error with code = parameter.required and field = filter', () => {
       return request(app.getHttpServer())
         .get('/default/enumAsInt')
         .expect(400)
         .expect(response => {
-          TestUtils.expectErreurReturned(response, { champErreur: 'filter', codeErreur: 'parameter.required' })
+          TestUtils.expectErreurReturned(response, { field: 'filter', code: 'parameter.required' })
         })
     })
-    it('should return error with codeErreur = type.wrong and champErreur = filter', () => {
+    it('should return error with code = type.wrong and field = filter', () => {
       return request(app.getHttpServer())
         .get('/default/enumAsInt?filter=15')
         .expect(400)
         .expect(response => {
-          TestUtils.expectErreurReturned(response, { champErreur: 'filter', codeErreur: 'parameter.type.invalid' })
+          TestUtils.expectErreurReturned(response, { field: 'filter', code: 'parameter.type.invalid' })
         })
     })
     it('should return result with filter value', () => {
@@ -91,20 +91,20 @@ describe('@EnumQueryParam', () => {
 
   describe('as string', () => {
 
-    it('should return error with codeErreur = parameter.required and champErreur = filter', () => {
+    it('should return error with code = parameter.required and field = filter', () => {
       return request(app.getHttpServer())
         .get('/default/enumAsString')
         .expect(400)
         .expect(response => {
-          TestUtils.expectErreurReturned(response, { champErreur: 'filter', codeErreur: 'parameter.required' })
+          TestUtils.expectErreurReturned(response, { field: 'filter', code: 'parameter.required' })
         })
     })
-    it('should return error with codeErreur = type.wrong and champErreur = filter', () => {
+    it('should return error with code = type.wrong and field = filter', () => {
       return request(app.getHttpServer())
         .get('/default/enumAsString?filter=BAD')
         .expect(400)
         .expect(response => {
-          TestUtils.expectErreurReturned(response, { champErreur: 'filter', codeErreur: 'parameter.type.invalid' })
+          TestUtils.expectErreurReturned(response, { field: 'filter', code: 'parameter.type.invalid' })
         })
     })
     it('should return result with filter value', () => {

@@ -1,4 +1,4 @@
-import { BusinessException, ErreurDO } from '@u-iris/iris-common'
+import { BusinessException, ErrorDO } from '@u-iris/iris-common'
 import * as express from 'express'
 import URI from 'urijs'
 import { PaginationOptions, PaginationQueryParameters } from '../interfaces'
@@ -118,7 +118,7 @@ export class PaginationUtils {
    */
   protected static checkAcceptRange(size: number, nbMaxAllow: number) {
     if (size > nbMaxAllow) {
-      throw new BusinessException(new ErreurDO('size', 'max.exceeded', `The size query params must be lesser than ${nbMaxAllow}`),
+      throw new BusinessException(new ErrorDO('size', 'max.exceeded', `The size query params must be lesser than ${nbMaxAllow}`),
       )
     }
   }
@@ -134,7 +134,7 @@ export class PaginationUtils {
       size: queryParams.size ? TypeUtils.stringToIntBase10(queryParams.size) : defaultSize,
     }
     if (queryOptions.size <= 0) {
-      throw new BusinessException(new ErreurDO('size', 'min.exceeded', 'The size query params must be greater than 0'))
+      throw new BusinessException(new ErrorDO('size', 'min.exceeded', 'The size query params must be greater than 0'))
     }
     return queryOptions
   }

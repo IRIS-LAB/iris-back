@@ -5,7 +5,7 @@ import { BusinessValidatorProvider, ErrorProvider } from '../../../../src/module
 import { OrderBE } from '../../objects/business/be/OrderBE'
 import { OrderState } from '../../objects/business/be/OrderState'
 import { OrderFilterQuery } from '../../objects/filter/OrderFilterQuery'
-import { OrderDAO } from '../data/order-d-a-o.service'
+import { OrderDAO } from '../data/OrderDAO'
 import { AmountCalculator } from './AmountCalculator'
 
 

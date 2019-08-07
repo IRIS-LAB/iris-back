@@ -38,20 +38,20 @@ describe('@DateQueryParam', () => {
     TestUtils.cleanApplication()
   })
 
-  it('should return error with codeErreur = parameter.required and champErreur = filter', () => {
+  it('should return error with code = parameter.required and field = filter', () => {
     return request(app.getHttpServer())
       .get('/default/date')
       .expect(400)
       .expect(response => {
-        TestUtils.expectErreurReturned(response, { champErreur: 'filter', codeErreur: 'parameter.required' })
+        TestUtils.expectErreurReturned(response, { field: 'filter', code: 'parameter.required' })
       })
   })
-  it('should return error with codeErreur = type.wrong and champErreur = filter', () => {
+  it('should return error with code = type.date.invalid and field = filter', () => {
     return request(app.getHttpServer())
       .get('/default/date?filter=BAD')
       .expect(400)
       .expect(response => {
-        TestUtils.expectErreurReturned(response, { champErreur: 'filter', codeErreur: 'type.date.wrong' })
+        TestUtils.expectErreurReturned(response, { field: 'filter', code: 'type.date.invalid' })
       })
   })
   it('should return result with filter value', () => {

@@ -1,5 +1,5 @@
 import { ArgumentMetadata, Query } from '@nestjs/common'
-import { BusinessException, ErreurDO, IrisException, TechnicalException } from '@u-iris/iris-common'
+import { BusinessException, ErrorDO, IrisException, TechnicalException } from '@u-iris/iris-common'
 import { getErrorProvider } from '../modules/iris-module'
 
 export interface QueryConverterParam {
@@ -22,12 +22,12 @@ export function getQueryParam<T>(param: QueryConverterParam, transform: (value: 
           return transform(value, param.key, metadata)
         } catch (e) {
           if (e instanceof IrisException) {
-            throw new BusinessException(new ErreurDO(param.key, e.erreurs[0].codeErreur, e.erreurs[0].libelleErreur))
+            throw new BusinessException(new ErrorDO(param.key, e.errors[0].code, e.errors[0].label, {path: [param.key], value: e.errors[0].value, limit: e.errors[0].limit}))
           }
-          throw new TechnicalException(new ErreurDO(param.key, 'parameter.invalid', e.message), e)
+          throw new TechnicalException(new ErrorDO(param.key, 'parameter.invalid', e.message, {path: [param.key], value}), e)
         }
       } else if (param.required) {
-        throw getErrorProvider().createBusinessException(param.key, 'parameter.required', { field: param.key })
+        throw getErrorProvider().createBusinessException(param.key, 'parameter.required', { path: [param.key], value })
       }
       return value
     }

@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
-import { ErreurDO, TechnicalException } from '@u-iris/iris-common'
+import { ErrorDO, TechnicalException } from '@u-iris/iris-common'
 import '@u-iris/iris-common-test-utils'
 import { ExceptionFilter } from '../../../../src/filters'
 import { getLoggerProvider, IrisModule, setApplicationContext } from '../../../../src/modules/iris-module'
@@ -29,7 +29,7 @@ describe('Iris module context', () => {
   })
 
   it('should throw error because application context is not set', () => {
-    expect(getLoggerProvider).toThrow(new TechnicalException(new ErreurDO('applicationContext', 'null', 'setApplicationContext() has not been called'), new Error()))
+    expect(getLoggerProvider).toThrow(new TechnicalException(new ErrorDO('applicationContext', 'null', 'setApplicationContext() has not been called'), new Error()))
   })
   it('should throw error because application context is already set', () => {
     setApplicationContext(app)

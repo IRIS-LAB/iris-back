@@ -1,5 +1,5 @@
 import { INestApplicationContext } from '@nestjs/common'
-import { ErreurDO, TechnicalException } from '@u-iris/iris-common'
+import { ErrorDO, TechnicalException } from '@u-iris/iris-common'
 import winston from 'winston'
 import { ErrorProvider, LoggerProvider } from './providers'
 
@@ -27,7 +27,7 @@ export function cleanApplicationContext() {
  */
 export function getApplicationContext(): INestApplicationContext {
   if (!applicationContext) {
-    throw new TechnicalException(new ErreurDO('applicationContext', 'null', 'setApplicationContext() has not been called'), new Error())
+    throw new TechnicalException(new ErrorDO('applicationContext', 'null', 'setApplicationContext() has not been called'), new Error())
   }
   return applicationContext
 }

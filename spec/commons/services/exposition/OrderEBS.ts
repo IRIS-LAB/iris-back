@@ -14,7 +14,7 @@ import { PaginatedResources, Resource } from '../../../../src/modules/iris-modul
 import { PaginatedListResult } from '../../../../src/modules/iris-module/interfaces'
 import { OrderBE } from '../../objects/business/be/OrderBE'
 import { OrderState } from '../../objects/business/be/OrderState'
-import { OrderLBS } from '../business/order-l-b-s.service'
+import { OrderLBS } from '../business/OrderLBS'
 
 @Controller('/orders')
 export class OrderEBS {

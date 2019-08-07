@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common'
 import {
   BusinessException,
   EntityNotFoundBusinessException,
-  ErreurDO,
+  ErrorDO,
   IrisException,
   SecurityException,
-  TechnicalException
+  TechnicalException,
 } from '@u-iris/iris-common'
 import { MessageProvider } from './message.provider'
 
@@ -24,16 +24,21 @@ export class ErrorProvider {
   }
 
   public createEntityNotFoundBusinessException(field: string, id: any, code: string = 'entity.not.found', datas?: object): EntityNotFoundBusinessException {
-    return this.createIrisException(EntityNotFoundBusinessException, field, code, { id, ...datas })
+    return this.createIrisException(EntityNotFoundBusinessException, field, code, { value: id, id, ...datas })
   }
 
   public createTechnicalException(field: string, code: string, e: Error, datas?: object): TechnicalException {
-    datas = { field, ...datas }
-    return new TechnicalException(new ErreurDO(field, code, this.messageProvider.has(`${code}.${field}`) ? this.messageProvider.get(`${code}.${field}`, datas) : this.messageProvider.get(code, datas)), e)
+    return new TechnicalException(this.getError(field, code, datas), e)
   }
 
-  private createIrisException<T extends IrisException>(exceptionClass: new(erreurs: ErreurDO[] | ErreurDO) => T, field: string, code: string, datas?: object): T {
-    datas = { field, ...datas }
-    return new exceptionClass(new ErreurDO(field, code, this.messageProvider.has(`${code}.${field}`) ? this.messageProvider.get(`${code}.${field}`, datas) : this.messageProvider.get(code, datas)))
+  private createIrisException<T extends IrisException>(exceptionClass: new(erreurs: ErrorDO[] | ErrorDO) => T, field: string, code: string, datas?: any): T {
+    return new exceptionClass(this.getError(field, code, datas))
+  }
+
+  private getError(field: string, code: string, datas?: any): ErrorDO {
+    const { value, path, limit } = datas ? datas : { value: undefined, path: undefined, limit: undefined }
+    const messageDatas = { field, code, ...datas }
+    const message = this.messageProvider.has(`${code}.${field}`) ? this.messageProvider.get(`${code}.${field}`, messageDatas) : this.messageProvider.get(code, messageDatas)
+    return new ErrorDO(field, code, message, { value, path, limit })
   }
 }

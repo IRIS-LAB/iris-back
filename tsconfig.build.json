@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "moduleResolution": "node",
-    "strict": true,
     "target": "es5",
     "module": "commonjs",
     "sourceMap": false,
@@ -21,6 +20,7 @@
       "node_modules/@types",
       "@types"
     ],
+    "strict": true,
     "allowSyntheticDefaultImports": true,
     "noImplicitAny": false,
     "strictPropertyInitialization": false,

@@ -1,4 +1,4 @@
-import { BusinessException } from '@u-iris/iris-common'
+import { BusinessException, TechnicalException } from '@u-iris/iris-common'
 import moment from 'moment'
 import { TypeUtils } from '../../../src/utils'
 
@@ -57,7 +57,7 @@ describe('Type converter', () => {
     })
     it('should throw exception', () => {
       // @ts-ignore
-      expect(() => TypeUtils.convertToType('object', 'fez')).toThrow(BusinessException)
+      expect(() => TypeUtils.convertToType('object', 'fez')).toThrow(TechnicalException)
     })
   })
 })

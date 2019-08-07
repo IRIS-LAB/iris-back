@@ -4,8 +4,8 @@ import moment from 'moment'
 import request from 'supertest'
 import { OrderBE } from '../commons/objects/business/be/OrderBE'
 import { OrderState } from '../commons/objects/business/be/OrderState'
-import { OrderLBS } from '../commons/services/business/order-l-b-s.service'
-import { OrderDAO } from '../commons/services/data/order-d-a-o.service'
+import { OrderLBS } from '../commons/services/business/OrderLBS'
+import { OrderDAO } from '../commons/services/data/OrderDAO'
 import { TestUtils } from '../commons/test.utils'
 import { DatabaseTestUtils } from './database-test-utils.service'
 import './e2e-config-loader'
@@ -185,8 +185,8 @@ describe('OrderEBS (e2e)', () => {
         .expect('Content-Type', /json/)
         .then(response => {
           TestUtils.expectErreurReturned(response, {
-            champErreur: 'orderState',
-            codeErreur: 'parameter.type.invalid',
+            field: 'orderState',
+            code: 'parameter.type.invalid',
           })
         })
     })
@@ -228,7 +228,7 @@ describe('OrderEBS (e2e)', () => {
         .expect(400)
         .expect('Content-Type', /json/)
         .then(response => {
-          TestUtils.expectErreurReturned(response, { champErreur: 'customer.id', codeErreur: 'type.number.wrong' })
+          TestUtils.expectErreurReturned(response, { field: 'customer.id', code: 'type.number.invalid' })
         })
     })
 
@@ -324,7 +324,7 @@ describe('OrderEBS (e2e)', () => {
         .expect(500)
         .expect('Content-Type', /json/)
         .then(response => {
-          TestUtils.expectErreurReturned(response, {codeErreur: 'entity.field.invalid', champErreur: 'badfilter'})
+          TestUtils.expectErreurReturned(response, { code: 'entity.field.invalid', field: 'badfilter' })
         })
     })
   })
@@ -335,7 +335,7 @@ describe('OrderEBS (e2e)', () => {
         .get('/orders/1')
         .expect(404)
         .then(response => {
-          TestUtils.expectErreurReturned(response, { champErreur: 'orders', codeErreur: 'entity.not.found' })
+          TestUtils.expectErreurReturned(response, { field: 'orders', code: 'entity.not.found' })
         })
     })
 
@@ -459,7 +459,7 @@ describe('OrderEBS (e2e)', () => {
         .expect(400)
         .expect('Content-Type', /json/)
         .then(response => {
-          TestUtils.expectErreurReturned(response, { champErreur: 'options', codeErreur: 'option.not.allowed' })
+          TestUtils.expectErreurReturned(response, { field: 'options', code: 'option.not.allowed' })
         })
     })
 
@@ -473,7 +473,7 @@ describe('OrderEBS (e2e)', () => {
         .set('Accept', 'application/json')
         .expect(400)
         .then(response => {
-          TestUtils.expectErreurReturned(response, {champErreur: 'reference', codeErreur: 'any.required'})
+          TestUtils.expectErreurReturned(response, { field: 'reference', code: 'any.required' })
         })
     })
 

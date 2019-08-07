@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { ErreurDO, TechnicalException } from '@u-iris/iris-common'
+import { ErrorDO, TechnicalException } from '@u-iris/iris-common'
 import moment from 'moment-timezone'
 import uuid from 'uuid'
 import winston, { createLogger, format, transports } from 'winston'
@@ -90,7 +90,7 @@ export class LoggerProvider {
 
     // disable console if mode = production
     if (!this.options.enableConsole && !this.options.file) {
-      throw new TechnicalException(new ErreurDO('logger.options', 'enableConsole.or.file.required', 'You must enable console or file logger'), new Error())
+      throw new TechnicalException(new ErrorDO('logger.options', 'enableConsole.or.file.required', 'You must enable console or file logger'), new Error())
     }
 
     const loggerTransports: any[] = []

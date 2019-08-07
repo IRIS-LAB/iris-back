@@ -3,17 +3,19 @@
     "moduleResolution": "node",
     "strict": true,
     "target": "es5",
-    "module": "es2015",
+    "module": "commonjs",
     "sourceMap": true,
+
     "lib": [
       "es2015",
       "dom"
     ],
+    "rootDir": "./src",
     "baseUrl": "./src",
     "outDir": "./build",
     "types": [
       "@types/node",
-      "@u-iris/iris-common-test-utils",
+      "@u-iris/iris-common-test-utils/jest.extend",
       "jest"
     ],
     "typeRoots": [

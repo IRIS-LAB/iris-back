@@ -1,5 +1,7 @@
-import { BusinessException, ErreurDO } from '@u-iris/iris-common'
+import { BusinessException, ErrorDO, TechnicalException } from '@u-iris/iris-common'
 import moment from 'moment'
+import { Type } from 'tsdv-joi/constraints/object'
+import { ErrorProvider, getErrorProvider } from '../modules/iris-module'
 
 
 enum TypeEnum {
@@ -29,7 +31,22 @@ export class TypeUtils {
       case TypeUtils.TYPE.INT:
         return TypeUtils.stringToIntBase10(param)
       default:
-        throw new BusinessException(new ErreurDO('', 'type.wrong', 'The past type is not recognized'))
+        let errorProvider: ErrorProvider
+        try {
+          errorProvider = getErrorProvider()
+        } catch {
+          // not in nestjs context
+        }
+
+        // @ts-ignore
+        if (errorProvider) {
+          throw errorProvider.createTechnicalException('', 'typeUtils.type.invalid', new Error(), {
+            type,
+            value: param,
+          })
+        } else {
+          throw new TechnicalException(new ErrorDO('', 'typeUtils.type.invalid', 'Cannot convert type ' + type, {value: param}), new Error())
+        }
     }
   }
 
@@ -41,7 +58,7 @@ export class TypeUtils {
   public static stringToIntBase10(param: string): number {
     const regInt = RegExp(/^-?\d+$/, 'g')
     if (!regInt.test(param)) {
-      throw new BusinessException(new ErreurDO('', 'type.number.wrong', 'The past param is not a number'))
+      TypeUtils.throwBusinessException('type.number.invalid', { value: param }, TypeUtils.TYPE.INT)
     }
     return parseInt(param)
   }
@@ -59,8 +76,24 @@ export class TypeUtils {
       // none
     }
     if (!dateMoment || !dateMoment.isValid()) {
-      throw new BusinessException(new ErreurDO('', 'type.date.wrong', 'The past param is not a date'))
+      TypeUtils.throwBusinessException('type.date.invalid', { value: param }, TypeUtils.TYPE.DATE)
     }
     return dateMoment.toDate()
+  }
+
+  private static throwBusinessException(code: string, datas: any, type: string) {
+    let errorProvider: ErrorProvider
+    try {
+      errorProvider = getErrorProvider()
+    } catch {
+      // not in nestjs context
+    }
+
+    // @ts-ignore
+    if (errorProvider) {
+      throw errorProvider.createBusinessException('', code, datas)
+    } else {
+      throw new BusinessException(new ErrorDO('', code, 'Cannot convert in type ' + type, datas))
+    }
   }
 }

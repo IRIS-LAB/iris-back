@@ -1,5 +1,5 @@
 import { PipeTransform, Type } from '@nestjs/common'
-import { BusinessException, ErreurDO, IrisException, TechnicalException } from '@u-iris/iris-common'
+import { BusinessException, ErrorDO, IrisException, TechnicalException } from '@u-iris/iris-common'
 import { PathParam } from './path-param.decorator'
 
 
@@ -11,9 +11,9 @@ export function getPathParam<T>(propertyKey: string, transform: (value: string, 
           return transform(value, propertyKey)
         } catch (e) {
           if (e instanceof IrisException) {
-            throw new BusinessException(new ErreurDO(propertyKey, e.erreurs[0].codeErreur, e.erreurs[0].libelleErreur))
+            throw new BusinessException(new ErrorDO(propertyKey, e.errors[0].code, e.errors[0].label, {path: [propertyKey], value: e.errors[0].value, limit: e.errors[0].limit}))
           }
-          throw new TechnicalException(new ErreurDO(propertyKey, 'parameter.invalid', e.message), e)
+          throw new TechnicalException(new ErrorDO(propertyKey, 'parameter.invalid', e.message, {path: [propertyKey], value}), e)
         }
       }
       return value
