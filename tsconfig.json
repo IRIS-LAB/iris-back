@@ -3,17 +3,19 @@
     "moduleResolution": "node",
     "strict": true,
     "target": "es5",
-    "module": "es2015",
+    "module": "commonjs",
     "sourceMap": true,
+
     "lib": [
       "es2015",
       "dom"
     ],
+    "rootDir": "./src",
     "baseUrl": "./src",
     "outDir": "./build",
     "types": [
       "@types/node",
-      "@u-iris/iris-common-test-utils",
+      "@u-iris/iris-common-test-utils/jest.extend",
       "jest"
     ],
     "typeRoots": [
@@ -21,11 +23,18 @@
       "@types"
     ],
     "allowSyntheticDefaultImports": true,
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "strictPropertyInitialization": false,
     "esModuleInterop": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "preserveConstEnums": true,
+    "suppressImplicitAnyIndexErrors": false,
+    "noResolve": false,
+    "noUnusedParameters": false,
+    "noUnusedLocals": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true
   },
   "include": [
     "src/**/*.ts",
