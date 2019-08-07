@@ -72,7 +72,7 @@ export class LoggerProvider {
     })
 
     const myFormat = winston.format.printf(({ level, message, label, timestamp }) => {
-      return `${timestamp} [thread${process.pid}] [${this.options.appName}-${this.options.appVersion},${this.getTraceId()},${this.getSpanId()},${exportZipkin}] ${level.toUpperCase()} ${message}`
+      return `${timestamp} [thread${process.pid}] [${this.options.appName}-${this.options.appVersion},${this.getTraceId()},${this.getSpanId()},${exportZipkin}] ${level.toUpperCase()} - ${message}`
     })
     return combine(appendTimestamp({ tz: localTimeZone }), splat(), myFormat)
   }

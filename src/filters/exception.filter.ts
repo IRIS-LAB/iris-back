@@ -57,6 +57,7 @@ export class ExceptionFilter implements NestExceptionFilter {
     }
 
     res.status(status).send(result)
+    LoggingInterceptor.logResponse(res)
   }
 
   public catch(exception: unknown, host: ArgumentsHost): any {
@@ -71,7 +72,7 @@ export class ExceptionFilter implements NestExceptionFilter {
     } else {
       clsProvider.run(() => {
         // if cls-hooked context is not active, logging interceptor must be called here
-        LoggingInterceptor.log(request)
+        LoggingInterceptor.logRequest(request)
         ExceptionFilter.handleError(exception, request, response, next)
       })
     }
