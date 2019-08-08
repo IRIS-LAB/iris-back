@@ -147,11 +147,11 @@ export class PaginationUtils {
    * @returns {URL} - URL with query params
    * @throws {TechnicalException} - URL isn't type string
    */
-  protected static createUrl(url: string, queryParams?: any) {
+  protected static createUrl(url: string, queryParams?: any): string {
     const newUrl = new URI(url)
     if (queryParams !== null) {
       newUrl.search(queryParams)
     }
-    return newUrl
+    return newUrl.toString()
   }
 }
