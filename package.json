@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist/"
+    "dist/",
+    "resources/"
   ],
   "scripts": {
     "build": "rm -rf dist/ && tsc -p tsconfig.build.json",
