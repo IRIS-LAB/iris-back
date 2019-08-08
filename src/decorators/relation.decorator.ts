@@ -2,7 +2,7 @@ import * as constants from '../constants'
 import { RelationEntity } from '../enums'
 import { RelationMetadata } from '../interfaces/relation-metadata.interface'
 
-const assignMetadata = (args: { [key: string]: RelationMetadata } = {}, field: string, relation: RelationEntity, type: new(...args: any []) => any): { [key: string]: RelationMetadata } => ({
+const assignMetadata = (args: { [key: string]: RelationMetadata } = {}, field: string, relation: RelationEntity, type: RelationMetadata['type']): { [key: string]: RelationMetadata } => ({
   ...args,
   [field]: {
     ...(args[field] || {}),
@@ -16,7 +16,7 @@ const assignMetadata = (args: { [key: string]: RelationMetadata } = {}, field: s
  * @param relation - Type of the relation
  * @param type - Type of the field (required for arrays)
  */
-export function Relation(relation: RelationEntity, type?: new(...args: any []) => any): PropertyDecorator {
+export function Relation(relation: RelationEntity, type?: RelationMetadata['type']): PropertyDecorator {
   return (targetClass, propertyKey) => {
     const args: { [key: string]: RelationMetadata } = Reflect.getMetadata(constants.RELATION_METADATA, targetClass.constructor)
     if (!type && Reflect.getMetadata('design:type', targetClass, propertyKey) === Array) {

@@ -28,7 +28,7 @@ export class OrderBE {
   @BusinessValidator(Joi.string().equal(Object.keys(OrderState).map(k => OrderState[k])))
   public state?: OrderState
 
-  @Relation(RelationEntity.ASSOCIATION, OrderLineBE)
+  @Relation(RelationEntity.ASSOCIATION, () => OrderLineBE)
   @OneToMany(type => OrderLineBE, orderLines => orderLines.order, {
     eager: false,
     cascade: true,

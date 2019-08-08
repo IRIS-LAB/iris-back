@@ -32,8 +32,8 @@ function filterObject(object: any, prototype?: any): any {
       if (typeof value !== 'undefined' && (!relationMetadata || !relationMetadata.readOnly)) {
         if (relationMetadata && relationMetadata.relation) {
           let propertyPrototype
-          if (!propertyPrototype && relationMetadata && relationMetadata.type && relationMetadata.type.prototype) {
-            propertyPrototype = relationMetadata.type
+          if (!propertyPrototype && relationMetadata && relationMetadata.type && relationMetadata.type() && relationMetadata.type().prototype) {
+            propertyPrototype = relationMetadata.type().prototype
           }
           if (!propertyPrototype && prototype && prototype.constructor && prototype) {
             propertyPrototype = Reflect.getMetadata('design:type', prototype, propertyKey)

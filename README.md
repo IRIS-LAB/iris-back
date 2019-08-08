@@ -168,7 +168,7 @@ export class OrderBE {
 
 Decorate your relations with `@Relation(<relation-entity-type>[, <type>])` with:
 * `relation-entity-type`: one of RelationEntity.ASSOCIATION, RelationEntity.ENTITY, RelationEntity.NONE
-* `type`: type of array if your relation is a OneToMany or ManyToMany (type is required for an array because typescript does not provides a way to automatically detect a parameterized type)
+* `type`: function that returns type of array if your relation is a OneToMany or ManyToMany (type is required for an array because typescript does not provides a way to automatically detect a parameterized type)
 
 **Options** allow the consumer of your API to retrieve the content of the relations marked as ASSOCIATION or NONE.
 
@@ -199,7 +199,7 @@ export class OrderBE {
   public state?: CommandStateEnum
 
   // @Relation() applied to a field typeof Array must declare the type of array in parameter. This is a technical constraint of typescript
-  @Relation(RelationEntity.ASSOCIATION, OrderLineBE)
+  @Relation(RelationEntity.ASSOCIATION, () => OrderLineBE)
   @OneToMany(type => OrderLineBE, orderLines => orderLines.command, {
     eager: false,
     cascade: true,
@@ -257,7 +257,7 @@ export class OrderBE {
   @BusinessValidator(Joi.string().equal(Object.keys(CommandStateEnum).map(k => CommandStateEnum[k])))
   public state?: CommandStateEnum
 
-  @Relation(RelationEntity.ASSOCIATION, OrderLineBE)
+  @Relation(RelationEntity.ASSOCIATION, () => OrderLineBE)
   @OneToMany(type => OrderLineBE, orderLines => orderLines.command, {
     eager: false,
     cascade: true,

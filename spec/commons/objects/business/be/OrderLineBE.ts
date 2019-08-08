@@ -17,7 +17,6 @@ export class OrderLineBE {
   public amount?: number
 
   @Relation(RelationEntity.ASSOCIATION)
-
   @ManyToOne(type => ProductBE, {
     eager: true,
     cascade: true,

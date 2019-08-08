@@ -14,16 +14,17 @@ describe('Decorator @Relation and @AllowedOptions', () => {
     const ordersRelations: { [key: string]: RelationMetadata } = Reflect.getMetadata(constants.RELATION_METADATA, OrderBE)
     expect(Object.keys(ordersRelations)).toHaveLength(4)
 
-    expect(ordersRelations.orderLines).toEqual({
-      type: OrderLineBE,
+    expect(ordersRelations.orderLines).toMatchObject({
       relation: RelationEntity.ASSOCIATION,
       allowedOption: true,
     })
+    expect(ordersRelations.orderLines.type).toBeDefined()
+    expect(ordersRelations.orderLines.type()).toEqual(OrderLineBE)
 
     expect(ordersRelations['orderLines.product']).toEqual({
       allowedOption: true,
     })
-    expect(Reflect.getMetadata('design:type', ordersRelations.orderLines.type.prototype, 'product')).toEqual(ProductBE)
+    expect(Reflect.getMetadata('design:type', ordersRelations.orderLines.type().prototype, 'product')).toEqual(ProductBE)
 
     expect(ordersRelations.customer).toEqual({
       relation: RelationEntity.ASSOCIATION,

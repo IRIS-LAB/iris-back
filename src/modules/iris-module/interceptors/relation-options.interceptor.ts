@@ -89,8 +89,8 @@ export class RelationOptionsInterceptor<T> implements NestInterceptor<any, any> 
 
           if (!done) {
             let propertyPrototype
-            if (!propertyPrototype && relationMetadata && relationMetadata.type && relationMetadata.type.prototype) {
-              propertyPrototype = relationMetadata.type
+            if (!propertyPrototype && relationMetadata && relationMetadata.type && relationMetadata.type() && relationMetadata.type().prototype) {
+              propertyPrototype = relationMetadata.type()
             }
             if (!propertyPrototype && type && type.constructor && type.constructor.prototype) {
               propertyPrototype = Reflect.getMetadata('design:type', type.constructor.prototype, propertyKey)
