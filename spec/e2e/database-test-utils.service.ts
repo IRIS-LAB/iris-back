@@ -39,17 +39,17 @@ export class DatabaseTestUtils {
    */
   public async closeDbConnection() {
     if (this.connection.isConnected) {
-      await (await this.connection).close()
+      await this.connection.close()
     }
   }
 
   /**
    * Returns the entites of the database
    */
-  public async getEntities() {
-    const entities: Entity[] = [];
-    (await this.connection.entityMetadatas).forEach(
-      x => entities.push({ name: x.name, tableName: x.tableName })
+  public getEntities() {
+    const entities: Entity[] = []
+    this.connection.entityMetadatas.forEach(
+      x => entities.push({ name: x.name, tableName: x.tableName }),
     )
     return entities
   }
@@ -94,7 +94,7 @@ export class DatabaseTestUtils {
   }
 
   public async cleanDatabase() {
-    await this.cleanAll(await this.getEntities())
+    await this.cleanAll(this.getEntities())
   }
 
 
