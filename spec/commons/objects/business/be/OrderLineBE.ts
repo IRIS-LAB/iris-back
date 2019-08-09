@@ -24,7 +24,9 @@ export class OrderLineBE {
   public product: ProductBE
 
 
-  @ManyToOne(type => OrderBE, order => order.orderLines)
+  @ManyToOne(type => OrderBE, order => order.orderLines, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'ORDER_ID' })
   public order?: OrderBE
 }

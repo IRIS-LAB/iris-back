@@ -30,8 +30,8 @@ export class OrderBE {
 
   @Relation(RelationEntity.ASSOCIATION, () => OrderLineBE)
   @OneToMany(type => OrderLineBE, orderLines => orderLines.order, {
-    eager: false,
-    cascade: true,
+    eager: true,
+    cascade: true
   })
   public orderLines: OrderLineBE[]
 
@@ -39,6 +39,7 @@ export class OrderBE {
   @ManyToOne(type => AddressBE, {
     eager: true,
     cascade: true,
+    onDelete: 'CASCADE',
   })
   public billingAddress: AddressBE
 

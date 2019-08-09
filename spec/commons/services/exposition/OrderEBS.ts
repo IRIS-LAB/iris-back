@@ -1,4 +1,4 @@
-import { Controller, Get, Post } from '@nestjs/common'
+import { Controller, Delete, Get, Post } from '@nestjs/common'
 import {
   BodyParam,
   DateQueryParam,
@@ -60,5 +60,12 @@ export class OrderEBS {
   @Resource(OrderBE)
   public async createOrder(@EntityOptionsQueryParam() queryableParam: EntityOptions, @BodyParam() newOrder: OrderBE): Promise<OrderBE> {
     return this.orderLBS.createOrder(newOrder, queryableParam)
+  }
+
+  @Delete('/:id')
+  @Resource(OrderBE)
+  public async deleteOrder(@PathParam('id') id: number): Promise<{}> {
+    await this.orderLBS.deleteOrder(id)
+    return {}
   }
 }

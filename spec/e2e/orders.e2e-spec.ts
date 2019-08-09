@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { EntityNotFoundBusinessException } from '@u-iris/iris-common'
 import '@u-iris/iris-common-test-utils'
 import moment from 'moment'
 import request from 'supertest'
@@ -490,6 +491,53 @@ describe('OrderEBS (e2e)', () => {
           expect(response.body.reference).toEqual('ref')
           expect(response.body.customer).toBeDefined()
           expect(response.body.customer.id).toEqual(5)
+        })
+    })
+  })
+
+  describe('/:id (DELETE)', () => {
+    it('should return error because of order not found', () => {
+      return request(app.getHttpServer())
+        .delete('/orders/1')
+        .expect(404)
+        .then(response => {
+          TestUtils.expectErreurReturned(response, { field: 'orders', code: 'entity.not.found' })
+        })
+    })
+
+    it('should delete the order', async () => {
+      let order = new OrderBE()
+      order.reference = 'CMD.1'
+      order.orderLines = [
+        {
+          quantity: 1,
+          product: {
+            label: 'product 1',
+            amount: 10,
+          },
+        },
+        {
+          quantity: 1,
+          product: {
+            label: 'product 2',
+            amount: 4.99,
+          },
+        },
+      ]
+      order.customer = {
+        id: 54,
+        name: 'customer name',
+      }
+      order = await orderLBS.createOrder(order)
+
+      return request(app.getHttpServer())
+        .delete('/orders/' + order.id)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .then(response => {
+          expect(response.body).toBeDefined()
+          expect(response.body).toEqual({})
+          expect(orderLBS.findById(order.id!)).rejects.toBeInstanceOf(EntityNotFoundBusinessException)
         })
     })
   })

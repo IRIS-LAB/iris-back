@@ -42,6 +42,10 @@ export class OrderLBS {
     return this.orderDAO.save(order, query)
   }
 
+  public async deleteOrder(id: number): Promise<OrderBE> {
+    return this.orderDAO.remove(await this.findById(id))
+  }
+
   public async updateOrderState(orderId: number, orderState: OrderState): Promise<OrderBE> {
     const order = await this.orderDAO.findById(orderId)
     if (!order) {

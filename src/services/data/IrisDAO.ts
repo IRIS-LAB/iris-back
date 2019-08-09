@@ -11,7 +11,7 @@ import {
   Like,
   MoreThan,
   MoreThanOrEqual,
-  Not,
+  Not, RemoveOptions,
   Repository,
 } from 'typeorm'
 import * as constants from '../../constants'
@@ -90,6 +90,14 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
     return this.repository.save(entity)
   }
 
+  /**
+   * Remove an entity from database
+   * @param entity - Entity to remove
+   * @param options - options for remove operation
+   */
+  public async remove(entity: T, options?: RemoveOptions): Promise<T> {
+    return this.repository.remove(entity, options)
+  }
 
   /**
    * Apply query filters.
