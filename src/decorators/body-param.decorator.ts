@@ -4,9 +4,16 @@ import { RelationEntity } from '../enums'
 import { RelationMetadata } from '../interfaces/relation-metadata.interface'
 import { TypeUtils } from '../utils'
 
-export const BodyParam = (noMapping?: boolean, ...pipes: Array<Type<PipeTransform> | PipeTransform>) => Body({
+export const BodyParam = (type?: new(...args: any[]) => any, ...pipes: Array<Type<PipeTransform> | PipeTransform>) => Body({
   transform(value: any, metadata: ArgumentMetadata): any {
     if (metadata && metadata.metatype && metadata.metatype.prototype) {
+      if (metadata.metatype === Array) {
+        if (type) {
+          return filterObject(value, type.prototype)
+        } else {
+          throw new Error('Please set element type of Array in @BodyParam')
+        }
+      }
       return filterObject(value, metadata.metatype.prototype)
     }
     return value
@@ -15,13 +22,13 @@ export const BodyParam = (noMapping?: boolean, ...pipes: Array<Type<PipeTransfor
 
 function filterObject(object: any, prototype?: any): any {
   if (typeof object === 'object') {
-
-    const joiMetadatas = Reflect.getMetadata('tsdv:working-schema', prototype)
-    const relationMetadatas: { [key: string]: RelationMetadata } = Reflect.getMetadata(constants.RELATION_METADATA, prototype.constructor)
-
     if (Array.isArray(object)) {
       return object.map(o => filterObject(o, prototype))
     }
+
+    const joiMetadatas = Reflect.getMetadata('tsdv:working-schema', prototype)
+
+    const relationMetadatas: { [key: string]: RelationMetadata } = Reflect.getMetadata(constants.RELATION_METADATA, prototype.constructor)
     const result: any = prototype && prototype.constructor ? new prototype.constructor() : {}
     for (const propertyKey of Object.keys(object)) {
       const relationMetadata = relationMetadatas ? relationMetadatas[propertyKey] : null

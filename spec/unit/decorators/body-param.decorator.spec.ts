@@ -32,6 +32,10 @@ class DefaultLBS {
     return object
   }
 
+  public async assertList(list: TestReadonlyBE[]): Promise<TestReadonlyBE[]> {
+    return list
+  }
+
 }
 
 @Controller('/default')
@@ -49,6 +53,11 @@ class DefaultEBS {
   @Post('/assertDate')
   public assertDate(@BodyParam() object: TestDateBE): Promise<TestDateBE> {
     return this.defaultLBS.assertDate(object)
+  }
+
+  @Post('/assertList')
+  public async assertList(@BodyParam(TestReadonlyBE) list: TestReadonlyBE[]): Promise<TestReadonlyBE[]> {
+    return this.defaultLBS.assertList(list)
   }
 
   @Post('/assertReadOnly')
@@ -157,5 +166,33 @@ describe('@BodyParam', () => {
           },
         )
       })
+  })
+
+  it('should serialize list', () => {
+    jest.spyOn(defaultLBS, 'assertList').mockImplementation(async (list: TestReadonlyBE[]) => {
+      expect(list).toBeDefined()
+      expect(list).toBeInstanceOf(Array)
+      expect(list).toHaveLength(2)
+      expect(list).toContainEqual({ name: 'name1' })
+      expect(list).toContainEqual({ name: 'name2' })
+      return list
+    })
+
+    return request(app.getHttpServer())
+      .post('/default/assertList')
+      .send([{ name: 'name1' }, { name: 'name2' }])
+      .expect(201)
+      .expect(response => {
+        expect(response.body).toEqual([
+            {
+              name: 'name1',
+            },
+            {
+              name: 'name2',
+            },
+          ],
+        )
+      })
+
   })
 })

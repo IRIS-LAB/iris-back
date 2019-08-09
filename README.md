@@ -131,7 +131,7 @@ export class OrderBE {
   public amount?: number
 
   @Column({ name: 'STATE', nullable: false })
-  public state?: CommandStateEnum
+  public state?: OrderStateEnum
 
   @OneToMany(type => orderLineBE, orderLines => orderLines.order, {
     eager: false,
@@ -196,11 +196,11 @@ export class OrderBE {
   public amount?: number
 
   @Column({ name: 'STATE', nullable: false })
-  public state?: CommandStateEnum
+  public state?: OrderStateEnum
 
   // @Relation() applied to a field typeof Array must declare the type of array in parameter. This is a technical constraint of typescript
   @Relation(RelationEntity.ASSOCIATION, () => OrderLineBE)
-  @OneToMany(type => OrderLineBE, orderLines => orderLines.command, {
+  @OneToMany(type => OrderLineBE, orderLines => orderLines.order, {
     eager: false,
     cascade: true,
   })
@@ -254,11 +254,11 @@ export class OrderBE {
 
   @Column({ name: 'STATE', nullable: false })
   // Constraint for enum
-  @BusinessValidator(Joi.string().equal(Object.keys(CommandStateEnum).map(k => CommandStateEnum[k])))
-  public state?: CommandStateEnum
+  @BusinessValidator(Joi.string().equal(Object.keys(OrderStateEnum).map(k => OrderStateEnum[k])))
+  public state?: OrderStateEnum
 
   @Relation(RelationEntity.ASSOCIATION, () => OrderLineBE)
-  @OneToMany(type => OrderLineBE, orderLines => orderLines.command, {
+  @OneToMany(type => OrderLineBE, orderLines => orderLines.order, {
     eager: false,
     cascade: true,
   })
@@ -291,13 +291,13 @@ Example:
 import { Injectable } from '@nestjs/common'
 
 @Injectable()
-export class CommandLBS {
+export class OrderLBS {
 
   constructor(private readonly businessValidatorProvider: BusinessValidatorProvider) {
   }
 
-  public async validateCommande(command: OrderBE): Promise<OrderBE> {
-    return this.businessValidatorProvider.validate(command) // if a constraint is not validated, a BusinessException will be thrown
+  public async validateOrder(order: OrderBE): Promise<OrderBE> {
+    return this.businessValidatorProvider.validate(order) // if a constraint is not validated, a BusinessException will be thrown
   }
 }
 
@@ -354,7 +354,9 @@ If you want to cast the path parameter into a specific type :
 
 For **Body data**, use `@BodyParam()`
 
-Object injected into the method's parameter will be serialized into the type of entity you passed in `@PaginatedResources()` or `@Resource()`.
+Object injected into the method's parameter will be serialized into the type of the parameter or the type passed in parameter of `@BodyParam()`.
+
+Note that if the parameter is of type Array, you **must** set the type of array in `@BodyParam()`.
 
 
 Example:
@@ -376,10 +378,10 @@ import {
   PaginatedListResult
 } from '@u-iris/iris-back'
 
-@Controller(orders)
-export class CommandEBS {
+@Controller('/orders')
+export class OrderEBS {
 
-  constructor(private readonly commandLBS: CommandLBS) {
+  constructor(private readonly orderLBS: OrderLBS) {
   }
 
   @Get('/')
@@ -387,19 +389,19 @@ export class CommandEBS {
   public async findAll(@PaginatedEntitiesQueryParam() paginatedResourcesOptions: PaginatedEntitiesOptions,
                        @NumberQueryParam('customer.id') idClient: number,
                        @EnumQueryParam({
-                         type: CommandStateEnum,
-                         key: 'commandState',
-                       }) commandState: CommandStateEnum,
+                         type: OrderStateEnum,
+                         key: 'orderState',
+                       }) orderState: OrderStateEnum,
                        @StringQueryParam('reference') reference: string,
                        @DateQueryParam('deliveryData.deliveryDate.gte') deliveryDateGte: Date,
                        @DateQueryParam('deliveryData.deliveryDate.lte') beforeDateLivraison: Date,
                        @StringQueryParam('badfilter') badfilter: string,
                        @StringQueryParam('deliveryData.badfilter') deliveryDataBadfilter: string,
   ): Promise<PaginatedListResult<OrderBE>> {
-    return this.commandLBS.findWithPaginationResult(paginatedResourcesOptions, {
+    return this.orderLBS.findWithPaginationResult(paginatedResourcesOptions, {
         'customer.id': idClient,
         'reference': reference,
-        'state': commandState,
+        'state': orderState,
         'deliveryData.deliveryDate': {
           gte: deliveryDateGte,
           lte: beforeDateLivraison,
@@ -413,14 +415,21 @@ export class CommandEBS {
   @Get('/:id')
   @Resource(OrderBE)
   public async findById(@EntityOptionsQueryParam() queryableParam: EntityOptions, @PathParam('id') id: number): Promise<OrderBE> {
-    return this.commandLBS.findById(id, queryableParam)
+    return this.orderLBS.findById(id, queryableParam)
   }
 
   @Post('/')
   @Resource(OrderBE)
-  public async createCommande(@EntityOptionsQueryParam() queryableParam: EntityOptions, @BodyParam() newCommande: OrderBE): Promise<OrderBE> {
-    return this.commandLBS.createCommande(newCommande, queryableParam)
+  public async createOrder(@EntityOptionsQueryParam() queryableParam: EntityOptions, @BodyParam() newOrder: OrderBE): Promise<OrderBE> {
+    return this.orderLBS.createOrder(newOrder, queryableParam)
   }
+
+  @Put('/:id/orderLines')
+  @Resource(OrderBE)
+  public async updateOrderLines(@PathParam('id') id: number, @BodyParam(OrderLineBE) orderLines: OrderLineBE[]): Promise<OrderBE> {
+    return this.orderLBS.updateOrderLines(id, orderLines)
+  }
+
 }
 ```
 ### Providers
