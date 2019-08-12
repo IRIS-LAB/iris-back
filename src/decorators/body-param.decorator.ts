@@ -40,7 +40,7 @@ function filterObject(object: any, prototype?: any): any {
         if (relationMetadata && relationMetadata.relation) {
           let propertyPrototype
           if (!propertyPrototype && relationMetadata && relationMetadata.type && relationMetadata.type() && relationMetadata.type().prototype) {
-            propertyPrototype = relationMetadata.type().prototype
+            propertyPrototype = relationMetadata.type()
           }
           if (!propertyPrototype && prototype && prototype.constructor && prototype) {
             propertyPrototype = Reflect.getMetadata('design:type', prototype, propertyKey)

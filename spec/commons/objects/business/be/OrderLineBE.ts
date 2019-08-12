@@ -1,3 +1,5 @@
+import { BusinessValidator } from '@u-iris/iris-common'
+import { Joi } from 'tsdv-joi/core'
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { Relation } from '../../../../../src/decorators'
 import { RelationEntity } from '../../../../../src/enums'
@@ -11,9 +13,11 @@ export class OrderLineBE {
   public id?: number
 
   @Column({ name: 'QUANTITY', nullable: false })
+  @BusinessValidator(Joi.number())
   public quantity: number
 
   @Column({ name: 'AMOUNT', nullable: false, type: 'float' })
+  @BusinessValidator(Joi.number())
   public amount?: number
 
   @Relation(RelationEntity.ASSOCIATION)
@@ -29,4 +33,10 @@ export class OrderLineBE {
   })
   @JoinColumn({ name: 'ORDER_ID' })
   public order?: OrderBE
+
+  @ManyToOne(type => OrderBE, order => order.orderLinesEntities, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'ORDER_ENTITY_ID' })
+  public orderEntity?: OrderBE
 }

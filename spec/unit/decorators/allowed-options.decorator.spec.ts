@@ -12,7 +12,7 @@ import { CustomerXBE } from '../../commons/objects/business/xbe/CustomerXBE'
 describe('Decorator @Relation and @AllowedOptions', () => {
   it('should save relations with relation, allowedOption and type', () => {
     const ordersRelations: { [key: string]: RelationMetadata } = Reflect.getMetadata(constants.RELATION_METADATA, OrderBE)
-    expect(Object.keys(ordersRelations)).toHaveLength(4)
+    expect(Object.keys(ordersRelations)).toHaveLength(5)
 
     expect(ordersRelations.orderLines).toMatchObject({
       relation: RelationEntity.ASSOCIATION,
@@ -20,6 +20,12 @@ describe('Decorator @Relation and @AllowedOptions', () => {
     })
     expect(ordersRelations.orderLines.type).toBeDefined()
     expect(ordersRelations.orderLines.type()).toEqual(OrderLineBE)
+
+    expect(ordersRelations.orderLinesEntities).toMatchObject({
+      relation: RelationEntity.ENTITY
+    })
+    expect(ordersRelations.orderLinesEntities.type).toBeDefined()
+    expect(ordersRelations.orderLinesEntities.type()).toEqual(OrderLineBE)
 
     expect(ordersRelations['orderLines.product']).toEqual({
       allowedOption: true,

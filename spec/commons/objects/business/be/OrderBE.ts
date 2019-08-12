@@ -35,6 +35,13 @@ export class OrderBE {
   })
   public orderLines: OrderLineBE[]
 
+  @Relation(RelationEntity.ENTITY, () => OrderLineBE)
+  @OneToMany(type => OrderLineBE, orderLines => orderLines.orderEntity, {
+    eager: true,
+    cascade: true
+  })
+  public orderLinesEntities?: OrderLineBE[]
+
   @Relation(RelationEntity.ENTITY)
   @ManyToOne(type => AddressBE, {
     eager: true,

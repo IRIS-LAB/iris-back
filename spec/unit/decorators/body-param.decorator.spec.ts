@@ -36,6 +36,10 @@ class DefaultLBS {
     return list
   }
 
+  public async assertRelationEntity(order: OrderBE): Promise<OrderBE> {
+    return order
+  }
+
 }
 
 @Controller('/default')
@@ -63,6 +67,11 @@ class DefaultEBS {
   @Post('/assertReadOnly')
   public assertReadOnly(@BodyParam() object: TestReadonlyBE): Promise<TestReadonlyBE> {
     return this.defaultLBS.assertReadOnly(object)
+  }
+
+  @Post('/assertRelationEntity')
+  public assertRelationEntity(@BodyParam() order: OrderBE): Promise<OrderBE> {
+    return this.defaultLBS.assertRelationEntity(order)
   }
 }
 
@@ -192,6 +201,56 @@ describe('@BodyParam', () => {
             },
           ],
         )
+      })
+
+  })
+
+  it('should serialize ENTITY relation', () => {
+    jest.spyOn(defaultLBS, 'assertRelationEntity').mockImplementation(async (order: OrderBE) => {
+      expect(order).toBeDefined()
+      expect(order.id).not.toBeDefined()
+      expect(order.orderLinesEntities).toBeDefined()
+      expect(order.orderLinesEntities).toBeDefined()
+      for (const orderLine of order.orderLinesEntities!) {
+        expect(orderLine).toBeDefined()
+        expect(orderLine.id).toBeDefined()
+        expect(orderLine.quantity).toBeDefined()
+        expect(orderLine.product).toBeDefined()
+        expect(orderLine.product.id).toBeDefined()
+        expect(orderLine.product.label).not.toBeDefined()
+        expect(orderLine.product.amount).not.toBeDefined()
+      }
+      return order
+    })
+
+    return request(app.getHttpServer())
+      .post('/default/assertRelationEntity')
+      .send({
+        id: 45,
+        orderLinesEntities: [
+          {
+            id: 1,
+            quantity: 2,
+            product: {
+              id: 1,
+              label: 'product',
+              amount: 5,
+            }
+          },
+          {
+            id: 2,
+            quantity: 1,
+            product: {
+              id: 2,
+              label: 'product 1',
+              amount: 10,
+            }
+          },
+        ],
+      })
+      .expect(201)
+      .expect(response => {
+        expect(response.body).toBeDefined()
       })
 
   })
