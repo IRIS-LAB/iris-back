@@ -1,6 +1,6 @@
 import { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common'
 import { Observable } from 'rxjs'
-import { map } from 'rxjs/operators'
+import { map, tap } from 'rxjs/operators'
 import * as constants from '../../../constants'
 import { RelationEntity } from '../../../enums'
 import { RelationMetadata } from '../../../interfaces/relation-metadata.interface'
@@ -12,7 +12,7 @@ import { getErrorProvider } from '../iris.context'
  */
 export class RelationOptionsInterceptor<T> implements NestInterceptor<any, any> {
 
-  constructor(private readonly type: new(...args) => T) {
+  constructor(private readonly type?: new(...args) => T) {
   }
 
   public intercept(context: ExecutionContext, next: CallHandler<any>): Observable<any> | Promise<Observable<any>> {
@@ -22,12 +22,12 @@ export class RelationOptionsInterceptor<T> implements NestInterceptor<any, any> 
       // Check if option is valid
       for (const option of options) {
         // On vérifie que les options reçues sont autorisées sur le BE
-        const relations: { [key: string]: RelationMetadata } = Reflect.getMetadata(constants.RELATION_METADATA, this.type.prototype.constructor)
+        const relations: { [key: string]: RelationMetadata } = this.type ? Reflect.getMetadata(constants.RELATION_METADATA, this.type.prototype.constructor) : {}
         const relationMetadata = relations ? relations[option] : undefined
         if (!relationMetadata || !relationMetadata.allowedOption) {
           throw getErrorProvider().createBusinessException('options', 'option.not.allowed', {
             option,
-            type: this.type.prototype.constructor.name,
+            type: this.type ? this.type.prototype.constructor.name : 'unknown',
           })
         }
       }
@@ -37,12 +37,20 @@ export class RelationOptionsInterceptor<T> implements NestInterceptor<any, any> 
       .handle()
       .pipe(
         map(result =>
-          this.filterRelation(this.type.prototype, result, options),
+          this.filterRelation(this.type ? this.type.prototype : undefined, result, options),
+        ),
+      )
+      .pipe(
+        tap(result => {
+            if (!result && this.type === undefined) {
+              context.switchToHttp().getResponse().status(204)
+            }
+          },
         ),
       )
   }
 
-  protected filterRelation(type, object: any, options?: string[], path = ''): any {
+  protected filterRelation(type?, object?: any, options?: string[], path = ''): any {
 
     if (Array.isArray(object)) {
       return object.map(o => this.filterRelation(type, o, options, path))
