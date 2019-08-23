@@ -6,6 +6,15 @@ import { TypeUtils } from './type.utils'
 
 export class PaginationUtils {
 
+  public static PaginationHeaders = {
+    AcceptRanges: 'Accept-Ranges',
+    ContentRange: 'Content-Range',
+    PageElementCount: 'X-Page-Element-Count',
+    TotalElement: 'X-Total-Element',
+    TotalPage: 'X-Total-Page',
+    Link: 'Link',
+  }
+
   /**
    * Return options with page and size from request
    * @param req express request
@@ -37,7 +46,14 @@ export class PaginationUtils {
         this.getPaginationParams(req, nbMaxAllow, defaultSize),
       ),
     )
+    if (res.getHeader('Access-Control-Allow-Origin')) {
+      res.setHeader('Access-Control-Expose-Headers', PaginationUtils.getExposedHeaders())
+    }
     res.status(PaginationUtils.generateStatus(elementCount, lengthResponse))
+  }
+
+  public static getExposedHeaders(): string {
+    return Object.values(PaginationUtils.PaginationHeaders).join(',')
   }
 
   /**
@@ -92,12 +108,12 @@ export class PaginationUtils {
     cloneQueryParams.page = 0
     link += '<' + PaginationUtils.createUrl(hostname, cloneQueryParams) + '>; rel="first"'
     return {
-      'Accept-Range': resource + ' ' + nbMaxAllow,
-      'Content-Range': minIndex + '-' + maxIndex + '/' + elementCount,
-      'X-Page-Element-Count': lengthResponse,
-      'X-Total-Element': elementCount,
-      'X-Total-Page': totalPages,
-      link,
+      [PaginationUtils.PaginationHeaders.AcceptRanges]: resource + ' ' + nbMaxAllow,
+      [PaginationUtils.PaginationHeaders.ContentRange]: minIndex + '-' + maxIndex + '/' + elementCount,
+      [PaginationUtils.PaginationHeaders.PageElementCount]: lengthResponse,
+      [PaginationUtils.PaginationHeaders.TotalElement]: elementCount,
+      [PaginationUtils.PaginationHeaders.TotalPage]: totalPages,
+      [PaginationUtils.PaginationHeaders.Link]: link,
     }
   }
 

@@ -570,7 +570,7 @@ npm run test
 ## Changelog
 |Version|Comment|
 |---|---|
-|3.0.3|<ul><li>@Resource(undefined) will return status code 204 if no content is returned</li></ul>|
+|3.0.3|<ul><li>@Resource(undefined) will return status code 204 if no content is returned</li><li>fix: rename header Accept-Range => Accept-Ranges</li><li>set- response header Access-Control-Expose-Headers if Access-Control-Allow-Origin is present</li><li>improve unit tests</ul>|
 |3.0.2|<ul><li>fix serialization of relation ENTITY in @BodyParam</li></ul>|
 |3.0.1|<ul><li>add method remove to IrisDAO</li><li>implements @BodyParam() for type Array</li></ul>|
 |3.0.0|<ul><li>depends on @u-iris/iris-common@3.0.0</li></ul>|

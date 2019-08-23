@@ -87,7 +87,7 @@ describe('OrderEBS (e2e)', () => {
         .then(response => {
           expect(response.body).toHaveLength(1)
           expect(response.body).toContainObjectLike({ reference: 'CMD.2' })
-          expect(response.header['accept-range']).toEqual('orders 100')
+          expect(response.header['accept-ranges']).toEqual('orders 100')
           expect(response.header['content-range']).toEqual('0-0/1')
           expect(response.header['x-page-element-count']).toEqual('1')
           expect(response.header['x-total-element']).toEqual('1')
@@ -159,7 +159,7 @@ describe('OrderEBS (e2e)', () => {
         .then(response => {
           expect(response.body).toHaveLength(1)
           expect(response.body).toContainObjectLike({ reference: 'CMD.1' })
-          expect(response.header['accept-range']).toEqual('orders 100')
+          expect(response.header['accept-ranges']).toEqual('orders 100')
           expect(response.header['content-range']).toEqual('0-0/1')
           expect(response.header['x-page-element-count']).toEqual('1')
           expect(response.header['x-total-element']).toEqual('1')
