@@ -1,4 +1,5 @@
 import { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common'
+import * as nestjsConstants from '@nestjs/common/constants'
 import { Observable } from 'rxjs'
 import { map, tap } from 'rxjs/operators'
 import * as constants from '../../../constants'
@@ -42,7 +43,7 @@ export class RelationOptionsInterceptor<T> implements NestInterceptor<any, any> 
       )
       .pipe(
         tap(result => {
-            if (!result && this.type === undefined) {
+            if (!result && this.type === undefined && Reflect.getMetadata(nestjsConstants.HTTP_CODE_METADATA, context.getHandler()) === undefined) {
               context.switchToHttp().getResponse().status(204)
             }
           },

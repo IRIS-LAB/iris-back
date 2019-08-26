@@ -1,7 +1,7 @@
-import { Controller, Get, INestApplication } from '@nestjs/common'
+import { Controller, Get, HttpCode, HttpStatus, INestApplication, Post, Put } from '@nestjs/common'
 import '@u-iris/iris-common-test-utils'
 import request from 'supertest'
-import { NumberPathParam } from '../../../../../src/decorators'
+import { BodyParam, NumberPathParam } from '../../../../../src/decorators'
 import {
   ErrorProvider,
   IrisModule,
@@ -62,6 +62,26 @@ class DefaultEBS {
       throw this.errorProvider.createEntityNotFoundBusinessException('orders', id)
     }
     return order
+  }
+
+  @Post('/')
+  @Resource(OrderBE)
+  public async save(@BodyParam() order: OrderBE): Promise<OrderBE> {
+    return order
+  }
+
+  @Post('/status')
+  @Resource(OrderBE)
+  @HttpCode(HttpStatus.RESET_CONTENT)
+  public async saveWithStatus(@BodyParam() order: OrderBE): Promise<OrderBE> {
+    return order
+  }
+
+  @Put('/statusEmpty')
+  @Resource()
+  @HttpCode(HttpStatus.RESET_CONTENT)
+  public async saveEmptyWithStatus(@BodyParam() order: OrderBE): Promise<void> {
+    return undefined
   }
 
   @Get('/')
@@ -217,5 +237,22 @@ describe('RelationOptionsInterceptor', () => {
           }],
         )
       })
+  })
+
+  it('should return default http code', () => {
+    return request(app.getHttpServer())
+      .post('/orders')
+      .expect(201)
+  })
+
+  it('should return specific http code for post', () => {
+    return request(app.getHttpServer())
+      .post('/orders/status')
+      .expect(HttpStatus.RESET_CONTENT)
+  })
+  it('should return specific http code for empty response', () => {
+    return request(app.getHttpServer())
+      .put('/orders/statusEmpty')
+      .expect(HttpStatus.RESET_CONTENT)
   })
 })
