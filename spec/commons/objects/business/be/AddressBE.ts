@@ -1,6 +1,6 @@
-import { BusinessValidator } from '@u-iris/iris-common'
 import { Joi } from 'tsdv-joi/core'
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
+import { BusinessValidator } from '../../../../../src/decorators'
 import { OrderBE } from './OrderBE'
 
 @Entity(`ADDRESS`)

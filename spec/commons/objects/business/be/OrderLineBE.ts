@@ -1,7 +1,6 @@
-import { BusinessValidator } from '@u-iris/iris-common'
 import { Joi } from 'tsdv-joi/core'
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
-import { Relation } from '../../../../../src/decorators'
+import { BusinessValidator, Relation } from '../../../../../src/decorators'
 import { RelationEntity } from '../../../../../src/enums'
 import { OrderBE } from './OrderBE'
 import { ProductBE } from './ProductBE'

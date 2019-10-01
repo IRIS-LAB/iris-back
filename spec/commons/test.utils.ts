@@ -2,7 +2,7 @@ import { INestApplication } from '@nestjs/common'
 import { ModuleMetadata } from '@nestjs/common/interfaces'
 import { APP_INTERCEPTOR } from '@nestjs/core'
 import { Test, TestingModule } from '@nestjs/testing'
-import { ErrorDO } from '@u-iris/iris-common'
+import { ErrorDO, IrisException } from '@u-iris/iris-common'
 import '@u-iris/iris-common-test-utils'
 import * as request from 'superagent'
 import { ExceptionFilter } from '../../src/filters'
@@ -21,6 +21,31 @@ interface ErrorInResponse {
 }
 
 export class TestUtils {
+
+  public static expectExceptionToContain(exception: IrisException, ...errors: Array<{ field?: string, code?: string, label?: string, limit?: number, value?: any, path?: Array<string | number> }>) {
+    expect(exception).toBeDefined()
+    expect(exception.errors).toBeDefined()
+    if (errors) {
+      for (const e of errors) {
+        expect(exception.errors).toContainObjectLike(e)
+      }
+    }
+  }
+
+
+  public static expectThrowIrisExceptionLike<T extends IrisException>(fct: (...args: any[]) => any, exceptionType: new(...args: any[]) => T, ...errors: Array<{ field?: string, code?: string, label?: string, limit?: number, value?: any, path?: Array<string | number> }>) {
+    let exception
+    try {
+      fct()
+    } catch (e) {
+      exception = e
+    }
+
+    expect(exception).toBeDefined()
+    expect(exception).toBeInstanceOf(exceptionType)
+    TestUtils.expectExceptionToContain(exception, ...errors)
+  }
+
 
   public static expectErreurReturned(response: request.Response, ...erreurs: ErrorInResponse[]) {
     expect(response.body).toBeDefined()

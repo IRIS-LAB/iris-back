@@ -1,7 +1,6 @@
-import { BusinessValidator } from '@u-iris/iris-common'
 import { Joi } from 'tsdv-joi/core'
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
-import { AllowedOptions, Relation } from '../../../../../src/decorators'
+import { AllowedOptions, BusinessValidator, Relation } from '../../../../../src/decorators'
 import { RelationEntity } from '../../../../../src/enums'
 import { DeliveryDataBEP } from '../bep/DeliveryDataBEP'
 import { CustomerXBE } from '../xbe/CustomerXBE'

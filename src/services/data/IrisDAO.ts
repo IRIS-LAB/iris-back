@@ -170,7 +170,6 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
       }
       for (const sortable of query.sort) {
         // TODO : à partir de la version 0.3.0 de typeorm on pourra utiliser la fonction setValueAsNestedField
-        // this.setValueAsDatabasenameField(options.order, sortable.field, sortable.direction === 'asc' ? 'ASC' : 'DESC')
         this.setValueAsNestedField(options.order, sortable.field, sortable.direction === 'asc' ? 'ASC' : 'DESC')
       }
     }
