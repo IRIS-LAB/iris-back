@@ -1,6 +1,6 @@
 {
   "name": "@u-iris/iris-back",
-  "version": "3.1.1",
+  "version": "3.1.2-0",
   "description": "Powerful set of Typescript backend tools based on popular frameworks like NestJS, TypeORM, Joi and more...",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
