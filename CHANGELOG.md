@@ -1,6 +1,9 @@
 # CHANGELOG
 
-## 3.0.3+
+## 3.1.1
+* declare rxjs as peer-dependency
+ 
+## 3.1.0
 * update dependency @u-iris/iris-common to 3.1.0
 * update dependency typeorm to 0.2.19
 * send http status 204 only if no @HttpCode is present
