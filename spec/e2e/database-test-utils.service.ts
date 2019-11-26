@@ -44,6 +44,15 @@ export class DatabaseTestUtils {
   }
 
   /**
+   * Open the database connections
+   */
+  public async openDbConnection() {
+    if (!this.connection.isConnected) {
+      await this.connection.connect()
+    }
+  }
+
+  /**
    * Returns the entites of the database
    */
   public getEntities() {

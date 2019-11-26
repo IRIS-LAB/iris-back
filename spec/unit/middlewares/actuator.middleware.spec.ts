@@ -13,8 +13,13 @@ describe('Middleware actuator', () => {
     app = express()
     app.use('/actuator', middlewares(createLogger({ level: 'debug', transports: [new transports.Console()] })).actuator)
   })
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
 
   it('should return health UP', () => {
+    // jest.doMock('typeorm', ({ 'getConnectionManager': () => ({ connections: [] }) }))
+
     return request(app)
       .get('/actuator/health')
       .expect(200)
