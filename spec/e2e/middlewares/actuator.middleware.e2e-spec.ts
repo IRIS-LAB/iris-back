@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import request from 'supertest'
 import { getConnection } from 'typeorm'
 import { middlewares } from '../../../src/middlewares'
-import { getLogger, IrisModule, LoggingInterceptor, TraceContextInterceptor } from '../../../src/modules/iris-module'
+import { IrisModule, LoggingInterceptor, TraceContextInterceptor } from '../../../src/modules/iris-module'
 import { AddressBE } from '../../commons/objects/business/be/AddressBE'
 import { OrderBE } from '../../commons/objects/business/be/OrderBE'
 import { OrderLineBE } from '../../commons/objects/business/be/OrderLineBE'
@@ -91,12 +91,11 @@ describe('Actuator (e2e)', () => {
     })
     class AppModuleConnections implements NestModule {
       public configure(consumer: MiddlewareConsumer): MiddlewareConsumer | void {
-        const middlewaresWithLogger = middlewares(getLogger())
-        consumer.apply(middlewaresWithLogger.parseJSON).forRoutes('/')
-        consumer.apply(middlewaresWithLogger.enableCors).forRoutes('/')
-        consumer.apply(middlewaresWithLogger.enableCompression).forRoutes('/')
-        consumer.apply(middlewaresWithLogger.enableSecurity).forRoutes('/')
-        consumer.apply(middlewaresWithLogger.actuator).forRoutes('/actuator')
+        consumer.apply(middlewares.parseJSON()).forRoutes('/')
+        consumer.apply(middlewares.enableCors()).forRoutes('/')
+        consumer.apply(middlewares.enableCompression()).forRoutes('/')
+        consumer.apply(middlewares.enableSecurity()).forRoutes('/')
+        consumer.apply(middlewares.actuator()).forRoutes('/actuator')
         return consumer
       }
     }

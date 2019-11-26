@@ -2,7 +2,7 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
 import { APP_INTERCEPTOR } from '@nestjs/core'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { middlewares } from '../../../src/middlewares'
-import { getLogger, IrisModule, LoggingInterceptor, TraceContextInterceptor } from '../../../src/modules/iris-module'
+import { IrisModule, LoggingInterceptor, TraceContextInterceptor } from '../../../src/modules/iris-module'
 import { AddressBE } from '../../commons/objects/business/be/AddressBE'
 import { OrderBE } from '../../commons/objects/business/be/OrderBE'
 import { OrderLineBE } from '../../commons/objects/business/be/OrderLineBE'
@@ -33,12 +33,11 @@ import { testappIrisModuleOptions } from './testapp.module.options'
 })
 export class AppModule implements NestModule {
   public configure(consumer: MiddlewareConsumer): MiddlewareConsumer | void {
-    const middlewaresWithLogger = middlewares(getLogger())
-    consumer.apply(middlewaresWithLogger.parseJSON).forRoutes('/')
-    consumer.apply(middlewaresWithLogger.enableCors).forRoutes('/')
-    consumer.apply(middlewaresWithLogger.enableCompression).forRoutes('/')
-    consumer.apply(middlewaresWithLogger.enableSecurity).forRoutes('/')
-    consumer.apply(middlewaresWithLogger.actuator).forRoutes('/actuator')
+    consumer.apply(middlewares.parseJSON()).forRoutes('/')
+    consumer.apply(middlewares.enableCors()).forRoutes('/')
+    consumer.apply(middlewares.enableCompression()).forRoutes('/')
+    consumer.apply(middlewares.enableSecurity()).forRoutes('/')
+    consumer.apply(middlewares.actuator()).forRoutes('/actuator')
     return consumer
   }
 }

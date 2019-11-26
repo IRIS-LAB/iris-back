@@ -1,6 +1,5 @@
 import express from 'express'
 import request from 'supertest'
-import { createLogger, transports } from 'winston'
 import { middlewares } from '../../../src'
 import * as mock from './json-parser.middleware.mock'
 
@@ -12,7 +11,7 @@ describe('Middleware JSON Parser', () => {
 
   it('should find object in body request', () => {
     const app = express()
-    app.use(middlewares(createLogger({ level: 'debug', transports: [new transports.Console()] })).parseJSON)
+    app.use(middlewares.parseJSON())
     app.post('/', (req: express.Request, res: express.Response) => {
       mock.expectAllIsFine(req.body)
       res.send({})

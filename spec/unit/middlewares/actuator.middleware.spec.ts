@@ -1,7 +1,7 @@
 import express from 'express'
 import request from 'supertest'
 import { createLogger, transports } from 'winston'
-import { middlewares } from '../../../src'
+import { middlewares } from '../../../src/middlewares'
 
 // tslint:disable-next-line:no-var-requires
 const pkg = require('../../../package.json')
@@ -11,7 +11,7 @@ describe('Middleware actuator', () => {
 
   beforeEach(() => {
     app = express()
-    app.use('/actuator', middlewares(createLogger({ level: 'debug', transports: [new transports.Console()] })).actuator)
+    app.use('/actuator', middlewares.actuator(createLogger({ level: 'debug', transports: [new transports.Console()] })))
   })
   afterEach(() => {
     jest.clearAllMocks()
