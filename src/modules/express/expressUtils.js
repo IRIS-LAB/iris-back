@@ -56,7 +56,7 @@ export const expressUtils = logger => ({
         status = 500
         break
       case SecurityException:
-        status = result.erreurs[0].codeErreur.startsWith('security.authentification') ? 401 : 403
+        status = result.erreurs[0].codeErreur.startsWith('security.authentication') ? 401 : 403
         logger.log('SECURITY', JSON.stringify(result))
         break
       default:
