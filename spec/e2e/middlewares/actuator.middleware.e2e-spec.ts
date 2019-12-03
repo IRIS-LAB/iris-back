@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import request from 'supertest'
 import { getConnection } from 'typeorm'
 import { middlewares } from '../../../src/middlewares'
-import { IrisModule, LoggingInterceptor, TraceContextInterceptor } from '../../../src/modules/iris-module'
+import { IrisModule, LoggingInterceptor, RequestContextInterceptor } from '../../../src/modules/iris-module'
 import { AddressBE } from '../../commons/objects/business/be/AddressBE'
 import { OrderBE } from '../../commons/objects/business/be/OrderBE'
 import { OrderLineBE } from '../../commons/objects/business/be/OrderLineBE'
@@ -82,7 +82,7 @@ describe('Actuator (e2e)', () => {
       providers: [OrderLBS, OrderDAO, AmountCalculator,
         {
           provide: APP_INTERCEPTOR,
-          useClass: TraceContextInterceptor,
+          useClass: RequestContextInterceptor,
         },
         {
           provide: APP_INTERCEPTOR,

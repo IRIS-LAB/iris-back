@@ -1,6 +1,6 @@
 import { DynamicModule, Module } from '@nestjs/common'
 import { irisModuleOptions, IrisModuleOptions, setIrisModuleOptions } from './config-holder'
-import { LoggingInterceptor, TraceContextInterceptor } from './interceptors'
+import { LoggingInterceptor, RequestContextInterceptor } from './interceptors'
 import { BusinessValidatorProvider, ClsProvider, ErrorProvider, LoggerProvider, MessageProvider } from './providers'
 
 @Module({
@@ -10,7 +10,7 @@ import { BusinessValidatorProvider, ClsProvider, ErrorProvider, LoggerProvider, 
     ErrorProvider,
     LoggerProvider,
     ClsProvider,
-    TraceContextInterceptor,
+    RequestContextInterceptor,
     LoggingInterceptor
   ],
   exports: [
@@ -18,7 +18,7 @@ import { BusinessValidatorProvider, ClsProvider, ErrorProvider, LoggerProvider, 
     ErrorProvider,
     LoggerProvider,
     ClsProvider,
-    TraceContextInterceptor,
+    RequestContextInterceptor,
     LoggingInterceptor
   ]
 })
@@ -32,7 +32,7 @@ export class IrisModule {
         ErrorProvider,
         LoggerProvider,
         ClsProvider,
-        TraceContextInterceptor,
+        RequestContextInterceptor,
         LoggingInterceptor,
         BusinessValidatorProvider
       ],
@@ -41,7 +41,7 @@ export class IrisModule {
         ErrorProvider,
         LoggerProvider,
         ClsProvider,
-        TraceContextInterceptor,
+        RequestContextInterceptor,
         LoggingInterceptor,
         BusinessValidatorProvider
       ]
