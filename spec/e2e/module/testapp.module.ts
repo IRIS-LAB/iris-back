@@ -2,7 +2,7 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
 import { APP_INTERCEPTOR } from '@nestjs/core'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { middlewares } from '../../../src/middlewares'
-import { IrisModule, LoggingInterceptor, TraceContextInterceptor } from '../../../src/modules/iris-module'
+import { IrisModule, LoggingInterceptor, RequestContextInterceptor } from '../../../src/modules/iris-module'
 import { AddressBE } from '../../commons/objects/business/be/AddressBE'
 import { OrderBE } from '../../commons/objects/business/be/OrderBE'
 import { OrderLineBE } from '../../commons/objects/business/be/OrderLineBE'
@@ -24,7 +24,7 @@ import { testappIrisModuleOptions } from './testapp.module.options'
   providers: [OrderLBS, OrderDAO, AmountCalculator,
     {
       provide: APP_INTERCEPTOR,
-      useClass: TraceContextInterceptor,
+      useClass: RequestContextInterceptor,
     },
     {
       provide: APP_INTERCEPTOR,

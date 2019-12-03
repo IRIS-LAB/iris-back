@@ -10,6 +10,7 @@ export class ClsProvider implements cls.Namespace {
 
   private static TRACE_ID = 'trace-id'
   private static SPAN_ID = 'span-id'
+  private static AUTHORIZATION_TOKEN = 'authorization-token'
 
   private cls: cls.Namespace
 
@@ -42,6 +43,14 @@ export class ClsProvider implements cls.Namespace {
 
   public setSpanId(spanId: string) {
     return this.set(ClsProvider.SPAN_ID, spanId)
+  }
+
+   public getAuthorizationToken() {
+    return this.get(ClsProvider.AUTHORIZATION_TOKEN)
+  }
+
+  public setAuthorizationToken(token: string) {
+    return this.set(ClsProvider.AUTHORIZATION_TOKEN, token)
   }
 
   public run(cb: (...args: any[]) => void) {

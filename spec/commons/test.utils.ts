@@ -7,7 +7,7 @@ import '@u-iris/iris-common-test-utils'
 import * as request from 'superagent'
 import { ExceptionFilter } from '../../src/filters'
 import { cleanApplicationContext, setApplicationContext } from '../../src/modules/iris-module'
-import { LoggingInterceptor, TraceContextInterceptor } from '../../src/modules/iris-module/interceptors'
+import { LoggingInterceptor, RequestContextInterceptor } from '../../src/modules/iris-module/interceptors'
 // tslint:disable-next-line:no-var-requires
 // require('@u-iris/iris-common-test-utils')
 
@@ -63,7 +63,7 @@ export class TestUtils {
     }
     metadata.providers.unshift({
       provide: APP_INTERCEPTOR,
-      useClass: TraceContextInterceptor,
+      useClass: RequestContextInterceptor,
     }, {
       provide: APP_INTERCEPTOR,
       useClass: LoggingInterceptor,
