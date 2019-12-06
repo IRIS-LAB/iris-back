@@ -3,6 +3,7 @@ import cls from 'cls-hooked'
 import { EventEmitter } from 'events'
 import uuid from 'uuid'
 import { irisModuleOptions } from '../config-holder'
+import { AuthenticatedUser } from '../interfaces/authenticated-user.interface'
 
 @Injectable()
 export class ClsProvider implements cls.Namespace {
@@ -11,6 +12,7 @@ export class ClsProvider implements cls.Namespace {
   private static TRACE_ID = 'trace-id'
   private static SPAN_ID = 'span-id'
   private static AUTHORIZATION_TOKEN = 'authorization-token'
+  private static AUTHENTICATED_USER = 'authenticated-user'
 
   private cls: cls.Namespace
 
@@ -45,12 +47,20 @@ export class ClsProvider implements cls.Namespace {
     return this.set(ClsProvider.SPAN_ID, spanId)
   }
 
-   public getAuthorizationToken() {
+  public getAuthorizationToken() {
     return this.get(ClsProvider.AUTHORIZATION_TOKEN)
   }
 
   public setAuthorizationToken(token: string) {
     return this.set(ClsProvider.AUTHORIZATION_TOKEN, token)
+  }
+
+  public getAuthenticatedUser() {
+    return this.get(ClsProvider.AUTHENTICATED_USER)
+  }
+
+  public setAuthenticatedUser(user?: AuthenticatedUser) {
+    return this.set(ClsProvider.AUTHENTICATED_USER, user)
   }
 
   public run(cb: (...args: any[]) => void) {

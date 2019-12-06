@@ -13,7 +13,10 @@
     "lint": "tslint -c tslint.json -p tsconfig.json",
     "test": "jest --collect-coverage",
     "test:unit": "jest spec/unit --collect-coverage",
-    "test:e2e": "jest spec/e2e --collect-coverage"
+    "test:e2e": "jest spec/e2e --collect-coverage",
+    "docker:test": "docker-compose -f docker-compose.test.yml -p iris-back-node-test",
+    "docker:test:up": "npm run docker:test -- up",
+    "docker:test:down": "npm run docker:test -- down"
   },
   "repository": {
     "type": "git",
