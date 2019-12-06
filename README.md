@@ -302,6 +302,71 @@ export class OrderLBS {
 }
 
 ```
+
+If a business validation constraint is not verified, _businessValidatorProvider.validate(object)_ will throws a BusinessEntityException with errors containing :
+* field : the field in error
+* code: the code of the error (provided by Joi)
+* label : the label of the error (provided by joi by default)
+
+You can override the label in your messages.properties (that you have to set in the IrisModule.forRoot() parameter) by following this rules (sorted by priority):
+
+```properties
+error.<object_type_in_lower>.<field_name>.<joi_error_code>.label=<your message>
+error.<object_type_in_lower>.<field_name>.<joi_error_code>=<your message>
+error.<field_name>.<joi_error_code>.label=<your message>
+error.<field_name>.<joi_error_code>=<your message>
+error.<joi_error_code>.label=<your message>
+error.<joi_error_code>=<your message>
+```
+
+Some variables will be injected to your message :
+* $field : field name in error
+* $value : value in error
+* $parentType : object type in lower
+* $limit : value of limit for some constraints (greater, lesser, maxLength, etc.)
+For example :
+```typescript
+
+# dto.ts
+class DTO {
+  class DTO {
+  
+    @BusinessValidator(Joi.number().greater(0))
+    public count: number
+  
+    @BusinessValidator(Joi.string().required())
+    public name: string
+  
+  }
+}
+
+# messages.properties
+error.dto.count.number.greater=DTO must have count greater that $limit
+error.any.required=Field $field is required
+
+# main.ts
+const object = new DTO()
+object.count = -1
+businessValidatorProvider.validate(object) 
+
+/* will throw exception with errors
+[
+  {
+    field: 'count',
+    limit: 0,
+    value: -1,
+    label: 'DTO must have count greater that 0',
+  },
+  {
+    field: 'name',
+    label: 'Field name is required',
+  }
+]
+*/
+```
+
+
+
 ### Exposition Business Service (Controller)
 
 Exposition Business Service is used as NestJS Controller. It provides some features :

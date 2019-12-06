@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 3.1.2-SNAPSHOT
+* improve business validator provider by getting error message from message sources of IrisModule
+* rework middlewares
+* support cors configuration
+* actuator health checker now checks typeorm connections
+
 ## 3.1.1
 * declare rxjs as peer-dependency
  
