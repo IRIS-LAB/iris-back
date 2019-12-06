@@ -35,11 +35,13 @@ class OrderEBS {
   @Put('/:id/nocontent')
   @Resource()
   public async updateWithoutContent(@PathParam('id') id: number): Promise<void> {
+    return
   }
 
   @Delete('/:id')
   @Resource()
   public async delete(@PathParam('id') id: number): Promise<void> {
+    return
   }
 }
 
