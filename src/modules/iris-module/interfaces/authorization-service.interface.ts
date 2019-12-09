@@ -1,5 +1,10 @@
 import { Request } from 'express'
 
 export interface AuthorizationService {
-  validateAuthorization(request: Request, ...functions: string[]): Promise<boolean>;
+  /**
+   * Validates that the authenticated user has access to one of the roles.
+   * @param request - the request
+   * @param roles - the roles
+   */
+  validateAuthorization(request: Request, ...roles: string[]): Promise<boolean>;
 }
