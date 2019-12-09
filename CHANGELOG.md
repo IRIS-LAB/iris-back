@@ -6,6 +6,16 @@
 * support cors configuration
 * actuator health checker now checks typeorm connections
 
+## 3.1.2-SNAPSHOT
+* implements security services
+* rework request context and logger
+    * deprecates RequestContextInterceptor
+    * deprecates LoggingInterceptor
+    * add middlewares to create request context and request logging
+
+## 3.1.1
+* declare rxjs as peer-dependency
+
 ## 3.1.1
 * declare rxjs as peer-dependency
  

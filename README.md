@@ -50,7 +50,7 @@ Before starting to use iris-back, you should read the official documentation of 
 ### Application bootstrap
 To use iris-back in your NestJS application you should :
 * Import IrisModule into your main module by calling `IrisModule.forRoot()`
-* Define `TraceContextInterceptor` as the first interceptor in your main module and provided as APP_INTERCEPTOR (very important)
+* @deprecated ~~Define `TraceContextInterceptor` as the first interceptor in your main module and provided as APP_INTERCEPTOR (very important)~~
 * Define `ExceptionFilter` as a global filter
 * Call `setApplicationContext()`
 
@@ -73,15 +73,7 @@ import { IrisModule, LoggingInterceptor, TraceContextInterceptor, ExceptionFilte
          messagesSources: '/path/to/i18n.properties'
        })
   ],
-  providers: [
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: TraceContextInterceptor
-    },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: LoggingInterceptor
-    }]
+  providers: []
 })
 class AppModule implements NestModule {
   public configure(consumer: MiddlewareConsumer): MiddlewareConsumer | void {
@@ -587,6 +579,48 @@ class MyService {
     this.errorProvider.createEntityNotFoundBusinessException('field', idNotFound) // create entity not found exception
     
   } 
+}
+```
+
+### Security
+You can enable security by implementing AuthenticationService and/or AuthorizationService.
+
+The AuthenticationService is used to retrieve a user from a request.
+
+```typescript
+class MyAuthenticationProvider implements AuthenticationService {
+  public async getAuthenticatedUser(request: Request): Promise<AuthenticatedUser | undefined> {
+    return request.headers.authorization ? myService.getUser(request.headers.authorization) : undefined
+  }
+}
+```
+
+The AuthorizationService is used to valide user authorization from a request.
+
+```typescript
+class MyAuthorizationProvider implements AuthorizationService {
+  public async validateAuthorization(request: Request, ...roles: string[]): Promise<boolean> {
+    return request.user && request.user.roles.some(r => roles.indexOf(r) > -1)
+  }
+}
+```
+
+Once your have create your own implementation, you need to define your beans into the iris module options.
+
+```typescript
+@Module({
+  imports: [
+    IrisModule.forRoot({
+         authenticationProvider: MyAuthenticationProvider,
+         authorizationProvider: MyAuthorizationProvider
+       })
+  ],
+  providers: []
+})
+class AppModule implements NestModule {
+  public configure(consumer: MiddlewareConsumer): MiddlewareConsumer | void {
+    return undefined
+  }
 }
 ```
 
