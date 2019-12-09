@@ -2,7 +2,8 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
 import { APP_INTERCEPTOR } from '@nestjs/core'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { middlewares } from '../../../src/middlewares'
-import { IrisModule, LoggingInterceptor, RequestContextInterceptor } from '../../../src/modules/iris-module'
+import { IrisModule, LoggingInterceptor } from '../../../src/modules/iris-module'
+import { RequestContextMiddleware } from '../../../src/modules/iris-module/middlewares/request-context.middleware'
 import { AddressBE } from '../../commons/objects/business/be/AddressBE'
 import { OrderBE } from '../../commons/objects/business/be/OrderBE'
 import { OrderLineBE } from '../../commons/objects/business/be/OrderLineBE'
@@ -24,15 +25,12 @@ import { testappIrisModuleOptions } from './testapp.module.options'
   providers: [OrderLBS, OrderDAO, AmountCalculator,
     {
       provide: APP_INTERCEPTOR,
-      useClass: RequestContextInterceptor,
-    },
-    {
-      provide: APP_INTERCEPTOR,
       useClass: LoggingInterceptor,
     }],
 })
 export class AppModule implements NestModule {
   public configure(consumer: MiddlewareConsumer): MiddlewareConsumer | void {
+    consumer.apply(RequestContextMiddleware).forRoutes('/')
     consumer.apply(middlewares.parseJSON()).forRoutes('/')
     consumer.apply(middlewares.enableCors()).forRoutes('/')
     consumer.apply(middlewares.enableCompression()).forRoutes('/')
