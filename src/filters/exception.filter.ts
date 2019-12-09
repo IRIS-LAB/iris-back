@@ -7,7 +7,7 @@ import {
   TechnicalException,
 } from '@u-iris/iris-common'
 import express from 'express'
-import { ClsProvider, getApplicationContext, getLogger, LoggingInterceptor } from '../modules/iris-module'
+import { ClsProvider, getApplicationContext, getLogger } from '../modules/iris-module'
 
 @Catch()
 export class ExceptionFilter implements NestExceptionFilter {
@@ -57,7 +57,7 @@ export class ExceptionFilter implements NestExceptionFilter {
     }
 
     res.status(status).send(result)
-    LoggingInterceptor.logResponse(res)
+    // LoggingInterceptor.logResponse(res)
   }
 
   public catch(exception: unknown, host: ArgumentsHost): any {
@@ -72,7 +72,7 @@ export class ExceptionFilter implements NestExceptionFilter {
     } else {
       clsProvider.run(() => {
         // if cls-hooked context is not active, logging interceptor must be called here
-        LoggingInterceptor.logRequest(request)
+        // LoggingInterceptor.logRequest(request)
         ExceptionFilter.handleError(exception, request, response, next)
       })
     }

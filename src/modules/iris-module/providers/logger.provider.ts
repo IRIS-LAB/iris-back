@@ -21,6 +21,10 @@ export class LoggerProvider {
     this.buildLogFormatter()
   }
 
+  public get logger() {
+    return this.winstonLogger
+  }
+
   public debug(message: string) {
     this.logger.debug(message)
   }
@@ -41,16 +45,12 @@ export class LoggerProvider {
     this.clsManager.setTraceId(traceId)
   }
 
-  public getTraceId() {
-    return this.clsManager.getTraceId() || this.clsManager.setTraceId(this.generateRandomId())
+  public async getTraceId(): Promise<string> {
+    return await this.clsManager.getTraceId() || this.clsManager.setTraceId(this.generateRandomId())
   }
 
-  public get logger() {
-    return this.winstonLogger
-  }
-
-  private getSpanId() {
-    return this.clsManager.getSpanId() || this.clsManager.setSpanId(this.generateRandomId())
+  private async getSpanId(): Promise<string> {
+    return await this.clsManager.getSpanId() || this.clsManager.setSpanId(this.generateRandomId())
   }
 
   private buildLogFormatter() {
@@ -84,8 +84,8 @@ export class LoggerProvider {
       console: {
         level: this.options.level,
         handleExceptions: true,
-        humanReadableUnhandledException: true
-      }
+        humanReadableUnhandledException: true,
+      },
     }
 
     // disable console if mode = production
@@ -104,7 +104,7 @@ export class LoggerProvider {
       level: this.options.level,
       format: this.getLogFormatter(),
       transports: loggerTransports,
-      exitOnError: false // do not exit on handled exceptions
+      exitOnError: false, // do not exit on handled exceptions
     })
   }
 
