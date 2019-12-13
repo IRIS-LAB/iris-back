@@ -86,10 +86,12 @@
     "winston": "^3.2.1"
   },
   "peerDependencies": {
+    "@godaddy/terminus": ">=4.3.1",
     "@types/joi": "=10.4.2",
     "@nestjs/common": ">=6.10.2",
     "@nestjs/core": ">=6.10.2",
     "@nestjs/platform-express": ">=6.10.2",
+    "@nestjs/terminus": ">=6.5.3",
     "@nestjs/typeorm": ">=6.2.0",
     "@u-iris/iris-common": ">=3.1.0",
     "reflect-metadata": ">=0.1.13",
