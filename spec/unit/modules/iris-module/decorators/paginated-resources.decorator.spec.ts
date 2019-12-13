@@ -53,7 +53,7 @@ describe('@PaginatedResources', () => {
     beforeAll(async () => {
       const bootstraped = await TestUtils.bootstrapNestJS({
         imports: [
-          IrisModule.forRoot(irisModuleOptionsForTests),
+          IrisModule.forRoot({ ...irisModuleOptionsForTests, enableCors: false }),
         ],
         controllers: [
           OrderEBS,

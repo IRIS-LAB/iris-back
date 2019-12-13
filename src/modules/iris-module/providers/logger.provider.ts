@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 import { ErrorDO, TechnicalException } from '@u-iris/iris-common'
 import moment from 'moment-timezone'
 import uuid from 'uuid'
 import winston, { createLogger, format, transports } from 'winston'
-import { ExtendedLoggerOptions, irisModuleOptions } from '../config-holder'
+import { IRIS_CONFIG_OPTIONS } from '../../../constants'
+import { ExtendedLoggerOptions, IrisConfigOptions } from '../../config-module/config-holder'
 import { ClsProvider } from './cls.provider'
 import { ErrorProvider } from './error.provider'
 
@@ -12,11 +13,11 @@ export class LoggerProvider {
   protected winstonLogger: winston.Logger
   private options: ExtendedLoggerOptions
 
-  constructor(private readonly errorFactory: ErrorProvider, private readonly clsManager: ClsProvider) {
-    if (!irisModuleOptions || !irisModuleOptions.logger) {
+  constructor(@Inject(IRIS_CONFIG_OPTIONS) private irisConfigOptions: IrisConfigOptions, private readonly errorFactory: ErrorProvider, private readonly clsManager: ClsProvider) {
+    if (!this.irisConfigOptions || !this.irisConfigOptions.logger) {
       throw this.errorFactory.createTechnicalException('logger', 'configuration.required', new Error())
     }
-    this.options = irisModuleOptions.logger
+    this.options = this.irisConfigOptions.logger
     this.winstonLogger = this.createLogger()
     this.buildLogFormatter()
   }
@@ -45,12 +46,12 @@ export class LoggerProvider {
     this.clsManager.setTraceId(traceId)
   }
 
-  public async getTraceId(): Promise<string> {
-    return await this.clsManager.getTraceId() || this.clsManager.setTraceId(this.generateRandomId())
+  public getTraceId(): string {
+    return this.clsManager.getTraceId() || this.clsManager.setTraceId(this.generateRandomId())
   }
 
-  private async getSpanId(): Promise<string> {
-    return await this.clsManager.getSpanId() || this.clsManager.setSpanId(this.generateRandomId())
+  private getSpanId(): string {
+    return this.clsManager.getSpanId() || this.clsManager.setSpanId(this.generateRandomId())
   }
 
   private buildLogFormatter() {

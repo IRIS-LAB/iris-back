@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 import cls from 'cls-hooked'
 import { EventEmitter } from 'events'
 import uuid from 'uuid'
-import { irisModuleOptions } from '../config-holder'
-import { AuthenticatedUser } from '../interfaces/authenticated-user.interface'
+import { IRIS_CONFIG_OPTIONS } from '../../../constants'
+import { IrisConfigOptions } from '../../config-module/config-holder'
+import { AuthenticatedUser } from '../interfaces'
 
 @Injectable()
 export class ClsProvider implements cls.Namespace {
@@ -18,9 +19,13 @@ export class ClsProvider implements cls.Namespace {
 
   private readonly namespace?: string
 
-  constructor() {
-    this.namespace = irisModuleOptions && irisModuleOptions.logger && irisModuleOptions.logger.appName ? irisModuleOptions.logger.appName : `namespace${uuid.v4()}`
+  constructor(@Inject(IRIS_CONFIG_OPTIONS) private irisConfigOptions: IrisConfigOptions) {
+    this.namespace = this.irisConfigOptions && this.irisConfigOptions.logger && this.irisConfigOptions.logger.appName ? this.irisConfigOptions.logger.appName : `namespace${uuid.v4()}`
     this.cls = cls.createNamespace(this.namespace)
+  }
+
+  get active() {
+    return this.cls.active
   }
 
   public get(key: string) {
@@ -94,9 +99,5 @@ export class ClsProvider implements cls.Namespace {
 
   public exit(context: any): void {
     return this.cls.exit(context)
-  }
-
-  get active() {
-    return this.cls.active
   }
 }

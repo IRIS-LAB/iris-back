@@ -2,6 +2,8 @@ import cors, { CorsOptions } from 'cors'
 
 /**
  * Enable cors with cors plugin
+ *
+ * @deprecated cors enabling is already provided by iris module
  */
 export const enableCors = (corsOptions?: CorsOptions) => {
   return cors({
