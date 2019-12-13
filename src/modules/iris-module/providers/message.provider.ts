@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
+import { IRIS_CONFIG_OPTIONS } from '../../../constants'
 import { MessageFactory } from '../commons'
-import { irisModuleOptions } from '../config-holder'
+import { IrisConfigOptions } from '../../config-module/config-holder'
 
 export let messageSource: MessageProvider
 
@@ -8,8 +9,8 @@ export let messageSource: MessageProvider
 export class MessageProvider {
   private messageFactory: MessageFactory
 
-  constructor() {
-    this.messageFactory = new MessageFactory({ resources: irisModuleOptions.messagesSources })
+  constructor(@Inject(IRIS_CONFIG_OPTIONS) private irisConfigOptions: IrisConfigOptions) {
+    this.messageFactory = new MessageFactory({ resources: this.irisConfigOptions.messagesSources })
     messageSource = this
   }
 

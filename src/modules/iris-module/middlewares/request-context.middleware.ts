@@ -1,10 +1,11 @@
-import { Injectable, NestMiddleware } from '@nestjs/common'
-import { irisModuleOptions } from '../config-holder'
+import { Inject, Injectable, NestMiddleware } from '@nestjs/common'
+import { IRIS_CONFIG_OPTIONS } from '../../../constants'
+import { IrisConfigOptions } from '../../config-module/config-holder'
 import { ClsProvider, LoggerProvider } from '../providers'
 
 @Injectable()
 export class RequestContextMiddleware implements NestMiddleware {
-  constructor(private readonly logger: LoggerProvider, private readonly clsManager: ClsProvider) {
+  constructor(private readonly logger: LoggerProvider, private readonly clsManager: ClsProvider, @Inject(IRIS_CONFIG_OPTIONS) private irisConfigOptions: IrisConfigOptions) {
 
   }
 
@@ -14,8 +15,8 @@ export class RequestContextMiddleware implements NestMiddleware {
     this.clsManager.bindEmitter(res)
     return this.clsManager.runPromise(async () => {
       // Save traceId from header
-      if (irisModuleOptions.traceIdHeader && request.headers && request.headers[irisModuleOptions.traceIdHeader.toLowerCase()]) {
-        const headerFound = request.headers[irisModuleOptions.traceIdHeader.toLowerCase()]
+      if (this.irisConfigOptions.traceIdHeader && request.headers && request.headers[this.irisConfigOptions.traceIdHeader.toLowerCase()]) {
+        const headerFound = request.headers[this.irisConfigOptions.traceIdHeader.toLowerCase()]
         this.logger.setTraceId(Array.isArray(headerFound) ? (headerFound! as string[]).find(t => t !== undefined) as string : headerFound as string)
       }
       if (request.headers && request.headers.authorization) {

@@ -1,15 +1,11 @@
 import { INestApplication } from '@nestjs/common'
 import { ModuleMetadata } from '@nestjs/common/interfaces'
-import { APP_INTERCEPTOR } from '@nestjs/core'
 import { Test, TestingModule } from '@nestjs/testing'
 import { ErrorDO, IrisException } from '@u-iris/iris-common'
 import '@u-iris/iris-common-test-utils'
 import * as request from 'superagent'
 import { ExceptionFilter } from '../../src/filters'
 import { cleanApplicationContext, setApplicationContext } from '../../src/modules/iris-module'
-import { LoggingInterceptor } from '../../src/modules/iris-module/interceptors'
-// tslint:disable-next-line:no-var-requires
-// require('@u-iris/iris-common-test-utils')
 
 interface ErrorInResponse {
   field?: ErrorDO['field']
@@ -61,10 +57,6 @@ export class TestUtils {
     if (!metadata.providers) {
       metadata.providers = []
     }
-    metadata.providers.unshift({
-      provide: APP_INTERCEPTOR,
-      useClass: LoggingInterceptor,
-    })
     const module: TestingModule = await Test.createTestingModule(metadata).compile()
     const app = TestUtils.constructApplicationFromModule(module)
     return { app, module }

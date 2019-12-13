@@ -625,27 +625,24 @@ class AppModule implements NestModule {
 ```
 
 ### Other middlewares
-
-You can use some middlewares in your application module configuration :
-
-```typescript
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
-import { getLogger, IrisModule, LoggingInterceptor, middlewares, TraceContextInterceptor } from '@u-iris/iris-back'
-
-@Module({
-  ...
-})
-export class AppModule implements NestModule {
-  public configure(consumer: MiddlewareConsumer): MiddlewareConsumer | void {
-    const middlewaresWithLogger = middlewares()
-    consumer.apply(middlewaresWithLogger.enableCors).forRoutes('/') // Enable CORS
-    consumer.apply(middlewaresWithLogger.enableCompression).forRoutes('/') // Enable compression
-    consumer.apply(middlewaresWithLogger.enableSecurity).forRoutes('/') // Enable security with helmet
-    consumer.apply(middlewaresWithLogger.actuator).forRoutes('/actuator') // Enable actuator
-    return consumer
+Some middlewares are automatically added by IrisModule : 
+* compression (with [compression](https://github.com/expressjs/compression))
+* cors (with [cors](https://github.com/expressjs/cors))
+    * Default configuration : 
+    
+```javascript
+{
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['X-Total-Element', 'X-Total-Page', 'X-Page-Element-Count', 'Accept-Ranges', 'Content-Range', 'Link'],
   }
-}
 ```
+* security (with [helmet](https://github.com/helmetjs/helmet))
+
+You can disable or configure each of them with iris module options. See [documentation in code](src/modules/config-module/config-holder.ts).
+
+If you want to add more middlewares, please follow the NestJS [middlewares documentation](https://docs.nestjs.com/middleware).
 
 ## Contribution
 

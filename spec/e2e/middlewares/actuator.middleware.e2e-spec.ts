@@ -4,9 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import request from 'supertest'
 import { getConnection } from 'typeorm'
-import { middlewares } from '../../../src/middlewares'
 import { IrisModule, LoggingInterceptor } from '../../../src/modules/iris-module'
-import { RequestContextMiddleware } from '../../../src/modules/iris-module/middlewares/request-context.middleware'
 import { AddressBE } from '../../commons/objects/business/be/AddressBE'
 import { OrderBE } from '../../commons/objects/business/be/OrderBE'
 import { OrderLineBE } from '../../commons/objects/business/be/OrderLineBE'
@@ -50,15 +48,23 @@ describe('Actuator (e2e)', () => {
       return request(app.getHttpServer())
         .get('/actuator/health')
         .expect(200)
-        .expect({ status: 'UP' })
+        .expect(response => {
+          expect(response).toBeDefined()
+          expect(response.body).toBeDefined()
+          expect(response.body.status).toEqual('ok')
+        })
     })
 
     it('should return down', async () => {
       await databaseTestUtils.closeDbConnection()
       return request(app.getHttpServer())
         .get('/actuator/health')
-        .expect(200)
-        .expect({ status: 'DOWN' })
+        .expect(503)
+        .expect(response => {
+          expect(response).toBeDefined()
+          expect(response.body).toBeDefined()
+          expect(response.body.status).toEqual('error')
+        })
         .then(() => databaseTestUtils.openDbConnection())
     })
   })
@@ -88,12 +94,6 @@ describe('Actuator (e2e)', () => {
     })
     class AppModuleConnections implements NestModule {
       public configure(consumer: MiddlewareConsumer): MiddlewareConsumer | void {
-        consumer.apply(RequestContextMiddleware).forRoutes('/')
-        consumer.apply(middlewares.parseJSON()).forRoutes('/')
-        consumer.apply(middlewares.enableCors()).forRoutes('/')
-        consumer.apply(middlewares.enableCompression()).forRoutes('/')
-        consumer.apply(middlewares.enableSecurity()).forRoutes('/')
-        consumer.apply(middlewares.actuator()).forRoutes('/actuator')
         return consumer
       }
     }
@@ -115,7 +115,11 @@ describe('Actuator (e2e)', () => {
       return request(app.getHttpServer())
         .get('/actuator/health')
         .expect(200)
-        .expect({ status: 'UP' })
+        .expect(response => {
+          expect(response).toBeDefined()
+          expect(response.body).toBeDefined()
+          expect(response.body.status).toEqual('ok')
+        })
     })
 
     it('should return down because all the connections are down', async () => {
@@ -123,8 +127,12 @@ describe('Actuator (e2e)', () => {
       await getConnection('connection2').close()
       return request(app.getHttpServer())
         .get('/actuator/health')
-        .expect(200)
-        .expect({ status: 'DOWN' })
+        .expect(503)
+        .expect(response => {
+          expect(response).toBeDefined()
+          expect(response.body).toBeDefined()
+          expect(response.body.status).toEqual('error')
+        })
         .then(async () => {
           await getConnection('default').connect()
           await getConnection('connection2').connect()
@@ -135,16 +143,24 @@ describe('Actuator (e2e)', () => {
       await getConnection('default').close()
       return request(app.getHttpServer())
         .get('/actuator/health')
-        .expect(200)
-        .expect({ status: 'DOWN' })
+        .expect(503)
+        .expect(response => {
+          expect(response).toBeDefined()
+          expect(response.body).toBeDefined()
+          expect(response.body.status).toEqual('error')
+        })
         .then(() => getConnection('default').connect())
     })
     it('should return down because connection2 is down', async () => {
       await getConnection('connection2').close()
       return request(app.getHttpServer())
         .get('/actuator/health')
-        .expect(200)
-        .expect({ status: 'DOWN' })
+        .expect(503)
+        .expect(response => {
+          expect(response).toBeDefined()
+          expect(response.body).toBeDefined()
+          expect(response.body.status).toEqual('error')
+        })
         .then(() => getConnection('connection2').connect())
     })
   })
