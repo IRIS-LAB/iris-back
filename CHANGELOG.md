@@ -1,10 +1,18 @@
 # CHANGELOG
 
+## Migration from 3.1 to 4.0
+* remove RequestContextInterceptor and LoggingInterceptor providers (automatically applied by iris module as middlewares)
+* remove usage of middlewares from iris-back (automatically applied by iris module)
+* no longer use tsdv-joi to add business validator constraint. Use joiful instead (by importing jf from iris-back)
+    * @NestedArray(<type>) => @jf.array({elementClass: <type>})
+    * @Nested(<type>) => @jf.object({objectClass: <type>})
+
 ## 3.1.2-SNAPSHOT
 * improve business validator provider by getting error message from message sources of IrisModule
 * rework middlewares
 * support cors configuration
 * actuator health checker now checks typeorm connections
+* remove BusinessValidator decorator => use joiful decorators instead
 
 ## 3.1.2-SNAPSHOT
 * implements security services

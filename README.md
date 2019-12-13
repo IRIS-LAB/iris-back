@@ -237,16 +237,16 @@ export class OrderBE {
   public id?: number
 
   @Column({ name: 'REFERENCE', length: 10 })
-  @BusinessValidator(Joi.string().required())
+  @jf.string().required()
   public reference: string
 
   @Column({ name: 'AMOUNT', nullable: true, type: 'float' })
-  @BusinessValidator(Joi.number())
+  @jf.number()
   public amount?: number
 
   @Column({ name: 'STATE', nullable: false })
   // Constraint for enum
-  @BusinessValidator(Joi.string().equal(Object.keys(OrderStateEnum).map(k => OrderStateEnum[k])))
+  @jf.string().equal(Object.keys(OrderStateEnum).map(k => OrderStateEnum[k]))
   public state?: OrderStateEnum
 
   @Relation(RelationEntity.ASSOCIATION, () => OrderLineBE)
@@ -323,10 +323,10 @@ For example :
 class DTO {
   class DTO {
   
-    @BusinessValidator(Joi.number().greater(0))
+    @jf.number().greater(0)
     public count: number
   
-    @BusinessValidator(Joi.string().required())
+    @jf.string().required()
     public name: string
   
   }

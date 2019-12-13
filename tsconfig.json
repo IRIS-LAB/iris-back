@@ -5,12 +5,11 @@
     "target": "es6",
     "module": "commonjs",
     "sourceMap": true,
-
     "lib": [
       "es2015",
       "dom"
     ],
-    "rootDir": "./src",
+    "rootDir": "./",
     "baseUrl": "./src",
     "outDir": "./build",
     "types": [

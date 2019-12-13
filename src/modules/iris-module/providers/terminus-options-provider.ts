@@ -26,6 +26,7 @@ export class TerminusOptionsProvider implements TerminusOptionsFactory {
     if (this.irisConfigOptions.actuatorOptions!.enableTypeOrm) {
       try {
         const connections = getConnectionManager().connections
+        // @ts-ignore
         connections.forEach(connection => healthIndicators.push(async () => this.typeorm.pingCheck('database.' + connection.name, {
           timeout: 1500,
           connection,

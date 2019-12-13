@@ -1,3 +1,3 @@
 export interface EntityOptions {
-  options: string[]
+  options?: string[]
 }

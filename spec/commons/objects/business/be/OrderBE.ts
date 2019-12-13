@@ -1,6 +1,5 @@
-import { Joi } from 'tsdv-joi/core'
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
-import { AllowedOptions, BusinessValidator, Relation } from '../../../../../src/decorators'
+import { AllowedOptions, jf, Relation } from '../../../../../src/decorators'
 import { RelationEntity } from '../../../../../src/enums'
 import { DeliveryDataBEP } from '../bep/DeliveryDataBEP'
 import { CustomerXBE } from '../xbe/CustomerXBE'
@@ -16,15 +15,15 @@ export class OrderBE {
   public id?: number
 
   @Column({ name: 'REFERENCE', length: 10 })
-  @BusinessValidator(Joi.string().required())
+  @jf.string().required()
   public reference: string
 
   @Column({ name: 'AMOUNT', nullable: true, type: 'float' })
-  @BusinessValidator(Joi.number())
+  @jf.number()
   public amount?: number
 
   @Column({ name: 'STATE', nullable: false })
-  @BusinessValidator(Joi.string().equal(Object.keys(OrderState).map(k => OrderState[k])))
+  @jf.string().equal(Object.keys(OrderState).map(k => OrderState[k]))
   public state?: OrderState
 
   @Relation(RelationEntity.ASSOCIATION, () => OrderLineBE)

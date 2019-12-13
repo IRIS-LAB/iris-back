@@ -19,7 +19,8 @@
     "forin": false,
     "radix": false,
     "no-namespace": false,
-    "max-classes-per-file": false
+    "max-classes-per-file": false,
+    "member-ordering": false
   },
   "rulesDirectory": []
 }

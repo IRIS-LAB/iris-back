@@ -1,3 +1,5 @@
+import './e2e-config-loader'
+
 import { Test, TestingModule } from '@nestjs/testing'
 import { EntityNotFoundBusinessException } from '@u-iris/iris-common'
 import '@u-iris/iris-common-test-utils'
@@ -9,7 +11,6 @@ import { OrderLBS } from '../commons/services/business/OrderLBS'
 import { OrderDAO } from '../commons/services/data/OrderDAO'
 import { TestUtils } from '../commons/test.utils'
 import { DatabaseTestUtils } from './database-test-utils.service'
-import './e2e-config-loader'
 import { AppModule } from './module/testapp.module'
 
 describe('OrderEBS (e2e)', () => {

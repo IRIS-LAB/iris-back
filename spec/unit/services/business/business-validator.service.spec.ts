@@ -1,31 +1,35 @@
 import { BusinessException } from '@u-iris/iris-common'
+import { TestsUtils } from '@u-iris/iris-common-test-utils'
 import 'reflect-metadata'
-import { Nested, NestedArray } from 'tsdv-joi'
-import { Joi } from 'tsdv-joi/core'
-import { BusinessValidator } from '../../../../src/decorators'
+import { jf } from '../../../../src/decorators'
 import { BusinessValidatorService } from '../../../../src/services/business'
 import { TestUtils } from '../../../commons/test.utils'
 
 class Child {
-  @BusinessValidator(Joi.string().max(10).regex(/^([A-Za-z0-9]*)$/).required())
+  @jf.string().max(10).regex(/^([A-Za-z0-9]*)$/).required()
   public name: string
 }
 
+class DTO2 {
+  @jf.number().required()
+  public requiredCount: number
+}
+
 class DTO {
-  @BusinessValidator(Joi.string().max(10).regex(/^([A-Za-z0-9]*)$/).required())
+  @jf.string().max(10).regex(/^([A-Za-z0-9]*)$/).required()
   public name: string
 
-  @BusinessValidator(Joi.number().greater(0))
+  @jf.number().greater(0)
   public count: number
 
-  @BusinessValidator(Joi.string().required())
+
+  @jf.string().required()
   public alias: string
 
-  @Nested(Child)
+  @jf.object({ objectClass: Child })
   public child: Child
 
-  @BusinessValidator(Joi.array().max(5))
-  @NestedArray(Child)
+  @jf.array({ elementClass: Child }).max(5)
   public children: Child[]
 
   public unknownField: string
@@ -157,6 +161,12 @@ describe('BusinessValidatorservice', () => {
         code: 'any.required',
         label: '"alias" is required',
       })
+    })
+    it('should validate number required', () => {
+      const dto2 = new DTO2()
+      TestsUtils.expectThrowIrisExceptionLike(() => new BusinessValidatorService().validate(dto2), BusinessException)
+      dto2.requiredCount = 1
+      expect(new BusinessValidatorService().validate(dto2)).toEqual(dto2)
     })
   })
 

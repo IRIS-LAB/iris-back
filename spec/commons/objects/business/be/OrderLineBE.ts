@@ -1,6 +1,5 @@
-import { Joi } from 'tsdv-joi/core'
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
-import { BusinessValidator, Relation } from '../../../../../src/decorators'
+import { jf, Relation } from '../../../../../src/decorators'
 import { RelationEntity } from '../../../../../src/enums'
 import { OrderBE } from './OrderBE'
 import { ProductBE } from './ProductBE'
@@ -12,11 +11,11 @@ export class OrderLineBE {
   public id?: number
 
   @Column({ name: 'QUANTITY', nullable: false })
-  @BusinessValidator(Joi.number())
+  @jf.number()
   public quantity: number
 
   @Column({ name: 'AMOUNT', nullable: false, type: 'float' })
-  @BusinessValidator(Joi.number())
+  @jf.number()
   public amount?: number
 
   @Relation(RelationEntity.ASSOCIATION)

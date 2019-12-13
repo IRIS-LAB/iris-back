@@ -1,22 +1,21 @@
 import { Controller, INestApplication, Injectable, Post } from '@nestjs/common'
 import request from 'supertest'
-import { Joi } from 'tsdv-joi/core'
-import { BodyParam, BusinessValidator, ReadOnly } from '../../../src/decorators'
+import { BodyParam, jf, ReadOnly } from '../../../src/decorators'
 import { IrisModule } from '../../../src/modules/iris-module'
 import { irisModuleOptionsForTests } from '../../commons/message-factory-for-tests'
 import { OrderBE } from '../../commons/objects/business/be/OrderBE'
 import { TestUtils } from '../../commons/test.utils'
 
 class TestDateBE {
-  @BusinessValidator(Joi.date())
+  @jf.date()
   public date: Date
 }
 
 class TestReadonlyBE {
-  @BusinessValidator(Joi.string())
+  @jf.string()
   public name: string
 
-  @BusinessValidator(Joi.string())
+  @jf.string()
   @ReadOnly()
   public hiddenField: string
 }
