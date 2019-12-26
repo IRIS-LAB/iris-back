@@ -47,10 +47,16 @@ export class LoggerProvider {
   }
 
   public getTraceId(): string {
+    if (!this.clsManager.active) {
+      return '?'
+    }
     return this.clsManager.getTraceId() || this.clsManager.setTraceId(this.generateRandomId())
   }
 
   private getSpanId(): string {
+    if (!this.clsManager.active) {
+      return '?'
+    }
     return this.clsManager.getSpanId() || this.clsManager.setSpanId(this.generateRandomId())
   }
 
