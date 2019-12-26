@@ -85,7 +85,7 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
    * @param query - The query paginated options
    * @param filters - filters to apply
    */
-  public createQueryBuilder(query?: PaginatedEntitiesOptions, filters?: Q & any): SelectQueryBuilder<T> {
+  public createQueryBuilder(query?: PaginatedEntitiesOptions, filters?: any): SelectQueryBuilder<T> {
     const queryBuilder = new TypeormQueryBuilder(this.repository)
     this.applyRelationsToQuerybuilder(queryBuilder)
     this.applyQueryFiltersToQueryBuilder(queryBuilder, filters)
