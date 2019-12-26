@@ -3,7 +3,7 @@
     "moduleResolution": "node",
     "target": "es6",
     "module": "commonjs",
-    "sourceMap": false,
+    "sourceMap": true,
     "declaration" : true,
     "lib": [
       "es2015",

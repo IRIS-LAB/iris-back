@@ -37,4 +37,10 @@ export class OrderLineBE {
   })
   @JoinColumn({ name: 'ORDER_ENTITY_ID' })
   public orderEntity?: OrderBE
+
+  @ManyToOne(type => OrderBE, order => order.orderLinesEntities, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'ORDER_ENTITY_WITHOUT_RELATION_ID' })
+  public orderEntityWithoutRelation?: OrderBE
 }

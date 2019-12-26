@@ -96,6 +96,68 @@ describe('OrderEBS (e2e)', () => {
         })
     })
 
+    it('should return list with orders filtered by billingadress country', async () => {
+      const order1: OrderBE = new OrderBE()
+      order1.reference = 'CMD.1'
+      order1.customer = { id: 5 }
+      order1.billingAddress = {line1: 'line1', line2: 'line2', country: 'FR'}
+      await orderLBS.createOrder(order1)
+
+      const order2: OrderBE = new OrderBE()
+      order2.reference = 'CMD.2'
+      order2.customer = { id: 3 }
+      order2.billingAddress = {line1: 'line1', line2: 'line2', country: 'ES'}
+      await orderLBS.createOrder(order2)
+
+      const order3: OrderBE = new OrderBE()
+      order3.reference = 'CMD.3'
+      order3.customer = { id: 10 }
+      order3.billingAddress = {line1: 'line1', line2: 'line2', country: 'FR'}
+      await orderLBS.createOrder(order3)
+
+      return request(app.getHttpServer())
+        .get('/orders?billingAddress.country=FR')
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .then(response => {
+          expect(response.body).toHaveLength(2)
+          expect(response.body).toContainObjectLike({ reference: 'CMD.1' })
+          expect(response.body).toContainObjectLike({ reference: 'CMD.3' })
+        })
+    })
+
+    it('should return list with orders filtered by customer id', async () => {
+      const order1: OrderBE = new OrderBE()
+      order1.reference = 'CMD.1'
+      order1.customer = { id: 5 }
+      await orderLBS.createOrder(order1)
+
+      const order2: OrderBE = new OrderBE()
+      order2.reference = 'CMD.2'
+      order2.customer = { id: 3 }
+      await orderLBS.createOrder(order2)
+
+      const order3: OrderBE = new OrderBE()
+      order3.reference = 'CMD.3'
+      order3.customer = { id: 3 }
+      await orderLBS.createOrder(order3)
+
+      return request(app.getHttpServer())
+        .get('/orders?customer.id=3')
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .then(response => {
+          expect(response.body).toHaveLength(2)
+          expect(response.body).toContainObjectLike({ reference: 'CMD.2' })
+          expect(response.body).toContainObjectLike({ reference: 'CMD.3' })
+          expect(response.header['accept-ranges']).toEqual('orders 100')
+          expect(response.header['content-range']).toEqual('0-1/2')
+          expect(response.header['x-page-element-count']).toEqual('2')
+          expect(response.header['x-total-element']).toEqual('2')
+          expect(response.header['x-total-page']).toEqual('1')
+        })
+    })
+
     it('should return list with orders ordered by reference asc', async () => {
       let order1: OrderBE = new OrderBE()
       order1.reference = 'CMD.1'

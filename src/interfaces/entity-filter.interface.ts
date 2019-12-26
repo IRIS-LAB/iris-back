@@ -1,4 +1,4 @@
-type BasicType = string | Date | number | undefined
+type BasicType = string | Date | number | undefined | null
 
 export interface EntityFilterObject {
   gt?: Date | number

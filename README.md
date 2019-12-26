@@ -226,8 +226,7 @@ Moreover, a business validator is used to define a constraint validator.
 Example:
 ```typescript
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
-import { AllowedOptions, Relation, RelationEntity, BusinessValidator } from '@u-iris/iris-back'
-import { Joi } from 'tsdv-joi/core'
+import { AllowedOptions, Relation, RelationEntity, jf } from '@u-iris/iris-back'
 
 @Entity(`ORDER`)
 @AllowedOptions('orderLines', 'orderLines.product', 'customer')

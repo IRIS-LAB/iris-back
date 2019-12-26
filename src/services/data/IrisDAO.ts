@@ -1,32 +1,10 @@
-import {
-  EntityMetadata,
-  Equal,
-  FindConditions,
-  FindManyOptions,
-  FindOneOptions,
-  FindOperator,
-  In,
-  LessThan,
-  LessThanOrEqual,
-  Like,
-  MoreThan,
-  MoreThanOrEqual,
-  Not, RemoveOptions,
-  Repository,
-} from 'typeorm'
+import { EntityMetadata, RemoveOptions, Repository, SelectQueryBuilder } from 'typeorm'
 import * as constants from '../../constants'
 import { RelationEntity } from '../../enums'
-import {
-  EntityFilterObject,
-  EntityFilterQuery,
-  EntityOptions,
-  FindableQuery,
-  PaginatedEntitiesOptions,
-} from '../../interfaces'
+import { EntityFilterQuery, EntityOptions, PaginatedEntitiesOptions } from '../../interfaces'
 import { RelationMetadata } from '../../interfaces/relation-metadata.interface'
 import { ErrorProvider } from '../../modules/iris-module/providers'
-import { FilterUtils } from '../../utils'
-
+import { TypeormQueryBuilder, TypeormUtils } from '../../utils'
 
 /**
  * IrisDAO.
@@ -49,9 +27,12 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
    * @param filters - Functional filters
    */
   public async findWithPaginationResult(query?: PaginatedEntitiesOptions, filters?: Q): Promise<{ list: T[], count: number }> {
-    const list = await this.repository.find(this.getFindManyOptions(query, filters))
-    const count = await this.repository.count(this.getFindManyOptions(query, filters))
-    return { list, count }
+    const results = await this.createQueryBuilder(query, filters)
+      .getManyAndCount()
+
+    // const list = await this.repository.find(this.getFindManyOptions(query, filters))
+    // const count = await this.repository.count(this.getFindManyOptions(query, filters))
+    return { list: results[0], count: results[1] }
   }
 
   /**
@@ -60,7 +41,7 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
    * @param filters - Functional filters
    */
   public async find(query?: PaginatedEntitiesOptions, filters?: Q): Promise<T[]> {
-    return this.repository.find(this.getFindManyOptions(query, filters))
+    return this.createQueryBuilder(query, filters).getMany()
   }
 
   /**
@@ -69,7 +50,7 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
    * @param filters - Functional filters
    */
   public async count(query?: PaginatedEntitiesOptions, filters?: Q): Promise<number> {
-    return this.repository.count(this.getFindManyOptions(query, filters))
+    return this.createQueryBuilder(query, filters).getCount()
   }
 
   /**
@@ -78,7 +59,7 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
    * @param query - Query passed by exposition service where filters are stored.
    */
   public async findById(id: number, query?: EntityOptions): Promise<T | undefined> {
-    return this.repository.findOne(id, this.getFindOneOptions(query))
+    return this.createQueryBuilder(query, { id }).getOne()
   }
 
   /**
@@ -100,99 +81,26 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
   }
 
   /**
-   * Apply query filters.
-   *
-   * If type of filters is formatted with keys corresponding to entity fields, this methods should not be overridden.
-   * @param query - Query options that will be passed to find and count methods
-   * @param filters = Functional filters
+   * Create a query builder from current repository with relations, pagination and filters from the entity model and the query and filters parameters.
+   * @param query - The query paginated options
+   * @param filters - filters to apply
    */
-  protected applyQueryFilters(query: FindableQuery<T>, filters?: Q) {
-    if (filters) {
-      for (const key of Object.keys(filters)) {
-        const value = filters[key]
+  public createQueryBuilder(query?: PaginatedEntitiesOptions, filters?: Q & any): SelectQueryBuilder<T> {
+    const queryBuilder = new TypeormQueryBuilder(this.repository)
+    this.applyRelationsToQuerybuilder(queryBuilder)
+    this.applyQueryFiltersToQueryBuilder(queryBuilder, filters)
+    this.applySortOptionsToQuerybuilder(queryBuilder, query)
+    this.applyPaginationOptionsToQuerybuilder(queryBuilder, query)
+    return queryBuilder.getSelectQueryBuilder()
 
-        if (typeof value !== 'undefined') {
-          // Build with modifier
-          if (typeof value === 'object') {
-            const objectValue: EntityFilterObject = value as EntityFilterObject
-            this.applyQueryOperator(query.where!, key, objectValue, 'gt', MoreThan)
-            this.applyQueryOperator(query.where!, key, objectValue, 'gte', MoreThanOrEqual)
-            this.applyQueryOperator(query.where!, key, objectValue, 'lt', LessThan)
-            this.applyQueryOperator(query.where!, key, objectValue, 'lte', LessThanOrEqual)
-            this.applyQueryOperator(query.where!, key, objectValue, 'like', Like)
-            this.applyQueryOperator(query.where!, key, objectValue, 'in', In)
-            this.applyQueryOperator(query.where!, key, objectValue, 'nin', Not, In)
-            this.applyQueryOperator(query.where!, key, objectValue, 'eq', Equal)
-            this.applyQueryOperator(query.where!, key, objectValue, 'ne', Not, Equal)
-          } else {
-            this.setValueAsNestedField(query.where, key, value)
-          }
-        }
-      }
-    }
   }
 
   /**
-   * Apply query filters, sort options, pagination options and loading options and return findable query.
-   * @param query - Query passed by exposition service
-   * @param filters - Functional filters
+   * Browser entity relations and call applyFn on relation marked as ASSOCIATION or ENTITY or enabled by options (from query parameter).
+   * @param applyFn - function to call
+   * @param query - query parameter with options
    */
-  protected getFindManyOptions(query?: PaginatedEntitiesOptions, filters?: Q): FindManyOptions<T> {
-
-    const options: FindableQuery<T> = { where: {} }
-    if (filters) {
-      this.applyQueryFilters(options, filters)
-    }
-    this.setSortOptions(options, query)
-    this.setPaginationOptions(options, query)
-    this.setLoadingOptions(options, query)
-    return options
-  }
-
-  /**
-   * Apply loading options and return findable options for findById method
-   */
-  protected getFindOneOptions(query?: EntityOptions): FindOneOptions<T> {
-    const options: FindableQuery<T> = {}
-    this.setLoadingOptions(options, query)
-    return options
-  }
-
-  /**
-   * Apply sortable options
-   * @param options - Options where sortable fields are applied
-   * @param query - Query passed by exposition service
-   */
-  protected setSortOptions(options: FindableQuery<T>, query?: PaginatedEntitiesOptions): void {
-    if (query && query.sort) {
-      if (!options.order) {
-        options.order = {}
-      }
-      for (const sortable of query.sort) {
-        // TODO : à partir de la version 0.3.0 de typeorm on pourra utiliser la fonction setValueAsNestedField
-        this.setValueAsNestedField(options.order, sortable.field, sortable.direction === 'asc' ? 'ASC' : 'DESC')
-      }
-    }
-  }
-
-  /**
-   * Apply paginable options
-   * @param options - Options where paginable options are applied
-   * @param query - Query passed by exposition service
-   */
-  protected setPaginationOptions(options: FindableQuery<T>, query?: PaginatedEntitiesOptions): void {
-    if (query && query.paginate) {
-      options.skip = query.paginate.page * query.paginate.size
-      options.take = query.paginate.size
-    }
-  }
-
-  /**
-   * Apply loading options from Relation and Option decorators from the BE
-   * @param options - Options where loading options are applied
-   * @param query  - Query passed by exposition service
-   */
-  protected setLoadingOptions(options: FindableQuery<T>, query?: EntityOptions): void {
+  protected applyRelations(applyFn: (relation: string, metadata: RelationMetadata) => void, query?: EntityOptions): void {
     // Check @Relation()
     const entityRelations: { [key: string]: RelationMetadata } = Reflect.getMetadata(constants.RELATION_METADATA, (this.repository.target as any).prototype.constructor)
     if (entityRelations) {
@@ -201,18 +109,12 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
         // We fully load ASSOCIATION Relations. Unnecessary fields will be deleted by exposition interceptor
         if (relation.relation === RelationEntity.ENTITY || relation.relation === RelationEntity.ASSOCIATION || (query && query.options && query.options.indexOf(key) > -1)) {
           // Check if relation is managed by typeorm. Could be relative to XBE and then it should be managed manually in LBS
-          if (this.isRelationValid(key)) {
-            if (!options.relations) {
-              options.relations = []
-            }
-
+          if (TypeormUtils.isRelationValid(this.repository, key)) {
             // We add all relations that allow typeorm to load nested relations
             const splittedRelation = key.split('.')
             for (let index = 1; index <= splittedRelation.length; index++) {
               const relationToAdd = splittedRelation.slice(0, index).join('.')
-              if (options.relations.indexOf(relationToAdd) === -1) {
-                options.relations.push(relationToAdd)
-              }
+              applyFn(relationToAdd, relation)
             }
           }
         }
@@ -220,63 +122,31 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
     }
   }
 
-  /**
-   * Check nested typeorm relation validity
-   * @param relationPath - Relation path
-   * @param metadata - metadata for relation entity
-   */
-  protected isRelationValid(relationPath: string, metadata?: EntityMetadata): boolean {
-    if (!metadata) {
-      metadata = this.repository.metadata
-    }
-    const splittedRelations = relationPath.split('.')
-    const closestRelationMetadata = metadata.relations.find(c => c.propertyPath === splittedRelations[0])
-    return closestRelationMetadata !== undefined && (splittedRelations.length === 1 || this.isRelationValid(splittedRelations.slice(1).join('.'), this.repository.manager.connection.getMetadata(closestRelationMetadata.type)))
-  }
-
-  /**
-   * Transform string field with dot separator into an object with nested fields and apply to o. (For example, 'field.nested' = 1 will result in {field: {nested: 1}}
-   * @param o - The query parameter
-   * @param fieldname - field
-   * @param value - value
-   */
-  protected setValueAsNestedField(o: any, fieldname: string, value: any) {
-    if (!this.fieldExists(fieldname)) {
-      throw this.errorProvider.createTechnicalException(fieldname, 'entity.field.invalid', new Error(), {type: typeof this.repository.target === 'function' ? this.repository.target.name : this.repository.target})
-    }
-    let temp = o
-    const fields = fieldname.split('.')
-    for (let i = 0; i < fields.length; i++) {
-      const path = fields[i]
-      if (i === fields.length - 1) {
-        temp[path] = value
-      } else {
-        if (typeof temp[path] === 'undefined') {
-          temp[path] = {}
-        } else if (typeof temp[path] !== 'object') {
-          throw this.errorProvider.createBusinessException(fieldname, 'field.not.accessible')
-        }
-      }
-      temp = temp[path]
+  private applySortOptionsToQuerybuilder(typeormQueryBuilder: TypeormQueryBuilder<T>, query?: PaginatedEntitiesOptions): void {
+    if (query && query.sort && query.sort.length > 0) {
+      const sort = query.sort.reduce((prev: any, current) => {
+        prev[current.field] = current.direction === 'asc' ? 'ASC' : 'DESC'
+        return prev
+      }, {})
+      typeormQueryBuilder.withOrderBy(sort)
     }
   }
 
-  /**
-   * Transform filter EntityFilterObject to TypeORM Filter and apply it to where query.
-   * @param where - find conditions in TypeORM format
-   * @param key - key to filter
-   * @param filter - the filter
-   * @param filterOperator - the filter operator
-   * @param operators - TypeORM Operator
-   */
-  private applyQueryOperator<K>(where: FindConditions<T>, key: string, filter: EntityFilterObject, filterOperator: keyof EntityFilterObject, ...operators: Array<(value: any | FindOperator<any>) => FindOperator<any>>) {
-    if (FilterUtils.exists(filter, filterOperator)) {
-      let o
-      for (const operator of operators) {
-        o = o ? operator(o) : operator
-      }
-      this.setValueAsNestedField(where, key, o((filter[filterOperator]!)))
+  private applyPaginationOptionsToQuerybuilder(typeormQueryBuilder: TypeormQueryBuilder<T>, query?: PaginatedEntitiesOptions): void {
+    if (query && query.paginate) {
+      typeormQueryBuilder
+        .withOffset(query.paginate.page * query.paginate.size)
+        .withLimit(query.paginate.size)
     }
+  }
+
+  private applyRelationsToQuerybuilder(queryBuilder: TypeormQueryBuilder<T>, query?: EntityOptions): void {
+    // Apply typeorm eager relations
+    this.applyTypeormRelations(queryBuilder, this.repository.metadata)
+    // Apply Iris relations
+    this.applyRelations((relationToAdd, metadata) => {
+      queryBuilder.withRelationToField(relationToAdd, true)
+    }, query)
   }
 
   /**
@@ -284,7 +154,16 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
    * @param field - the field
    */
   private fieldExists(field: string) {
-    return this.fieldExistsInMap(field, this.repository.metadata.propertiesMap)
+    return this.fieldExistsForEntityMetadata(field, this.repository.metadata)
+  }
+
+  /**
+   * Check if a field is a part of entity metadata.
+   * @param field - the field
+   * @param metadata - the entity metadata
+   */
+  private fieldExistsForEntityMetadata(field: string, metadata: EntityMetadata) {
+    return this.fieldExistsInMap(field, metadata.propertiesMap) || metadata.relations.some(relation => this.fieldExistsInRelation(field, relation))
   }
 
   /**
@@ -296,5 +175,43 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
     const parts = field.split('.')
     const firstPart = parts.shift()
     return firstPart && map && map.hasOwnProperty(firstPart) && (parts.length === 0 || this.fieldExistsInMap(parts.join('.'), map[firstPart]))
+  }
+
+  /**
+   * Check if a field is a part of a relation.
+   * @param field - field path
+   * @param relation - relation metadata
+   */
+  private fieldExistsInRelation(field: string, relation: any) {
+    const parts = field.split('.')
+    const firstPart = parts.shift()
+    return firstPart && relation && (relation.propertyName === firstPart || relation.propertyPath === firstPart) && (parts.length === 0 || this.fieldExistsForEntityMetadata(parts.join('.'), relation.inverseEntityMetadata))
+  }
+
+  private applyQueryFiltersToQueryBuilder(typeormQueryBuilder: TypeormQueryBuilder<T>, filters?: Q): void {
+    if (filters) {
+      for (const key of Object.keys(filters)) {
+        const value = filters[key]
+
+        if (typeof value !== 'undefined') {
+          if (!this.fieldExists(key)) {
+            throw this.errorProvider.createTechnicalException(key, 'entity.field.invalid', new Error(), { type: typeof this.repository.target === 'function' ? this.repository.target.name : this.repository.target })
+          }
+
+          // Add left join
+          typeormQueryBuilder.withFilter(key, value)
+        }
+      }
+    }
+
+  }
+
+  private applyTypeormRelations(typeormQueryBuilder: TypeormQueryBuilder<T>, metadata: EntityMetadata, pathPrefix?: string):void {
+    for (const relation of metadata.relations) {
+      if(relation.isEager) {
+        typeormQueryBuilder = typeormQueryBuilder.withRelationToField(`${pathPrefix ? pathPrefix + '.' : ''}${relation.propertyPath}`, true)
+        this.applyTypeormRelations(typeormQueryBuilder, relation.inverseEntityMetadata, `${pathPrefix ? pathPrefix + '.' : ''}${relation.propertyPath}`)
+      }
+    }
   }
 }

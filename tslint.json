@@ -20,7 +20,8 @@
     "radix": false,
     "no-namespace": false,
     "max-classes-per-file": false,
-    "member-ordering": false
+    "member-ordering": false,
+    "ordered-imports": false
   },
   "rulesDirectory": []
 }
