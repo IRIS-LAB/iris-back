@@ -60,7 +60,7 @@ export class OrderBE {
     cascade: true,
     onDelete: 'CASCADE',
   })
-  public billingAddressLazy: AddressBE
+  public billingAddressLazy?: AddressBE
 
   @Column(type => DeliveryDataBEP, {
     prefix: '',
