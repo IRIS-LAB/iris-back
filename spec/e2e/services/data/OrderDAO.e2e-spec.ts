@@ -92,7 +92,7 @@ describe('OrderDAO (e2e)', () => {
 
       order = await orderDAO.save(order)
 
-      const result = await orderDAO.findOne({reference: '123'})
+      const result = await orderDAO.findOne({ reference: '123' })
 
       expect(result).toBeDefined()
       expect(result!.orderLinesWithoutRelation).toBeDefined()
@@ -101,6 +101,29 @@ describe('OrderDAO (e2e)', () => {
       expect(result!.orderLinesWithoutRelation![0].product.label).toEqual('product 2')
       expect(result!.orderLinesWithoutRelation![1].product).toBeDefined()
       expect(result!.orderLinesWithoutRelation![1].product.label).toEqual('product 3')
+    })
+  })
+
+  describe('findById', () => {
+    it('should load lazy relations when in options', async () => {
+      let order = new OrderBE()
+      order.reference = '123'
+      order.state = OrderState.PENDING
+      order.customer = { id: 1 }
+      order.billingAddressLazy = {
+        line1: 'line1',
+        line2: 'line2',
+        country: 'FR',
+      }
+      order = await orderDAO.save(order)
+
+      const result = await orderDAO.findById(order.id!, {options: ['billingAddressLazy']})
+
+      expect(result).toBeDefined()
+      expect(result!.billingAddressLazy).toBeDefined()
+      expect(result!.billingAddressLazy.line1).toEqual('line1')
+      expect(result!.billingAddressLazy.line2).toEqual('line2')
+      expect(result!.billingAddressLazy.country).toEqual('FR')
     })
   })
 

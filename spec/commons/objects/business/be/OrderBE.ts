@@ -54,6 +54,14 @@ export class OrderBE {
   })
   public billingAddress: AddressBE
 
+  @Relation(RelationEntity.NONE)
+  @ManyToOne(type => AddressBE, {
+    eager: false,
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  public billingAddressLazy: AddressBE
+
   @Column(type => DeliveryDataBEP, {
     prefix: '',
   })
