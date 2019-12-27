@@ -1,15 +1,15 @@
-import { Inject, Injectable } from '@nestjs/common'
+import { Inject, Injectable, LoggerService } from '@nestjs/common'
 import { ErrorDO, TechnicalException } from '@u-iris/iris-common'
 import moment from 'moment-timezone'
 import uuid from 'uuid'
 import winston, { createLogger, format, transports } from 'winston'
 import { IRIS_CONFIG_OPTIONS } from '../../../constants'
-import { ExtendedLoggerOptions, IrisConfigOptions } from '../../config-module/config-holder'
+import { ExtendedLoggerOptions, IrisConfigOptions } from '../../config-module'
 import { ClsProvider } from './cls.provider'
 import { ErrorProvider } from './error.provider'
 
 @Injectable()
-export class LoggerProvider {
+export class LoggerProvider implements LoggerService {
   protected winstonLogger: winston.Logger
   private options: ExtendedLoggerOptions
 
@@ -40,6 +40,14 @@ export class LoggerProvider {
 
   public error(message: string) {
     this.logger.error(message)
+  }
+
+  public log(message: any): any {
+    this.logger.log(message)
+  }
+
+  public verbose(message: any): any {
+    this.logger.verbose(message)
   }
 
   public setTraceId(traceId: string) {
