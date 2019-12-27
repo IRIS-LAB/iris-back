@@ -1,11 +1,12 @@
+import '../../e2e-config-loader'
 import { Test, TestingModule } from '@nestjs/testing'
+import { AddressBE } from '../../../commons/objects/business/be/AddressBE'
 import { OrderBE } from '../../../commons/objects/business/be/OrderBE'
 import { OrderLineBE } from '../../../commons/objects/business/be/OrderLineBE'
 import { OrderState } from '../../../commons/objects/business/be/OrderState'
 import { OrderDAO } from '../../../commons/services/data/OrderDAO'
 import { TestUtils } from '../../../commons/test.utils'
 import { DatabaseTestUtils } from '../../database-test-utils.service'
-import '../../e2e-config-loader'
 import { AppModule } from '../../module/testapp.module'
 
 describe('OrderDAO (e2e)', () => {
@@ -68,6 +69,46 @@ describe('OrderDAO (e2e)', () => {
       expect(result1.orderLinesWithoutRelation![1].product).toBeDefined()
       expect(result1.orderLinesWithoutRelation![1].product.label).toEqual('product 3')
     })
+
+  })
+  describe('find', () => {
+    it('should load child relations if passed in options', async () => {
+      const billingAddress = new AddressBE()
+      billingAddress.line1 = 'line1'
+      billingAddress.line2 = 'line2'
+      billingAddress.country = 'FR'
+
+      let order = new OrderBE()
+      order.reference = '123'
+      order.state = OrderState.PENDING
+      order.customer = { id: 1 }
+      order.billingAddress = billingAddress
+
+      order = await orderDAO.save(order)
+
+
+      let order2 = new OrderBE()
+      order2.reference = '2'
+      order2.state = OrderState.PENDING
+      order2.customer = { id: 1 }
+      order2.billingAddress = order.billingAddress
+      order2 = await orderDAO.save(order2)
+
+      const results = await orderDAO.find(undefined, {options: ['billingAddress.orders']})
+      expect(results).toHaveLength(2)
+
+      const result1 = results[0]
+      expect(result1).toBeDefined()
+      expect(result1.billingAddress).toBeDefined()
+      expect(result1.billingAddress.orders).toBeDefined()
+      expect(result1.billingAddress.orders).toHaveLength(2)
+
+      const result2 = results[1]
+      expect(result2).toBeDefined()
+      expect(result2.billingAddress).toBeDefined()
+      expect(result2.billingAddress.orders).toBeDefined()
+      expect(result2.billingAddress.orders).toHaveLength(2)
+    })
   })
 
   describe('findOne', () => {
@@ -117,13 +158,13 @@ describe('OrderDAO (e2e)', () => {
       }
       order = await orderDAO.save(order)
 
-      const result = await orderDAO.findById(order.id!, {options: ['billingAddressLazy']})
+      const result = await orderDAO.findById(order.id!, { options: ['billingAddressLazy'] })
 
       expect(result).toBeDefined()
       expect(result!.billingAddressLazy).toBeDefined()
-      expect(result!.billingAddressLazy.line1).toEqual('line1')
-      expect(result!.billingAddressLazy.line2).toEqual('line2')
-      expect(result!.billingAddressLazy.country).toEqual('FR')
+      expect(result!.billingAddressLazy!.line1).toEqual('line1')
+      expect(result!.billingAddressLazy!.line2).toEqual('line2')
+      expect(result!.billingAddressLazy!.country).toEqual('FR')
     })
   })
 

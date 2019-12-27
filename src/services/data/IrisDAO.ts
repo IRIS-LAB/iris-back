@@ -3,8 +3,8 @@ import * as constants from '../../constants'
 import { RelationEntity } from '../../enums'
 import { EntityFilterQuery, EntityOptions, PaginatedEntitiesOptions } from '../../interfaces'
 import { RelationMetadata } from '../../interfaces/relation-metadata.interface'
-import { ErrorProvider } from '../../modules/iris-module/providers'
-import { TypeormQueryBuilder, TypeormUtils } from '../../utils'
+import { ErrorProvider, LoggerProvider } from '../../modules/iris-module/providers'
+import { TypeormQueryBuilder } from '../../utils'
 
 /**
  * IrisDAO.
@@ -17,8 +17,9 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
    * Default constructor
    * @param repository - TypeORM repository
    * @param errorProvider - error factory
+   * @param loggerProvider - logger provider
    */
-  constructor(protected readonly repository: Repository<T>, protected readonly errorProvider: ErrorProvider) {
+  constructor(protected readonly repository: Repository<T>, protected readonly errorProvider: ErrorProvider, protected readonly loggerProvider: LoggerProvider) {
   }
 
   /**
@@ -108,25 +109,62 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
    * Browser entity relations and call applyFn on relation marked as ASSOCIATION or ENTITY or enabled by options (from query parameter).
    * @param applyFn - function to call
    * @param query - query parameter with options
+   * @param maxDepths - max depths for circular dependencies
+   * @param currentDepth - current depth from main entity
+   * @param pathPrefix - path prefix from main entity
+   * @param constructor - type of the current entity relation
    */
-  protected applyRelations(applyFn: (relation: string, metadata: RelationMetadata) => void, query?: EntityOptions): void {
-    // Check @Relation()
-    const entityRelations: { [key: string]: RelationMetadata } = Reflect.getMetadata(constants.RELATION_METADATA, (this.repository.target as any).prototype.constructor)
-    if (entityRelations) {
-      for (const key of Object.keys(entityRelations)) {
-        const relation = entityRelations[key]
-        // We fully load ASSOCIATION Relations. Unnecessary fields will be deleted by exposition interceptor
-        if (relation.relation === RelationEntity.ENTITY || relation.relation === RelationEntity.ASSOCIATION || (query && query.options && query.options.indexOf(key) > -1)) {
-          // Check if relation is managed by typeorm. Could be relative to XBE and then it should be managed manually in LBS
-          if (TypeormUtils.isRelationValid(this.repository, key)) {
-            // We add all relations that allow typeorm to load nested relations
-            const splittedRelation = key.split('.')
-            for (let index = 1; index <= splittedRelation.length; index++) {
-              const relationToAdd = splittedRelation.slice(0, index).join('.')
-              applyFn(relationToAdd, relation)
-            }
-          }
-        }
+  // protected applyRelations(applyFn: (relation: string, metadata: RelationMetadata) => void, query?: EntityOptions, maxDepths = 5, currentDepth = 1, pathPrefix?: string, constructor?) {
+  //   // Check @Relation()
+  //   const entityRelations: { [key: string]: RelationMetadata } = Reflect.getMetadata(constants.RELATION_METADATA, constructor || (this.repository.target as any).prototype.constructor)
+  //   if (entityRelations) {
+  //     for (const key of Object.keys(entityRelations)) {
+  //       const relation = entityRelations[key]
+  //       // We fully load ASSOCIATION Relations. Unnecessary fields will be deleted by exposition interceptor
+  //       const relationPath = (pathPrefix ? pathPrefix + '.' : '') + key
+  //       if (relation.relation === RelationEntity.ENTITY || relation.relation === RelationEntity.ASSOCIATION || (query && query.options && query.options.indexOf(relationPath) > -1)) {
+  //         // Check if relation is managed by typeorm. Could be relative to XBE and then it should be managed manually in LBS
+  //         if (TypeormUtils.isRelationValid(this.repository, relationPath)) {
+  //           // We add all relations that allow typeorm to load nested relations
+  //           const splittedRelation = relationPath.split('.')
+  //           for (let index = 1; index <= splittedRelation.length; index++) {
+  //             const relationToAdd = splittedRelation.slice(0, index).join('.')
+  //             applyFn(relationToAdd, relation)
+  //           }
+  //         }
+  //         if (currentDepth < maxDepths) {
+  //           const type = typeof relation.type === 'function' ? relation.type() : this.getTypeormTypeForRelation(relationPath)
+  //           if (!type) {
+  //             this.loggerProvider.warn(`Cannot find type for relation ${typeof this.repository.target === 'string' ? this.repository.target : this.repository.target.name}.${relationPath}`)
+  //           } else {
+  //             this.applyRelations(applyFn, query, maxDepths, currentDepth + 1, relationPath, type)
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
+
+  /**
+   * Apply relations from Typeorm model and @Relation annotations.
+   *
+   * This will add relation to load and return in resultset if typeorm relation is eager or if iris relation is annotated with ENTITY or ASSOCIATION or if an option for the relation is passed in the query parameter.
+   *
+   * @param typeormQueryBuilder - the typeorm builder.
+   * @param query - the query (with options).
+   * @param metadata - the entity metadata to check relations to.
+   * @param pathPrefix - the path prefix from the repository target to the entity.
+   */
+  private applyTypeormRelations(typeormQueryBuilder: TypeormQueryBuilder<T>, query?: EntityOptions, metadata?: EntityMetadata, pathPrefix?: string): void {
+    const entityMetadata = metadata || this.repository.metadata
+    const irisRelations: { [key: string]: RelationMetadata } = Reflect.getMetadata(constants.RELATION_METADATA, entityMetadata.target)
+    for (const relation of entityMetadata.relations) {
+      const irisRelation = irisRelations ? irisRelations[relation.propertyPath] : undefined
+      const fullRelationPath = `${pathPrefix ? pathPrefix + '.' : ''}${relation.propertyPath}`
+
+      if (relation.isEager || (irisRelation && (irisRelation.relation === RelationEntity.ENTITY || irisRelation.relation === RelationEntity.ASSOCIATION)) || (query && query.options && query.options.some(opt => opt === fullRelationPath || (opt.startsWith(fullRelationPath) && opt.substring(fullRelationPath.length, 1) === '.')))) {
+        typeormQueryBuilder = typeormQueryBuilder.withRelationToField(fullRelationPath, true)
+        this.applyTypeormRelations(typeormQueryBuilder, query, relation.inverseEntityMetadata, fullRelationPath)
       }
     }
   }
@@ -151,11 +189,11 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
 
   private applyRelationsToQuerybuilder(queryBuilder: TypeormQueryBuilder<T>, query?: EntityOptions): void {
     // Apply typeorm eager relations
-    this.applyTypeormRelations(queryBuilder, this.repository.metadata)
+    this.applyTypeormRelations(queryBuilder, query)
     // Apply Iris relations
-    this.applyRelations((relationToAdd, metadata) => {
-      queryBuilder.withRelationToField(relationToAdd, true)
-    }, query)
+    // this.applyRelations((relationToAdd, metadata) => {
+    //   queryBuilder.withRelationToField(relationToAdd, true)
+    // }, query)
   }
 
   /**
@@ -215,12 +253,13 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
 
   }
 
-  private applyTypeormRelations(typeormQueryBuilder: TypeormQueryBuilder<T>, metadata: EntityMetadata, pathPrefix?: string): void {
-    for (const relation of metadata.relations) {
-      if (relation.isEager) {
-        typeormQueryBuilder = typeormQueryBuilder.withRelationToField(`${pathPrefix ? pathPrefix + '.' : ''}${relation.propertyPath}`, true)
-        this.applyTypeormRelations(typeormQueryBuilder, relation.inverseEntityMetadata, `${pathPrefix ? pathPrefix + '.' : ''}${relation.propertyPath}`)
-      }
-    }
-  }
+  // private getTypeormTypeForRelation(propertyPath: string, metadata?: EntityMetadata) {
+  //   const parts = propertyPath.split('.')
+  //   const firstPart = parts.shift()
+  //   const relationFound = (metadata || this.repository.metadata).relations.find(r => r.propertyPath === firstPart)
+  //   if (!relationFound) {
+  //     return undefined
+  //   }
+  //   return parts.length === 0 ? relationFound.type : this.getTypeormTypeForRelation(parts.join('.'), relationFound.inverseEntityMetadata)
+  // }
 }
