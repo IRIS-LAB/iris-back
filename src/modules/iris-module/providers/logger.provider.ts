@@ -43,7 +43,7 @@ export class LoggerProvider implements LoggerService {
   }
 
   public log(message: any): any {
-    this.logger.log(message)
+    this.logger.debug(message)
   }
 
   public verbose(message: any): any {

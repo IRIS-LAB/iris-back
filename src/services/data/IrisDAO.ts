@@ -106,46 +106,6 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
   }
 
   /**
-   * Browser entity relations and call applyFn on relation marked as ASSOCIATION or ENTITY or enabled by options (from query parameter).
-   * @param applyFn - function to call
-   * @param query - query parameter with options
-   * @param maxDepths - max depths for circular dependencies
-   * @param currentDepth - current depth from main entity
-   * @param pathPrefix - path prefix from main entity
-   * @param constructor - type of the current entity relation
-   */
-  // protected applyRelations(applyFn: (relation: string, metadata: RelationMetadata) => void, query?: EntityOptions, maxDepths = 5, currentDepth = 1, pathPrefix?: string, constructor?) {
-  //   // Check @Relation()
-  //   const entityRelations: { [key: string]: RelationMetadata } = Reflect.getMetadata(constants.RELATION_METADATA, constructor || (this.repository.target as any).prototype.constructor)
-  //   if (entityRelations) {
-  //     for (const key of Object.keys(entityRelations)) {
-  //       const relation = entityRelations[key]
-  //       // We fully load ASSOCIATION Relations. Unnecessary fields will be deleted by exposition interceptor
-  //       const relationPath = (pathPrefix ? pathPrefix + '.' : '') + key
-  //       if (relation.relation === RelationEntity.ENTITY || relation.relation === RelationEntity.ASSOCIATION || (query && query.options && query.options.indexOf(relationPath) > -1)) {
-  //         // Check if relation is managed by typeorm. Could be relative to XBE and then it should be managed manually in LBS
-  //         if (TypeormUtils.isRelationValid(this.repository, relationPath)) {
-  //           // We add all relations that allow typeorm to load nested relations
-  //           const splittedRelation = relationPath.split('.')
-  //           for (let index = 1; index <= splittedRelation.length; index++) {
-  //             const relationToAdd = splittedRelation.slice(0, index).join('.')
-  //             applyFn(relationToAdd, relation)
-  //           }
-  //         }
-  //         if (currentDepth < maxDepths) {
-  //           const type = typeof relation.type === 'function' ? relation.type() : this.getTypeormTypeForRelation(relationPath)
-  //           if (!type) {
-  //             this.loggerProvider.warn(`Cannot find type for relation ${typeof this.repository.target === 'string' ? this.repository.target : this.repository.target.name}.${relationPath}`)
-  //           } else {
-  //             this.applyRelations(applyFn, query, maxDepths, currentDepth + 1, relationPath, type)
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
-
-  /**
    * Apply relations from Typeorm model and @Relation annotations.
    *
    * This will add relation to load and return in resultset if typeorm relation is eager or if iris relation is annotated with ENTITY or ASSOCIATION or if an option for the relation is passed in the query parameter.
@@ -188,12 +148,7 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
   }
 
   private applyRelationsToQuerybuilder(queryBuilder: TypeormQueryBuilder<T>, query?: EntityOptions): void {
-    // Apply typeorm eager relations
     this.applyTypeormRelations(queryBuilder, query)
-    // Apply Iris relations
-    // this.applyRelations((relationToAdd, metadata) => {
-    //   queryBuilder.withRelationToField(relationToAdd, true)
-    // }, query)
   }
 
   /**
@@ -250,16 +205,5 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
         }
       }
     }
-
   }
-
-  // private getTypeormTypeForRelation(propertyPath: string, metadata?: EntityMetadata) {
-  //   const parts = propertyPath.split('.')
-  //   const firstPart = parts.shift()
-  //   const relationFound = (metadata || this.repository.metadata).relations.find(r => r.propertyPath === firstPart)
-  //   if (!relationFound) {
-  //     return undefined
-  //   }
-  //   return parts.length === 0 ? relationFound.type : this.getTypeormTypeForRelation(parts.join('.'), relationFound.inverseEntityMetadata)
-  // }
 }
