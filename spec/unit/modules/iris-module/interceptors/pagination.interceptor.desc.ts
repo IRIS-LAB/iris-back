@@ -14,7 +14,7 @@ class DefaultEBS {
   @PaginatedResources(Number, 'numbers', 10, 100)
   public async index(@PaginatedEntitiesQueryParam() queryableListParam: PaginatedEntitiesOptions): Promise<PaginatedListResult<number>> {
     const numbersInDatabase = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
-    const results = numbersInDatabase.slice(queryableListParam.paginate.size * queryableListParam.paginate.page, queryableListParam.paginate.size * queryableListParam.paginate.page + queryableListParam.paginate.size)
+    const results = numbersInDatabase.slice(queryableListParam.paginate!.size * queryableListParam.paginate!.page, queryableListParam.paginate!.size * queryableListParam.paginate!.page + queryableListParam.paginate!.size)
     return { list: results, count: numbersInDatabase.length }
   }
 }

@@ -53,6 +53,17 @@ class DefaultEBS {
 
 }
 
+@Controller('/other')
+@Roles('ROLE3')
+class DefaultEBS2 {
+
+  @Get('/')
+  public async index(): Promise<string> {
+    return 'OK'
+  }
+
+}
+
 describe('@Roles', () => {
   let app: INestApplication
 
@@ -71,6 +82,7 @@ describe('@Roles', () => {
           ],
           controllers: [
             DefaultEBS,
+            DefaultEBS2,
           ],
           providers: [],
         })
@@ -125,6 +137,7 @@ describe('@Roles', () => {
           ],
           controllers: [
             DefaultEBS,
+            DefaultEBS2
           ],
           providers: [],
         })
@@ -157,6 +170,12 @@ describe('@Roles', () => {
       it('should unauthorize request secured by roles', () => {
         return request(app.getHttpServer())
           .get('/')
+          .expect(403)
+      })
+
+      it('should unauthorize request secured by roles on controller', () => {
+        return request(app.getHttpServer())
+          .get('/other')
           .expect(403)
       })
     })

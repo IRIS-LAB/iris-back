@@ -39,6 +39,7 @@ $ npm install @u-iris/iris-back @nestjs/common@=6.10.12 @nestjs/core@=6.10.12 @n
     * [Logger](#logger)
     * [Message provider](#message-provider)
     * [Error provider](#error-provider)
+* [Security](#security)
 * [Other middlewares](#other-middlewares)
 
 
@@ -619,6 +620,26 @@ Once your have create your own implementation, you need to define your beans int
 class AppModule implements NestModule {
   public configure(consumer: MiddlewareConsumer): MiddlewareConsumer | void {
     return undefined
+  }
+}
+```
+
+Then you can add authorization roles required for each resource with @Role decorator :
+```typescript
+
+@Controller('/')
+@Roles('ROLE_1', 'ROLE_2') // MyAuthorizationProvider.validateAuthorization(request, 'ROLE_1', 'ROLE_2') will be called and must return true to enable access to the controller
+class SecuredController {
+
+}
+
+@Controller('/')
+class UnsecuredController {
+
+  @Roles('ROLE_1', 'ROLE_2')
+  @Get('/')
+  public async foo():Promise<string> {
+    return 'bar'
   }
 }
 ```

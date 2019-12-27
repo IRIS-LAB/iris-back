@@ -10,6 +10,7 @@ import { CorsMiddleware } from './middlewares/cors.middleware'
 import { HelmetMiddleware } from './middlewares/helmet.middleware'
 import { LoggerMiddleware } from './middlewares/logging.middleware'
 import { RequestContextMiddleware } from './middlewares/request-context.middleware'
+import { RequireRole } from './middlewares/require-role.middleware'
 import { BusinessValidatorProvider, ClsProvider, ErrorProvider, LoggerProvider, MessageProvider } from './providers'
 import { DefaultAuthenticationProvider } from './providers/default-authentication.provider'
 import { DefaultAuthorizationProvider } from './providers/default-authorization.provider'
@@ -85,6 +86,7 @@ export class IrisModule implements NestModule {
   public configure(consumer: MiddlewareConsumer): any {
     consumer
       .apply(CompressionMiddleware, RequestContextMiddleware, LoggerMiddleware, CorsMiddleware, HelmetMiddleware).forRoutes('/')
+      .apply(RequireRole('ACTUATOR')).forRoutes('/actuator')
   }
 
 }

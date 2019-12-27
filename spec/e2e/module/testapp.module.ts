@@ -23,12 +23,6 @@ import { testappIrisModuleOptions } from './testapp.module.options'
 })
 export class AppModule implements NestModule {
   public configure(consumer: MiddlewareConsumer): MiddlewareConsumer | void {
-    // consumer.apply(RequestContextMiddleware).forRoutes('/')
-    // consumer.apply(middlewares.parseJSON()).forRoutes('/')
-    // consumer.apply(middlewares.enableCors()).forRoutes('/')
-    // consumer.apply(middlewares.enableCompression()).forRoutes('/')
-    // consumer.apply(middlewares.enableSecurity()).forRoutes('/')
-    // consumer.apply(middlewares.actuator()).forRoutes('/actuator')
     return consumer
   }
 }
