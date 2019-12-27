@@ -23,10 +23,10 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
 
   /**
    * Find entities matching filters with pagination and sort and return list and count.
-   * @param query - The query
-   * @param filters - Functional filters
+   * @param filters? - Functional filters
+   * @param query? - The query
    */
-  public async findWithPaginationResult(query?: PaginatedEntitiesOptions, filters?: Q): Promise<{ list: T[], count: number }> {
+  public async findWithPaginationResult(filters?: Q, query?: PaginatedEntitiesOptions): Promise<{ list: T[]; count: number }> {
     const results = await this.createQueryBuilder(query, filters)
       .getManyAndCount()
 
@@ -37,19 +37,19 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
 
   /**
    * Find entities matching filters with pagination and sort
-   * @param query - The query
-   * @param filters - Functional filters
+   * @param filters? - Functional filters
+   * @param query? - The query
    */
-  public async find(query?: PaginatedEntitiesOptions, filters?: Q): Promise<T[]> {
+  public async find(filters?: Q, query?: PaginatedEntitiesOptions): Promise<T[]> {
     return this.createQueryBuilder(query, filters).getMany()
   }
 
   /**
    * Find entities in database matching query filters
-   * @param query - Query passed by exposition service where filters are stored.
-   * @param filters - Functional filters
+   * @param filters? - Functional filters
+   * @param query? - Query passed by exposition service where filters are stored.
    */
-  public async count(query?: PaginatedEntitiesOptions, filters?: Q): Promise<number> {
+  public async count(filters?: Q, query?: PaginatedEntitiesOptions): Promise<number> {
     return this.createQueryBuilder(query, filters).getCount()
   }
 

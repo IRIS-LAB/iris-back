@@ -16,15 +16,15 @@ export class OrderLBS {
   }
 
   public async findAll(query?: PaginatedEntitiesOptions, filters?: OrderFilterQuery): Promise<OrderBE[]> {
-    return this.orderDAO.find(query, filters)
+    return this.orderDAO.find(filters, query)
   }
 
   public async count(query?: PaginatedEntitiesOptions, filters?: OrderFilterQuery): Promise<number> {
-    return this.orderDAO.count(query, filters)
+    return this.orderDAO.count(filters, query)
   }
 
   public async findWithPaginationResult(query?: PaginatedEntitiesOptions, filters?: OrderFilterQuery): Promise<PaginatedListResult<OrderBE>> {
-    return this.orderDAO.findWithPaginationResult(query, filters)
+    return this.orderDAO.findWithPaginationResult(filters, query)
   }
 
   public async findById(id: number, query?: EntityOptions): Promise<OrderBE> {
