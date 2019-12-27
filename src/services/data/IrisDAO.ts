@@ -59,7 +59,16 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
    * @param query - Query passed by exposition service where filters are stored.
    */
   public async findById(id: number, query?: EntityOptions): Promise<T | undefined> {
-    return this.createQueryBuilder(query, { id }).getOne()
+    return this.findOne({ id }, query)
+  }
+
+  /**
+   * Find an entity by ID
+   * @param filters - filters of query
+   * @param query - Query passed by exposition service where filters are stored.
+   */
+  public async findOne(filters?: any, query?: EntityOptions): Promise<T | undefined> {
+    return this.createQueryBuilder(query, filters).getOne()
   }
 
   /**
@@ -206,9 +215,9 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
 
   }
 
-  private applyTypeormRelations(typeormQueryBuilder: TypeormQueryBuilder<T>, metadata: EntityMetadata, pathPrefix?: string):void {
+  private applyTypeormRelations(typeormQueryBuilder: TypeormQueryBuilder<T>, metadata: EntityMetadata, pathPrefix?: string): void {
     for (const relation of metadata.relations) {
-      if(relation.isEager) {
+      if (relation.isEager) {
         typeormQueryBuilder = typeormQueryBuilder.withRelationToField(`${pathPrefix ? pathPrefix + '.' : ''}${relation.propertyPath}`, true)
         this.applyTypeormRelations(typeormQueryBuilder, relation.inverseEntityMetadata, `${pathPrefix ? pathPrefix + '.' : ''}${relation.propertyPath}`)
       }

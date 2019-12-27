@@ -33,7 +33,7 @@ describe('OrderDAO (e2e)', () => {
     await databaseTestUtils.cleanDatabase()
   })
 
-  describe('queryBuilder', () => {
+  describe('createQueryBuilder', () => {
     it('should load eager relations', async () => {
       let order = new OrderBE()
       order.reference = '123'
@@ -67,6 +67,40 @@ describe('OrderDAO (e2e)', () => {
       expect(result1.orderLinesWithoutRelation![0].product.label).toEqual('product 2')
       expect(result1.orderLinesWithoutRelation![1].product).toBeDefined()
       expect(result1.orderLinesWithoutRelation![1].product.label).toEqual('product 3')
+    })
+  })
+
+  describe('findOne', () => {
+    it('should load eager relations', async () => {
+      let order = new OrderBE()
+      order.reference = '123'
+      order.state = OrderState.PENDING
+      order.customer = { id: 1 }
+      order.orderLinesWithoutRelation = []
+
+      const orderLine1 = new OrderLineBE()
+      orderLine1.quantity = 3
+      orderLine1.product = { amount: 3, label: 'product 2' }
+      orderLine1.amount = 9
+      order.orderLinesWithoutRelation.push(orderLine1)
+
+      const orderLine2 = new OrderLineBE()
+      orderLine2.product = { amount: 15, label: 'product 3' }
+      orderLine2.quantity = 2
+      orderLine2.amount = 30
+      order.orderLinesWithoutRelation.push(orderLine2)
+
+      order = await orderDAO.save(order)
+
+      const result = await orderDAO.findOne({reference: '123'})
+
+      expect(result).toBeDefined()
+      expect(result!.orderLinesWithoutRelation).toBeDefined()
+      expect(result!.orderLinesWithoutRelation).toHaveLength(2)
+      expect(result!.orderLinesWithoutRelation![0].product).toBeDefined()
+      expect(result!.orderLinesWithoutRelation![0].product.label).toEqual('product 2')
+      expect(result!.orderLinesWithoutRelation![1].product).toBeDefined()
+      expect(result!.orderLinesWithoutRelation![1].product.label).toEqual('product 3')
     })
   })
 
