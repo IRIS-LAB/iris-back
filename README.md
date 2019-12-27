@@ -15,10 +15,10 @@ The main features are :
 * Logger
 * Messages provider from .properties files
 
-## Installation
+## Install
 
 ```bash
-$ npm install @u-iris/iris-back --save
+$ npm install @u-iris/iris-back @nestjs/common@=6.10.12 @nestjs/core@=6.10.12 @nestjs/typeorm@=6.2.0 @u-iris/iris-common reflect-metadata rxjs typeorm@=0.2.22 --save
 ```
 
 ## Usage

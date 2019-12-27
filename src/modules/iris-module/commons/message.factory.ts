@@ -21,7 +21,7 @@ export class MessageFactory {
     if (result && datas && typeof datas === 'object') {
       Object.keys(datas).forEach(k => {
           result = result.replace('${' + k + '}', datas[k], 'g')
-          result = result.replace('$' + k + '', datas[k], 'g')
+          result = result.replace(new RegExp('\\$' + k + '(\\s|$)'), datas[k] + '$1', 'g')
         }
       )
     }
