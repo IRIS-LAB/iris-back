@@ -654,7 +654,7 @@ Health checker is enabled by default by iris module (this can be disabled in the
 **IMPORTANT**: To get this information the middleware have some sort of logic:
 
 When the express app is executed with node app.js or npm start the module will look for a file named package.json where the node command was launched.
-Git information will show only if exists a git.properties file where the app was launched. You can use node-git-info to generate this file.
+Git information will show only if exists a git.properties file where the app was launched. You can use [node-git-info](https://www.npmjs.com/package/node-git-info) to generate this file.
 
 * /metrics : get memory usage and uptime. This endpoint is **secured** and requires a specific ROLE to access it.
 * /env : get environment variables. This endpoint is **secured** and requires a specific ROLE to access it.
