@@ -15,6 +15,5 @@ export const testappIrisModuleOptions: IrisConfigOptions = {
   },
   messagesSources: path.resolve(__dirname, '../../resources/i18n-test.properties'),
   actuatorOptions: {
-    enablePing: false
   },
 }

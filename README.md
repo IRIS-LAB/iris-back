@@ -14,6 +14,7 @@ The main features are :
 * Trace Context support
 * Logger
 * Messages provider from .properties files
+* Healthchecker
 
 ## Install
 
@@ -40,6 +41,7 @@ $ npm install @u-iris/iris-back @nestjs/common@=6.10.12 @nestjs/core@=6.10.12 @n
     * [Message provider](#message-provider)
     * [Error provider](#error-provider)
 * [Security](#security)
+* [Healthchecker](#health-checker)
 * [Other middlewares](#other-middlewares)
 
 
@@ -643,6 +645,30 @@ class UnsecuredController {
   }
 }
 ```
+
+### Health Checker
+Health checker is enabled by default by iris module (this can be disabled in the iris module options. The default path is **/actuator** (this can be overridden in the iris module options). It provides some endpoints :
+* /health : get server health status: UP or DOWN (this will check typeorm connections)
+* /info : get basics informations such as project name, version and git informations about commit, branch etc.
+
+**IMPORTANT**: To get this information the middleware have some sort of logic:
+
+When the express app is executed with node app.js or npm start the module will look for a file named package.json where the node command was launched.
+Git information will show only if exists a git.properties file where the app was launched. You can use node-git-info to generate this file.
+
+* /metrics : get memory usage and uptime. This endpoint is **secured** and requires a specific ROLE to access it.
+* /env : get environment variables. This endpoint is **secured** and requires a specific ROLE to access it.
+
+You can configure the health checker by setting this options in the iris module options **actuatorOptions** field :
+
+| name | default value | description |
+|---|---|---|
+| enable | true | enable or disable the health checker globally |
+| endpoint | '/actuator' | main endpoint of the health checker services |
+| role | 'ACTUATOR' | Required role to access to secured healh checker endpoints |
+| enableTypeOrm | true | enable or disable the check of typeorm connections in /info service |
+| gitMode | 'simple' | level of git informations returned by /info service  ('simple' or 'full') |
+
 
 ### Other middlewares
 Some middlewares are automatically added by IrisModule : 

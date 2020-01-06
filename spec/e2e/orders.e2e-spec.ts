@@ -38,6 +38,7 @@ describe('OrderEBS (e2e)', () => {
 
   beforeEach(async () => {
     await databaseTestUtils.cleanDatabase()
+    jest.clearAllMocks()
   })
 
   describe('/ (GET)', () => {

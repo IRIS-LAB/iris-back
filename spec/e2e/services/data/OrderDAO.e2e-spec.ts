@@ -1,4 +1,3 @@
-import '../../e2e-config-loader'
 import { Test, TestingModule } from '@nestjs/testing'
 import { AddressBE } from '../../../commons/objects/business/be/AddressBE'
 import { OrderBE } from '../../../commons/objects/business/be/OrderBE'
@@ -7,6 +6,7 @@ import { OrderState } from '../../../commons/objects/business/be/OrderState'
 import { OrderDAO } from '../../../commons/services/data/OrderDAO'
 import { TestUtils } from '../../../commons/test.utils'
 import { DatabaseTestUtils } from '../../database-test-utils.service'
+import '../../e2e-config-loader'
 import { AppModule } from '../../module/testapp.module'
 
 describe('OrderDAO (e2e)', () => {
@@ -31,6 +31,7 @@ describe('OrderDAO (e2e)', () => {
   })
 
   beforeEach(async () => {
+    jest.clearAllMocks()
     await databaseTestUtils.cleanDatabase()
   })
 
@@ -64,10 +65,11 @@ describe('OrderDAO (e2e)', () => {
       expect(result1).toBeDefined()
       expect(result1.orderLinesWithoutRelation).toBeDefined()
       expect(result1.orderLinesWithoutRelation).toHaveLength(2)
-      expect(result1.orderLinesWithoutRelation![0].product).toBeDefined()
-      expect(result1.orderLinesWithoutRelation![0].product.label).toEqual('product 2')
-      expect(result1.orderLinesWithoutRelation![1].product).toBeDefined()
-      expect(result1.orderLinesWithoutRelation![1].product.label).toEqual('product 3')
+      result1.orderLinesWithoutRelation?.forEach(r => {
+        expect(r).toBeDefined()
+        expect(r.product).toBeDefined()
+        expect(r.product.label).toBeDefined()
+      })
     })
 
   })
