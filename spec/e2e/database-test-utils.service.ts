@@ -106,25 +106,4 @@ export class DatabaseTestUtils {
     await this.cleanAll(this.getEntities())
   }
 
-
-  /**
-   * Insert the data from the src/test/fixtures folder
-   */
-  // async loadAll(entities: Entity[]) {
-  //   try {
-  //     for (const entity of entities) {
-  //       const fixtureFile = Path.join(__dirname, `../test/fixtures/${entity.name}.json`)
-  //       if (fs.existsSync(fixtureFile)) {
-  //         const items = JSON.parse(fs.readFileSync(fixtureFile, 'utf8'))
-  //         await this.connection
-  //           .createQueryBuilder(entity.name)
-  //           .insert()
-  //           .values(items)
-  //           .execute()
-  //       }
-  //     }
-  //   } catch (error) {
-  //     throw new Error(`ERROR [TestUtils.loadAll()]: Loading fixtures on test db: ${error}`)
-  //   }
-  // }
 }

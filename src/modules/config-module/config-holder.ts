@@ -1,3 +1,4 @@
+import { ModuleMetadata } from '@nestjs/common/interfaces/modules/module-metadata.interface'
 import { CompressionOptions } from 'compression'
 import { CorsOptions } from 'cors'
 import { IHelmetConfiguration } from 'helmet'
@@ -47,6 +48,12 @@ export interface IrisActuatorConfigOptions {
 }
 
 export interface IrisConfigOptions {
+
+  /**
+   * NestJS Module to imports (used to provide authorization and authentication providers).
+   */
+  imports?: ModuleMetadata['imports']
+
   /**
    * Logger options.
    */

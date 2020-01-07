@@ -28,6 +28,9 @@ export class IrisModule implements NestModule {
     ]
 
     const irisConfigOptions = getIrisConfigOptions(options)
+    if (irisConfigOptions.imports && irisConfigOptions.imports.length) {
+      modulesToImport.push(...irisConfigOptions.imports)
+    }
     if (irisConfigOptions.actuatorOptions!.enable) {
       Reflect.defineMetadata(PATH_METADATA, irisConfigOptions.actuatorOptions!.endpoint, ActuatorController)
       Reflect.defineMetadata(SCOPE_OPTIONS_METADATA, undefined, ActuatorController)
