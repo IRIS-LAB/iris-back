@@ -22,14 +22,12 @@
 * rework error provider methods signatures
 * fix : logger provider does no longer throw exception if trace id or span id is not available in cls context (this will return '?' in this case)
 
-## 3.1.2-SNAPSHOT
+## 3.1.2
 * improve business validator provider by getting error message from message sources of IrisModule
 * rework middlewares
 * support cors configuration
 * actuator health checker now checks typeorm connections
 * remove BusinessValidator decorator => use joiful decorators instead
-
-## 3.1.2-SNAPSHOT
 * implements security services
 * rework request context and logger
     * deprecates RequestContextInterceptor
