@@ -1,17 +1,16 @@
 import { Test } from '@nestjs/testing'
 import { BusinessException } from '@u-iris/iris-common'
 import { TestsUtils } from '@u-iris/iris-common-test-utils'
-import { Joi } from 'tsdv-joi/core'
-import { BusinessValidator } from '../../../../../src/decorators'
+import { jf } from '../../../../../src/decorators'
 import { BusinessValidatorProvider, IrisModule } from '../../../../../src/modules/iris-module'
 import { irisModuleOptionsForTests } from '../../../../commons/message-factory-for-tests'
 
 class DTO {
 
-  @BusinessValidator(Joi.number().greater(0))
+  @jf.number().greater(0)
   public count: number
 
-  @BusinessValidator(Joi.string().required())
+  @jf.string().required()
   public name: string
 
 }

@@ -1,3 +1,5 @@
 export * from './filter.utils'
 export * from './pagination.utils'
 export * from './type.utils'
+export * from './typeorm.utils'
+export * from './typeorm-query-builder'

@@ -8,7 +8,7 @@ import {
   AuthorizationService,
   ClsProvider,
   IrisModule,
-  Roles,
+  Secured,
 } from '../../../../../src/modules/iris-module'
 import { DefaultAuthorizationProvider } from '../../../../../src/modules/iris-module/providers/default-authorization.provider'
 import { irisModuleOptionsForTests } from '../../../../commons/message-factory-for-tests'
@@ -36,7 +36,7 @@ class DefaultEBS {
   }
 
   @Get('/')
-  @Roles('ROLE1', 'ROLE2')
+  @Secured('ROLE1', 'ROLE2')
   public async index(): Promise<string> {
     return 'OK'
   }
@@ -53,7 +53,18 @@ class DefaultEBS {
 
 }
 
-describe('@Roles', () => {
+@Controller('/other')
+@Secured('ROLE3')
+class DefaultEBS2 {
+
+  @Get('/')
+  public async index(): Promise<string> {
+    return 'OK'
+  }
+
+}
+
+describe('@Secured', () => {
   let app: INestApplication
 
   describe('authorizationProvider', () => {
@@ -71,6 +82,7 @@ describe('@Roles', () => {
           ],
           controllers: [
             DefaultEBS,
+            DefaultEBS2,
           ],
           providers: [],
         })
@@ -125,6 +137,7 @@ describe('@Roles', () => {
           ],
           controllers: [
             DefaultEBS,
+            DefaultEBS2
           ],
           providers: [],
         })
@@ -157,6 +170,12 @@ describe('@Roles', () => {
       it('should unauthorize request secured by roles', () => {
         return request(app.getHttpServer())
           .get('/')
+          .expect(403)
+      })
+
+      it('should unauthorize request secured by roles on controller', () => {
+        return request(app.getHttpServer())
+          .get('/other')
           .expect(403)
       })
     })

@@ -22,12 +22,18 @@ export class RolesGuard implements CanActivate {
     // save user into cls context
     this.clsManager.setAuthenticatedUser(user)
 
-    const functions = this.reflector.get<string[]>(ROLES_METADATAS, context.getHandler())
-    if (!functions || !functions.length) {
-      return true
-    }
-    // if any role is required, process to authorization validation
-    return this.authorizationService.validateAuthorization(request, ...functions)
+    let access = true
+
+    const middlewaresFunctions = request[ROLES_METADATAS]
+    access = access && (!middlewaresFunctions || middlewaresFunctions.length === 0 || await this.authorizationService.validateAuthorization(request, ...middlewaresFunctions))
+
+    const guardsClassRoles = this.reflector.get<string[]>(ROLES_METADATAS, context.getClass())
+    access = access && (!guardsClassRoles || guardsClassRoles.length === 0 || await this.authorizationService.validateAuthorization(request, ...guardsClassRoles))
+
+    const guardsMethodRoles = this.reflector.get<string[]>(ROLES_METADATAS, context.getHandler())
+    access = access && (!guardsMethodRoles || guardsMethodRoles.length === 0 || await this.authorizationService.validateAuthorization(request, ...guardsMethodRoles))
+
+    return access
   }
 
 }

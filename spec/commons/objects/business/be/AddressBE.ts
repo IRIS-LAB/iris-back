@@ -1,6 +1,5 @@
-import { Joi } from 'tsdv-joi/core'
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
-import { BusinessValidator } from '../../../../../src/decorators'
+import { jf } from '../../../../../src/decorators'
 import { OrderBE } from './OrderBE'
 
 @Entity(`ADDRESS`)
@@ -10,15 +9,15 @@ export class AddressBE {
   public id?: number
 
   @Column({ name: 'LINE1' })
-  @BusinessValidator(Joi.string().required())
+  @jf.string().required()
   public line1: string
 
   @Column({ name: 'LINE2' })
-  @BusinessValidator(Joi.string())
+  @jf.string()
   public line2?: string
 
   @Column({ name: 'COUNTRY' })
-  @BusinessValidator(Joi.string().required())
+  @jf.string().required()
   public country: string
 
   @OneToMany(type => OrderBE, order => order.billingAddress, {

@@ -1,7 +1,7 @@
 import { Controller, Get, INestApplication } from '@nestjs/common'
 import { BusinessException, ErrorDO } from '@u-iris/iris-common'
 import request from 'supertest'
-import { StringPathParam } from '../../../src/decorators/string.path-param.decorator'
+import { StringPathParam } from '../../../src/decorators'
 import { ErrorProvider, IrisModule } from '../../../src/modules/iris-module'
 import { irisModuleOptionsForTests } from '../../commons/message-factory-for-tests'
 import { TestUtils } from '../../commons/test.utils'

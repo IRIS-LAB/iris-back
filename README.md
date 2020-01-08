@@ -14,11 +14,12 @@ The main features are :
 * Trace Context support
 * Logger
 * Messages provider from .properties files
+* Healthchecker
 
-## Installation
+## Install
 
 ```bash
-$ npm install @u-iris/iris-back --save
+$ npm install @u-iris/iris-back @nestjs/common @nestjs/core @nestjs/platform-express @nestjs/typeorm @u-iris/iris-common reflect-metadata rxjs typeorm --save
 ```
 
 ## Usage
@@ -39,6 +40,8 @@ $ npm install @u-iris/iris-back --save
     * [Logger](#logger)
     * [Message provider](#message-provider)
     * [Error provider](#error-provider)
+* [Security](#security)
+* [Healthchecker](#health-checker)
 * [Other middlewares](#other-middlewares)
 
 
@@ -51,15 +54,13 @@ Before starting to use iris-back, you should read the official documentation of 
 To use iris-back in your NestJS application you should :
 * Import IrisModule into your main module by calling `IrisModule.forRoot()`
 * @deprecated ~~Define `TraceContextInterceptor` as the first interceptor in your main module and provided as APP_INTERCEPTOR (very important)~~
-* Define `ExceptionFilter` as a global filter
-* Call `setApplicationContext()`
+* Bootstrap application with your module by calling _bootstrapIrisApp()_
 
 Example:
 
 ```typescript
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
-import { NestFactory, APP_INTERCEPTOR } from '@nestjs/core'
-import { IrisModule, LoggingInterceptor, TraceContextInterceptor, ExceptionFilter, setApplicationContext } from '@u-iris/iris-back'
+import { IrisModule, bootstrapIrisApp, getLogger } from '@u-iris/iris-back'
 
 @Module({
   imports: [
@@ -81,23 +82,34 @@ class AppModule implements NestModule {
   }
 }
 (async () => {
-    const app = await NestFactory.create(AppModule)
-    app.useGlobalFilters(new ExceptionFilter())
-    setApplicationContext(app)
-    app.listen(3000, () => {
-      console.log.info(`Server running at http://127.0.0.1:3000/`)
-    })
+  try {
+      const port = 3000
+      await bootstrapIrisApp(AppModule, { port })
+      getLogger().info(`Server running at http://127.0.0.1:${port}/`)
+    } catch (e) {
+      getLogger().error(e)
+    }
 })()
 ```
 
 ### Application context
-Application is a global store used to access injectable providers from outside a NestJS context. You must initialize application context by calling `setApplicationContext()` to use IrisModule.
+Application context is a global store used to access injectable providers from outside a NestJS context. The context is automatically initialized if you bootstrap your application with the bootstrapIrisApp() method.
+
+You can access any injectable bean from outside the NestJS context from this application context.
 
 ```typescript
-import { setApplicationContext } from '@u-iris/iris-back'
+import { Module, NestModule } from '@nestjs/common'
+import { bootstrapIrisApp, getLogger } from '@u-iris/iris-back' import { getApplicationContext } from './iris.context'
+@Module({
+  // ...
+})
+class AppModule implements NestModule {
+  // ...
+}
+await bootstrapIrisApp(AppModule)
 
-const app = await NestFactory.create(AppModule)
-setApplicationContext(app)
+const myInjectableBean = getApplicationContext().get(MyInjectableBeanClass) // return an instance of your bean
+const logger = getLogger() // return the logger bean defined in IrisModule
 ```
 
 ### Business Entity
@@ -226,8 +238,7 @@ Moreover, a business validator is used to define a constraint validator.
 Example:
 ```typescript
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
-import { AllowedOptions, Relation, RelationEntity, BusinessValidator } from '@u-iris/iris-back'
-import { Joi } from 'tsdv-joi/core'
+import { AllowedOptions, Relation, RelationEntity, jf } from '@u-iris/iris-back'
 
 @Entity(`ORDER`)
 @AllowedOptions('orderLines', 'orderLines.product', 'customer')
@@ -237,16 +248,16 @@ export class OrderBE {
   public id?: number
 
   @Column({ name: 'REFERENCE', length: 10 })
-  @BusinessValidator(Joi.string().required())
+  @jf.string().required()
   public reference: string
 
   @Column({ name: 'AMOUNT', nullable: true, type: 'float' })
-  @BusinessValidator(Joi.number())
+  @jf.number()
   public amount?: number
 
   @Column({ name: 'STATE', nullable: false })
   // Constraint for enum
-  @BusinessValidator(Joi.string().equal(Object.keys(OrderStateEnum).map(k => OrderStateEnum[k])))
+  @jf.string().equal(Object.keys(OrderStateEnum).map(k => OrderStateEnum[k]))
   public state?: OrderStateEnum
 
   @Relation(RelationEntity.ASSOCIATION, () => OrderLineBE)
@@ -323,10 +334,10 @@ For example :
 class DTO {
   class DTO {
   
-    @BusinessValidator(Joi.number().greater(0))
+    @jf.number().greater(0)
     public count: number
   
-    @BusinessValidator(Joi.string().required())
+    @jf.string().required()
     public name: string
   
   }
@@ -561,7 +572,7 @@ class MyService {
 
 #### Error provider
 ErrorProvider allows you to create `IrisException` and get label from `MessageProvider` automatically by checking the code of the error.
-// TODO : ajouter un exemple de fichier .properties 
+
 
 ```typescript
 import { Injectable } from '@nestjs/common'
@@ -573,6 +584,7 @@ class MyService {
   }
   public someAction() {
     this.errorProvider.createBusinessException('field', 'code', {data1: 'val1'}) // create business exception
+    this.errorProvider.createBusinessException({field: 'field', code: 'code', label: 'label', datas: {val: 'val1'}}) // create business exception
     this.errorProvider.createSecurityException('field', 'code', {data1: 'val1'}) // create security exception
     this.errorProvider.createTechnicalException('field', 'code', new Error()) // create technical exception
     const idNotFound = 1056
@@ -580,6 +592,9 @@ class MyService {
     
   } 
 }
+
+# messages.properties
+error.field.code.label=Field $field is in error with value $value
 ```
 
 ### Security
@@ -595,7 +610,7 @@ class MyAuthenticationProvider implements AuthenticationService {
 }
 ```
 
-The AuthorizationService is used to valide user authorization from a request.
+The AuthorizationService is used to validate user authorization from a request.
 
 ```typescript
 class MyAuthorizationProvider implements AuthorizationService {
@@ -614,15 +629,59 @@ Once your have create your own implementation, you need to define your beans int
          authenticationProvider: MyAuthenticationProvider,
          authorizationProvider: MyAuthorizationProvider
        })
-  ],
-  providers: []
+  ]
+  // ...
 })
 class AppModule implements NestModule {
-  public configure(consumer: MiddlewareConsumer): MiddlewareConsumer | void {
-    return undefined
+  // ...
+}
+```
+
+To secure and enpoint you can add roles required for each resource with @Secured decorator :
+```typescript
+
+@Controller('/')
+@Secured('ROLE_1', 'ROLE_2') // MyAuthorizationProvider.validateAuthorization(request, 'ROLE_1', 'ROLE_2') will be called and must return true to enable access to the controller
+class SecuredController {
+
+}
+
+@Controller('/')
+class UnsecuredController {
+
+  @Secured('ROLE_1', 'ROLE_2')
+  @Get('/')
+  public async foo():Promise<string> {
+    return 'bar'
   }
 }
 ```
+
+> IrisModule will automatically inject the user returned by your authenticationProvider into the request _user_ field and the cls context (you can get the user by calling clsProvider.getAuthenticatedUser())
+
+### Health Checker
+Health checker is enabled by default by iris module (this can be disabled in the iris module options. The default path is **/actuator** (this can be overridden in the iris module options). It provides some endpoints :
+* /health : get server health status: UP or DOWN (this will check typeorm connections)
+* /info : get basics informations such as project name, version and git informations about commit, branch etc.
+
+**IMPORTANT**: To get this information the middleware have some sort of logic:
+
+When the express app is executed with node app.js or npm start the module will look for a file named package.json where the node command was launched.
+Git information will show only if exists a git.properties file where the app was launched. You can use [node-git-info](https://www.npmjs.com/package/node-git-info) to generate this file.
+
+* /metrics : get memory usage and uptime. This endpoint is **secured** and requires a specific ROLE to access it.
+* /env : get environment variables. This endpoint is **secured** and requires a specific ROLE to access it.
+
+You can configure the health checker by setting this options in the iris module options **actuatorOptions** field :
+
+| name | default value | description |
+|---|---|---|
+| enable | true | enable or disable the health checker globally |
+| endpoint | '/actuator' | main endpoint of the health checker services |
+| role | 'ACTUATOR' | Required role to access to secured healh checker endpoints |
+| enableTypeOrm | true | enable or disable the check of typeorm connections in /info service |
+| gitMode | 'simple' | level of git informations returned by /info service  ('simple' or 'full') |
+
 
 ### Other middlewares
 Some middlewares are automatically added by IrisModule : 

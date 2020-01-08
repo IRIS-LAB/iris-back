@@ -1,14 +1,10 @@
 import { BusinessException, ErrorDO } from '@u-iris/iris-common'
 import deepmerge from 'deepmerge'
-import { Validator } from 'tsdv-joi'
-import { ValidationResult } from 'tsdv-joi/ValidationResult'
+import * as jf from 'joiful'
 import { BusinessValidatorOptions, Messages } from '../../interfaces'
 
 /**
- * BusinessValidatorService used to validate a bean with @BusinessValidator() decorator on its fields.
- *
- * Use @Nested() to validate a field that should be validated itself.
- * Use @NestedArray() to validate a field of type Array that each item should be validated themselves.
+ * BusinessValidatorService used to validate a bean with joiful decorators (https://github.com/joiful-ts/joiful).
  */
 export class BusinessValidatorService {
 
@@ -29,14 +25,13 @@ export class BusinessValidatorService {
    */
   public validate<T>(object: T, options ?: BusinessValidatorOptions): T {
     return this.validateJoiResult(
-      new Validator({
+      jf.validate(object, {
         allowUnknown: true,
         skipFunctions: true,
         stripUnknown: false,
         ...(this.options && this.options.joiOptions ? this.options.joiOptions : {}),
         abortEarly: false,
-      })
-        .validate(object), deepmerge(this.options ? this.options : {}, options || {}).messages)
+      }), deepmerge(this.options ? this.options : {}, options || {}).messages)
   }
 
   /**
@@ -82,7 +77,7 @@ export class BusinessValidatorService {
    * @param result - the validation result object
    * @param messages - the messages object
    */
-  private validateJoiResult<T>(result: ValidationResult<T>, messages?: Messages | null): T {
+  private validateJoiResult<T>(result: jf.ValidationResult<T>, messages?: Messages | null): T {
     if (result.error) {
       const errors = result.error.details.map(({ message, context, type, path }) => {
         if (!context || !context.key) {

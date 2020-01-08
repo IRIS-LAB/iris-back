@@ -1,4 +1,4 @@
-import { ValidationOptions } from 'joi'
+import { ValidationOptions } from '@hapi/joi'
 import { Messages } from './message.interface'
 
 export interface BusinessValidatorOptions {

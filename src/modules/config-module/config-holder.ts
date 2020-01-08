@@ -1,4 +1,4 @@
-import { DiskHealthIndicatorOptions } from '@nestjs/terminus/dist/health-indicators/disk/disk-health-options.type'
+import { ModuleMetadata } from '@nestjs/common/interfaces/modules/module-metadata.interface'
 import { CompressionOptions } from 'compression'
 import { CorsOptions } from 'cors'
 import { IHelmetConfiguration } from 'helmet'
@@ -10,20 +10,50 @@ const DEFAULT_OPTIONS: Partial<IrisConfigOptions> = {
   traceIdHeader: 'X-B3-TraceId',
   actuatorOptions: {
     enable: true,
-    endpoint: '/actuator/health',
-    enablePing: true,
-    pingUri: 'https://google.com',
+    endpoint: '/actuator',
+    role: 'ACTUATOR',
     enableTypeOrm: true,
-    enableMemoryHeapThreshold: false,
-    memoryHeapUsedThreshold: 1024,
-    enableDiskStorageThreshold: false,
+    gitMode: 'simple',
   },
   enableCors: true,
   enableHelmet: true,
   enableCompression: true,
 }
 
+export interface IrisActuatorConfigOptions {
+  /**
+   * Enable/disable actuator path (default: true).
+   */
+  enable?: boolean
+
+  /**
+   * Enpoint of actuator checkhealth (default : /actuator/health).
+   */
+  endpoint?: string
+
+  /**
+   * Enable/disable check of database connections managed by TypeOrm (default: true).
+   */
+  enableTypeOrm?: boolean
+
+  /**
+   * Git informations mode.
+   */
+  gitMode?: 'simple' | 'full'
+
+  /**
+   * Required role to access to secured healh checker endpoints.
+   */
+  role?: string
+}
+
 export interface IrisConfigOptions {
+
+  /**
+   * NestJS Module to imports (used to provide authorization and authentication providers).
+   */
+  imports?: ModuleMetadata['imports']
+
   /**
    * Logger options.
    */
@@ -52,51 +82,7 @@ export interface IrisConfigOptions {
   /**
    * Actuator options.
    */
-  actuatorOptions?: {
-    /**
-     * Enable/disable actuator path (default: true).
-     */
-    enable?: boolean
-
-    /**
-     * Enpoint of actuator checkhealth (default : /actuator/health).
-     */
-    endpoint?: string
-
-    /**
-     * Enable/disable check of dns ping (default: true).
-     */
-    enablePing?: boolean
-    /**
-     * URI for the ping check (default : https://google.com).
-     */
-    pingUri?: string
-
-    /**
-     * Enable/disable check of database connections managed by TypeOrm (default: true).
-     */
-    enableTypeOrm?: boolean
-
-    /**
-     * Enable/disable check of memory heap threshold (node process should not exceed the memory usage defined in memoryHeapUsedThreshold option.
-     */
-    enableMemoryHeapThreshold?: boolean
-
-    /**
-     * Max memory (in Mb) for memory heap threshold check (default: 1024).
-     */
-    memoryHeapUsedThreshold?: number
-
-    /**
-     * Enable/disable check of disk storage threshold (node process should not exceed the disk storage theshold defined in diskStorageThresholdOptions option.
-     */
-    enableDiskStorageThreshold?: boolean
-
-    /**
-     * Options for disk storage threshold check.
-     */
-    diskStorageThresholdOptions?: DiskHealthIndicatorOptions
-  }
+  actuatorOptions?: IrisActuatorConfigOptions
 
   /**
    * Enable / disable cors for all routes (default: true).
