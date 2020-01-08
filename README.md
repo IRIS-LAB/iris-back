@@ -19,7 +19,7 @@ The main features are :
 ## Install
 
 ```bash
-$ npm install @u-iris/iris-back @nestjs/common @nestjs/core @nestjs/typeorm @u-iris/iris-common reflect-metadata rxjs typeorm --save
+$ npm install @u-iris/iris-back @nestjs/common @nestjs/core @nestjs/platform-express @nestjs/typeorm @u-iris/iris-common reflect-metadata rxjs typeorm --save
 ```
 
 ## Usage
