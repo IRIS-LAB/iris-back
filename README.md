@@ -54,15 +54,13 @@ Before starting to use iris-back, you should read the official documentation of 
 To use iris-back in your NestJS application you should :
 * Import IrisModule into your main module by calling `IrisModule.forRoot()`
 * @deprecated ~~Define `TraceContextInterceptor` as the first interceptor in your main module and provided as APP_INTERCEPTOR (very important)~~
-* Define `ExceptionFilter` as a global filter
-* Call `setApplicationContext()`
+* Bootstrap application with your module by calling _bootstrapIrisApp()_
 
 Example:
 
 ```typescript
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
-import { NestFactory, APP_INTERCEPTOR } from '@nestjs/core'
-import { IrisModule, LoggingInterceptor, TraceContextInterceptor, ExceptionFilter, setApplicationContext } from '@u-iris/iris-back'
+import { IrisModule, bootstrapIrisApp, getLogger } from '@u-iris/iris-back'
 
 @Module({
   imports: [
@@ -84,23 +82,34 @@ class AppModule implements NestModule {
   }
 }
 (async () => {
-    const app = await NestFactory.create(AppModule)
-    app.useGlobalFilters(new ExceptionFilter())
-    setApplicationContext(app)
-    app.listen(3000, () => {
-      console.log.info(`Server running at http://127.0.0.1:3000/`)
-    })
+  try {
+      const port = 3000
+      await bootstrapIrisApp(AppModule, { port })
+      getLogger().info(`Server running at http://127.0.0.1:${port}/`)
+    } catch (e) {
+      getLogger().error(e)
+    }
 })()
 ```
 
 ### Application context
-Application is a global store used to access injectable providers from outside a NestJS context. You must initialize application context by calling `setApplicationContext()` to use IrisModule.
+Application context is a global store used to access injectable providers from outside a NestJS context. The context is automatically initialized if you bootstrap your application with the bootstrapIrisApp() method.
+
+You can access any injectable bean from outside the NestJS context from this application context.
 
 ```typescript
-import { setApplicationContext } from '@u-iris/iris-back'
+import { Module, NestModule } from '@nestjs/common'
+import { bootstrapIrisApp, getLogger } from '@u-iris/iris-back' import { getApplicationContext } from './iris.context'
+@Module({
+  // ...
+})
+class AppModule implements NestModule {
+  // ...
+}
+await bootstrapIrisApp(AppModule)
 
-const app = await NestFactory.create(AppModule)
-setApplicationContext(app)
+const myInjectableBean = getApplicationContext().get(MyInjectableBeanClass) // return an instance of your bean
+const logger = getLogger() // return the logger bean defined in IrisModule
 ```
 
 ### Business Entity
@@ -563,7 +572,7 @@ class MyService {
 
 #### Error provider
 ErrorProvider allows you to create `IrisException` and get label from `MessageProvider` automatically by checking the code of the error.
-// TODO : ajouter un exemple de fichier .properties 
+
 
 ```typescript
 import { Injectable } from '@nestjs/common'
@@ -575,6 +584,7 @@ class MyService {
   }
   public someAction() {
     this.errorProvider.createBusinessException('field', 'code', {data1: 'val1'}) // create business exception
+    this.errorProvider.createBusinessException({field: 'field', code: 'code', label: 'label', datas: {val: 'val1'}}) // create business exception
     this.errorProvider.createSecurityException('field', 'code', {data1: 'val1'}) // create security exception
     this.errorProvider.createTechnicalException('field', 'code', new Error()) // create technical exception
     const idNotFound = 1056
@@ -582,6 +592,9 @@ class MyService {
     
   } 
 }
+
+# messages.properties
+error.field.code.label=Field $field is in error with value $value
 ```
 
 ### Security
