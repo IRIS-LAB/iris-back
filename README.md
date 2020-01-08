@@ -19,7 +19,7 @@ The main features are :
 ## Install
 
 ```bash
-$ npm install @u-iris/iris-back @nestjs/common@=6.10.12 @nestjs/core@=6.10.12 @nestjs/typeorm@=6.2.0 @u-iris/iris-common reflect-metadata rxjs typeorm@=0.2.22 --save
+$ npm install @u-iris/iris-back @nestjs/common @nestjs/core @nestjs/typeorm @u-iris/iris-common reflect-metadata rxjs typeorm --save
 ```
 
 ## Usage
@@ -597,7 +597,7 @@ class MyAuthenticationProvider implements AuthenticationService {
 }
 ```
 
-The AuthorizationService is used to valide user authorization from a request.
+The AuthorizationService is used to validate user authorization from a request.
 
 ```typescript
 class MyAuthorizationProvider implements AuthorizationService {
@@ -616,21 +616,19 @@ Once your have create your own implementation, you need to define your beans int
          authenticationProvider: MyAuthenticationProvider,
          authorizationProvider: MyAuthorizationProvider
        })
-  ],
-  providers: []
+  ]
+  // ...
 })
 class AppModule implements NestModule {
-  public configure(consumer: MiddlewareConsumer): MiddlewareConsumer | void {
-    return undefined
-  }
+  // ...
 }
 ```
 
-Then you can add authorization roles required for each resource with @Role decorator :
+To secure and enpoint you can add roles required for each resource with @Secured decorator :
 ```typescript
 
 @Controller('/')
-@Roles('ROLE_1', 'ROLE_2') // MyAuthorizationProvider.validateAuthorization(request, 'ROLE_1', 'ROLE_2') will be called and must return true to enable access to the controller
+@Secured('ROLE_1', 'ROLE_2') // MyAuthorizationProvider.validateAuthorization(request, 'ROLE_1', 'ROLE_2') will be called and must return true to enable access to the controller
 class SecuredController {
 
 }
@@ -638,13 +636,15 @@ class SecuredController {
 @Controller('/')
 class UnsecuredController {
 
-  @Roles('ROLE_1', 'ROLE_2')
+  @Secured('ROLE_1', 'ROLE_2')
   @Get('/')
   public async foo():Promise<string> {
     return 'bar'
   }
 }
 ```
+
+> IrisModule will automatically inject the user returned by your authenticationProvider into the request _user_ field and the cls context (you can get the user by calling clsProvider.getAuthenticatedUser())
 
 ### Health Checker
 Health checker is enabled by default by iris module (this can be disabled in the iris module options. The default path is **/actuator** (this can be overridden in the iris module options). It provides some endpoints :

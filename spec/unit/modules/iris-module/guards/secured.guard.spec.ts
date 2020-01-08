@@ -8,7 +8,7 @@ import {
   AuthorizationService,
   ClsProvider,
   IrisModule,
-  Roles,
+  Secured,
 } from '../../../../../src/modules/iris-module'
 import { DefaultAuthorizationProvider } from '../../../../../src/modules/iris-module/providers/default-authorization.provider'
 import { irisModuleOptionsForTests } from '../../../../commons/message-factory-for-tests'
@@ -36,7 +36,7 @@ class DefaultEBS {
   }
 
   @Get('/')
-  @Roles('ROLE1', 'ROLE2')
+  @Secured('ROLE1', 'ROLE2')
   public async index(): Promise<string> {
     return 'OK'
   }
@@ -54,7 +54,7 @@ class DefaultEBS {
 }
 
 @Controller('/other')
-@Roles('ROLE3')
+@Secured('ROLE3')
 class DefaultEBS2 {
 
   @Get('/')
@@ -64,7 +64,7 @@ class DefaultEBS2 {
 
 }
 
-describe('@Roles', () => {
+describe('@Secured', () => {
   let app: INestApplication
 
   describe('authorizationProvider', () => {

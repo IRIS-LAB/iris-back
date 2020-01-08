@@ -6,10 +6,12 @@
 * no longer use tsdv-joi to add business validator constraint. Use joiful instead (by importing jf from iris-back)
     * @NestedArray(<type>) => @jf.array({elementClass: <type>})
     * @Nested(<type>) => @jf.object({objectClass: <type>})
+
 ## 4.0.0
-* set nestjs, joi and typeorm as dependencies (theses dependencies are now automatically imported by iris-back)
+* set joi as dependency (there is no need to install it into your application)
 * replace tsdv-joi by joiful and upgrade joi version
 * rework IrisDAO by using criteriabuilder for database requests
+* add security support
 
 ## 3.1.2-SNAPSHOT
 * improve business validator provider by getting error message from message sources of IrisModule
