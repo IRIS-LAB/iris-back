@@ -1,8 +1,10 @@
 export const RELATION_METADATA = 'iris:relation'
-export const ROLES_METADATAS = 'iris:role'
+export const SECURED_METADATAS = 'iris:secured'
+export const UNSECURED_METADATAS = 'iris:unsecured'
 export const CONTROLLER_RESOURCE_TYPE_METADATA = 'iris:controller_resource'
 export const METHOD_RESOURCE_TYPE_METADATA = 'iris:method_resource'
 export const IRIS_CONFIG_OPTIONS = 'IRIS:CONFIG_OPTIONS'
+export const IRIS_DEFAULT_ROLE = 'USER'
 
 export const APP_AUTHORIZATION_SERVICE = 'AUTHORIZATION_SERVICE'
 export const APP_AUTHENTICATION_SERVICE = 'AUTHENTICATION_SERVICE'

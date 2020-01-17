@@ -1,5 +1,5 @@
 import { Inject, NestMiddleware } from '@nestjs/common'
-import { IRIS_CONFIG_OPTIONS, ROLES_METADATAS } from '../../../constants'
+import { IRIS_CONFIG_OPTIONS, SECURED_METADATAS } from '../../../constants'
 import { IrisConfigOptions } from '../../config-module'
 
 export class ActuatorSecurityMiddleware implements NestMiddleware{
@@ -7,10 +7,10 @@ export class ActuatorSecurityMiddleware implements NestMiddleware{
   }
   public use(request: any, res: any, next: () => void): any {
     if(this.irisConfigOptions.actuatorOptions!.role) {
-      if (!request[ROLES_METADATAS]) {
-        request[ROLES_METADATAS] = []
+      if (!request[SECURED_METADATAS]) {
+        request[SECURED_METADATAS] = []
       }
-      request[ROLES_METADATAS].push(this.irisConfigOptions.actuatorOptions!.role)
+      request[SECURED_METADATAS].push(this.irisConfigOptions.actuatorOptions!.role)
     }
     next()
   }

@@ -657,6 +657,32 @@ class UnsecuredController {
 }
 ```
 
+You can enable security on your application globally by setting secure option to the IrisModule.forRoot() :
+
+```typescript
+@Module({
+  imports: [
+    IrisModule.forRoot({
+         //...
+        secure: boolean | string | string[]
+       })
+  ]
+  // ...
+})
+class AppModule implements NestModule {
+  // ...
+}
+```
+
+You can set the secure option with :
+* boolean : if true, all the application need an authorization with role USER, if false, disable the security.
+* string : a role
+* string[] : one of the roles is required to access the application
+
+You can configure the security of your application once globally with the secure option then by adding @Secured() on your controllers you can replace the global configuration.
+
+To disable the security on a controller or a method of a controller, you can use @Unsecured() decorator.
+ 
 > IrisModule will automatically inject the user returned by your authenticationProvider into the request _user_ field and the cls context (you can get the user by calling clsProvider.getAuthenticatedUser())
 
 ### Health Checker
