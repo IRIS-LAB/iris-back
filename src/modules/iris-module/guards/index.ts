@@ -1,1 +1,1 @@
-export * from './roles.guard'
+export * from './secured.guard'

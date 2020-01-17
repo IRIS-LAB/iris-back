@@ -5,6 +5,7 @@ import { getConnectionManager } from 'typeorm'
 import properties from 'utils-fs-read-properties'
 import { IRIS_CONFIG_OPTIONS } from '../constants'
 import { IrisActuatorConfigOptions, IrisConfigOptions } from '../modules/config-module'
+import { Unsecured } from '../modules/iris-module/decorators/unsecured.decorator'
 
 export class ActuatorController {
 
@@ -70,6 +71,7 @@ export class ActuatorController {
   }
 
   @Get('/health')
+  @Unsecured()
   public health() {
     let up: boolean = true
 
@@ -86,6 +88,7 @@ export class ActuatorController {
   }
 
   @Get('/info')
+  @Unsecured()
   public info() {
     const build = ActuatorController.getBuild()
     const git = ActuatorController.getGit(this.irisConfigOptions.actuatorOptions!.gitMode)

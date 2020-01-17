@@ -113,6 +113,8 @@ export interface IrisConfigOptions {
    * Helmet options.
    */
   compressionOptions?: CompressionOptions
+
+  secured?: boolean | string | string[]
 }
 
 /**

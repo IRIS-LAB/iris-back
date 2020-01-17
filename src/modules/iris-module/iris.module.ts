@@ -5,7 +5,7 @@ import { APP_GUARD } from '@nestjs/core'
 import { APP_AUTHENTICATION_SERVICE, APP_AUTHORIZATION_SERVICE } from '../../constants'
 import { ActuatorController } from '../../controllers/actuator.controller'
 import { ConfigModule, getIrisConfigOptions, IrisConfigOptions } from '../config-module'
-import { RolesGuard } from './guards'
+import { SecuredGuard } from './guards'
 import { ActuatorSecurityMiddleware } from './middlewares/actuator-security.middleware'
 import { CompressionMiddleware } from './middlewares/compression.middleware'
 import { CorsMiddleware } from './middlewares/cors.middleware'
@@ -51,7 +51,7 @@ export class IrisModule implements NestModule {
         RequestContextMiddleware,
         {
           provide: APP_GUARD,
-          useClass: RolesGuard,
+          useClass: SecuredGuard,
         },
         {
           provide: APP_AUTHORIZATION_SERVICE,

@@ -1,4 +1,4 @@
 import { SetMetadata } from '@nestjs/common'
-import { ROLES_METADATAS } from '../../../constants'
+import { SECURED_METADATAS } from '../../../constants'
 
-export const Secured = (...functions: string[]) => SetMetadata(ROLES_METADATAS, functions)
+export const Secured = (function1: string, ...functions: string[]) => SetMetadata(SECURED_METADATAS, [function1, ...functions])
