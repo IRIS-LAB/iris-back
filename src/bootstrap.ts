@@ -1,14 +1,14 @@
-import { INestApplication, NestModule, Type } from '@nestjs/common'
+import { INestApplication, NestApplicationOptions, NestModule, Type } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { ExceptionFilter } from './filters'
 import { getLogger, LoggerProvider, setApplicationContext } from './modules/iris-module'
 
-export async function bootstrapIrisApp(appModule: Type<NestModule>, options?: { port?: number }): Promise<INestApplication> {
+export async function bootstrapIrisApp(appModule: Type<NestModule>, options?: { port?: number, logger?: NestApplicationOptions['logger'] }): Promise<INestApplication> {
   return new Promise(async (resolve, reject) => {
     try {
       const port = (options && options.port) || process.env.NODE_REQUESTPORT || 3000
       const app = await NestFactory.create(appModule, {
-        logger: false,
+        logger: options && options.logger !== undefined ? options.logger : (process.env.NODE_ENV === 'production' ? false : console),
       })
       setApplicationContext(app)
 
