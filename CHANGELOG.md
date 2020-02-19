@@ -1,9 +1,12 @@
 # CHANGELOG
 
 # 4.1.0
+
+### Features
 * improve security configuration
     * add secure option in iris config options that can be a boolean, a string or an array of string
     * add @Unsecured() decorator on class or method : the endpoint is accessible as public
+* **bootstrap:** add logger option
     
 ## Migration from 3.X to 4.X
 * remove the dependencies joi and tsdv-joi
