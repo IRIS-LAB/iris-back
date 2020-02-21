@@ -15,6 +15,7 @@ const assignMetadata = (args: { [key: string]: RelationMetadata } = {}, field: s
  * Relation decorator used to construct API response and DAO request.
  * @param relation - Type of the relation
  * @param type - Type of the field (required for arrays)
+ * @deprecated - prefer the use of the eager option of the typeorm relation with the @NotExposed annotation if necessary
  */
 export function Relation(relation: RelationEntity, type?: RelationMetadata['type']): PropertyDecorator {
   return (targetClass, propertyKey) => {
