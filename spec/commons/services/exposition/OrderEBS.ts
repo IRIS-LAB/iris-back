@@ -5,7 +5,7 @@ import {
   EntityOptionsQueryParam,
   EnumQueryParam,
   NumberQueryParam,
-  PaginatedEntitiesQueryParam,
+  PaginatedEntitiesOptionsQueryParam,
   PathParam,
   StringQueryParam,
 } from '../../../../src/decorators'
@@ -24,7 +24,7 @@ export class OrderEBS {
 
   @Get('/')
   @PaginatedResources(OrderBE, 'orders', 10, 100)
-  public async findAll(@PaginatedEntitiesQueryParam() paginatedResourcesOptions: PaginatedEntitiesOptions,
+  public async findAll(@PaginatedEntitiesOptionsQueryParam() paginatedResourcesOptions: PaginatedEntitiesOptions,
                        @NumberQueryParam('customer.id') customerId: number,
                        @EnumQueryParam({
                          type: OrderState,
