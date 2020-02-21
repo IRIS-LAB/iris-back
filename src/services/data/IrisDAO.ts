@@ -1,10 +1,11 @@
+import { LoggerProvider, ErrorProvider } from 'modules/iris-module/providers'
 import { EntityMetadata, RemoveOptions, Repository, SelectQueryBuilder } from 'typeorm'
 import * as constants from '../../constants'
 import { RelationEntity } from '../../enums'
 import { EntityFilterQuery, EntityOptions, PaginatedEntitiesOptions } from '../../interfaces'
 import { RelationMetadata } from '../../interfaces/relation-metadata.interface'
-import { ErrorProvider, LoggerProvider } from '../../modules/iris-module/providers'
 import { TypeormQueryBuilder } from '../../utils'
+import { ErrorService, LoggerService } from 'modules/iris-module/services'
 
 /**
  * IrisDAO.
@@ -14,12 +15,23 @@ import { TypeormQueryBuilder } from '../../utils'
 export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
 
   /**
+   * @deprecated use errorService instead
+   */
+  protected readonly errorProvider: ErrorProvider
+  /**
+   * @deprecated use errorService instead
+   */
+  protected readonly loggerProvider: LoggerProvider
+
+  /**
    * Default constructor
    * @param repository - TypeORM repository
-   * @param errorProvider - error factory
-   * @param loggerProvider - logger provider
+   * @param errorService - error factory
+   * @param loggerService - logger provider
    */
-  constructor(protected readonly repository: Repository<T>, protected readonly errorProvider: ErrorProvider, protected readonly loggerProvider: LoggerProvider) {
+  constructor(protected readonly repository: Repository<T>, protected readonly errorService: ErrorService, protected readonly loggerService: LoggerService) {
+    this.errorProvider = this.errorService
+    this.loggerProvider = this.loggerService
   }
 
   /**
@@ -197,7 +209,7 @@ export abstract class IrisDAO<T, Q extends EntityFilterQuery> {
 
         if (typeof value !== 'undefined') {
           if (!this.fieldExists(key)) {
-            throw this.errorProvider.createTechnicalException(key, 'entity.field.invalid', new Error(), { type: typeof this.repository.target === 'function' ? this.repository.target.name : this.repository.target })
+            throw this.errorService.createTechnicalException(key, 'entity.field.invalid', new Error(), { type: typeof this.repository.target === 'function' ? this.repository.target.name : this.repository.target })
           }
 
           // Add left join

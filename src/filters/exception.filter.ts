@@ -7,7 +7,7 @@ import {
   TechnicalException,
 } from '@u-iris/iris-common'
 import express from 'express'
-import { ClsProvider, getApplicationContext, getLogger } from '../modules/iris-module'
+import { ClsService, getApplicationContext, getLogger } from '../modules/iris-module'
 
 @Catch()
 export class ExceptionFilter implements NestExceptionFilter {
@@ -66,7 +66,7 @@ export class ExceptionFilter implements NestExceptionFilter {
     const request = ctx.getRequest()
     const next = ctx.getNext()
 
-    const clsProvider = getApplicationContext().get<ClsProvider>(ClsProvider)
+    const clsProvider = getApplicationContext().get<ClsService>(ClsService)
     if (clsProvider.active) {
       ExceptionFilter.handleError(exception, request, response, next)
     } else {

@@ -6,7 +6,7 @@ import * as constants from '../../../constants'
 import { RelationEntity } from '../../../enums'
 import { RelationMetadata } from '../../../interfaces/relation-metadata.interface'
 import { EntityOptionsFactory } from '../commons'
-import { getErrorProvider } from '../iris.context'
+import { getErrorService } from '../iris.context'
 
 /**
  * NestJS Interceptor to remove fields for NONE or ASSOTIATION Relations. ENTITY Relation should be managed by typeorm Query.
@@ -26,7 +26,7 @@ export class RelationOptionsInterceptor<T> implements NestInterceptor<any, any> 
         const relations: { [key: string]: RelationMetadata } = this.type ? Reflect.getMetadata(constants.RELATION_METADATA, this.type.prototype.constructor) : {}
         const relationMetadata = relations ? relations[option] : undefined
         if (!relationMetadata || !relationMetadata.allowedOption) {
-          throw getErrorProvider().createBusinessException('options', 'option.not.allowed', {
+          throw getErrorService().createBusinessException('options', 'option.not.allowed', {
             option,
             type: this.type ? this.type.prototype.constructor.name : 'unknown',
           })
@@ -85,7 +85,7 @@ export class RelationOptionsInterceptor<T> implements NestInterceptor<any, any> 
                   if (!this.optionExists(`${propertyPath}`, options)) {
                     if (typeof object[propertyKey] !== 'undefined') {
                       if (typeof object[propertyKey] !== 'object') {
-                        throw getErrorProvider().createTechnicalException(propertyKey, 'relation.invalid', new Error(), { relation: 'ASSOCIATION' })
+                        throw getErrorService().createTechnicalException(propertyKey, 'relation.invalid', new Error(), { relation: 'ASSOCIATION' })
                       }
                       object[propertyKey] = Array.isArray(object[propertyKey]) ? object[propertyKey].map(i => ({ id: i.id })) : { id: object[propertyKey].id }
                       done = true

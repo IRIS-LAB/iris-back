@@ -6,23 +6,22 @@ import {
   AuthenticatedUser,
   AuthenticationService,
   AuthorizationService,
-  ClsProvider,
   IrisModule,
   Secured,
 } from '../../../../../src/modules/iris-module'
-import { DefaultAuthorizationProvider } from '../../../../../src/modules/iris-module/providers/default-authorization.provider'
+import { ClsService, DefaultAuthorizationService } from '../../../../../src/modules/iris-module/services'
 import { irisModuleOptionsForTests } from '../../../../commons/message-factory-for-tests'
 import { TestUtils } from '../../../../commons/test.utils'
 
 @Injectable()
-class TestAuthenticationProvider implements AuthenticationService {
+class TestAuthenticationService implements AuthenticationService {
   public async getAuthenticatedUser(req: e.Request): Promise<AuthenticatedUser | undefined> {
     return undefined
   }
 }
 
 @Injectable()
-class TestAuthorizationProvider implements AuthorizationService {
+class TestAuthorizationService implements AuthorizationService {
   public async validateAuthorization(req: e.Request, ...functions: string[]): Promise<boolean> {
     return false
   }
@@ -31,7 +30,7 @@ class TestAuthorizationProvider implements AuthorizationService {
 @Controller('/')
 class DefaultEBS {
 
-  constructor(private readonly clsProvider: ClsProvider) {
+  constructor(private readonly clsProvider: ClsService) {
 
   }
 
@@ -65,18 +64,18 @@ class DefaultEBS2 {
 }
 
 
-describe('AuthorizationProvider', () => {
+describe('AuthorizationService', () => {
   let app: INestApplication
-  let authorizationProvider: AuthorizationService
+  let authorizationService: AuthorizationService
 
-  describe('with specific provider', () => {
+  describe('with specific service', () => {
     beforeAll(async () => {
       const bootstraped = await TestUtils.bootstrapNestJS({
         imports: [
           IrisModule.forRoot({
             ...irisModuleOptionsForTests,
-            authenticationProvider: TestAuthenticationProvider,
-            authorizationProvider: TestAuthorizationProvider,
+            authenticationProvider: TestAuthenticationService,
+            authorizationProvider: TestAuthorizationService,
           }),
         ],
         controllers: [
@@ -86,7 +85,7 @@ describe('AuthorizationProvider', () => {
         providers: [],
       })
       // authenticationProvider = bootstraped.module.get(APP_AUTHENTICATION_SERVICE)
-      authorizationProvider = bootstraped.module.get(APP_AUTHORIZATION_SERVICE)
+      authorizationService = bootstraped.module.get(APP_AUTHORIZATION_SERVICE)
       app = bootstraped.app
       await app.init()
     })
@@ -100,8 +99,8 @@ describe('AuthorizationProvider', () => {
       jest.clearAllMocks()
     })
 
-    it('should inject TestAuthorizationProvider', () => {
-      expect(authorizationProvider).toBeInstanceOf(TestAuthorizationProvider)
+    it('should inject TestAuthorizationService', () => {
+      expect(authorizationService).toBeInstanceOf(TestAuthorizationService)
     })
 
     it('should authorize request without roles', () => {
@@ -112,7 +111,7 @@ describe('AuthorizationProvider', () => {
     })
 
     it('should authorize request secured by roles', () => {
-      jest.spyOn(authorizationProvider, 'validateAuthorization').mockImplementation(async () => true)
+      jest.spyOn(authorizationService, 'validateAuthorization').mockImplementation(async () => true)
 
       return request(app.getHttpServer())
         .get('/')
@@ -121,7 +120,7 @@ describe('AuthorizationProvider', () => {
     })
 
     it('should unauthorize request secured by roles', () => {
-      jest.spyOn(authorizationProvider, 'validateAuthorization').mockImplementation(async () => false)
+      jest.spyOn(authorizationService, 'validateAuthorization').mockImplementation(async () => false)
 
       return request(app.getHttpServer())
         .get('/')
@@ -141,7 +140,7 @@ describe('AuthorizationProvider', () => {
         providers: [],
       })
       // authenticationProvider = bootstraped.module.get(APP_AUTHENTICATION_SERVICE)
-      authorizationProvider = bootstraped.module.get(APP_AUTHORIZATION_SERVICE)
+      authorizationService = bootstraped.module.get(APP_AUTHORIZATION_SERVICE)
       app = bootstraped.app
       await app.init()
     })
@@ -155,8 +154,8 @@ describe('AuthorizationProvider', () => {
       jest.clearAllMocks()
     })
 
-    it('should inject DefaultAuthorizationProvider', () => {
-      expect(authorizationProvider).toBeInstanceOf(DefaultAuthorizationProvider)
+    it('should inject DefaultAuthorizationService', () => {
+      expect(authorizationService).toBeInstanceOf(DefaultAuthorizationService)
     })
 
     it('should authorize request without roles', () => {

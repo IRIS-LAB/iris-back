@@ -1,6 +1,7 @@
 import { BusinessException, ErrorDO, TechnicalException } from '@u-iris/iris-common'
 import moment from 'moment'
-import { ErrorProvider, getErrorProvider } from '../modules/iris-module'
+import { getErrorService } from '../modules/iris-module'
+import { ErrorService } from '../modules/iris-module/services'
 
 
 enum TypeEnum {
@@ -30,9 +31,9 @@ export class TypeUtils {
       case TypeUtils.TYPE.INT:
         return TypeUtils.stringToIntBase10(param)
       default:
-        let errorProvider: ErrorProvider
+        let errorProvider: ErrorService
         try {
-          errorProvider = getErrorProvider()
+          errorProvider = getErrorService()
         } catch {
           // not in nestjs context
         }
@@ -81,9 +82,9 @@ export class TypeUtils {
   }
 
   private static throwBusinessException(code: string, datas: any, type: string) {
-    let errorProvider: ErrorProvider
+    let errorProvider: ErrorService
     try {
-      errorProvider = getErrorProvider()
+      errorProvider = getErrorService()
     } catch {
       // not in nestjs context
     }

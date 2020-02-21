@@ -1,22 +1,13 @@
+import { ValidationOptions } from '@hapi/joi'
+import { Injectable } from '@nestjs/common'
 import { BusinessException, ErrorDO } from '@u-iris/iris-common'
-import deepmerge from 'deepmerge'
 import * as jf from 'joiful'
-import { BusinessValidatorOptions, Messages } from '../../interfaces'
+import { Messages } from '../../../interfaces'
+import { MessageService } from './message.service'
 
-/**
- * BusinessValidatorService used to validate a bean with joiful decorators (https://github.com/joiful-ts/joiful).
- * @deprecated use service from IrisModule instead
- */
+@Injectable()
 export class BusinessValidatorService {
-
-  private options?: BusinessValidatorOptions
-
-  /**
-   * Constructor
-   * @param options- validator options with messages and/or joiOptions overridden.
-   */
-  constructor(options?: BusinessValidatorOptions) {
-    this.options = options
+  constructor(private readonly messageService: MessageService) {
   }
 
   /**
@@ -24,53 +15,33 @@ export class BusinessValidatorService {
    * @param object - object to validate
    * @param options - validator options with messages and/or joiOptions overridden.
    */
-  public validate<T>(object: T, options ?: BusinessValidatorOptions): T {
+  public validate<T>(object: T, joiOptions?: ValidationOptions): T {
     return this.validateJoiResult(
       jf.validate(object, {
         allowUnknown: true,
         skipFunctions: true,
         stripUnknown: false,
-        ...(this.options && this.options.joiOptions ? this.options.joiOptions : {}),
+        ...(joiOptions ? joiOptions : {}),
         abortEarly: false,
-      }), deepmerge(this.options ? this.options : {}, options || {}).messages)
+      }))
   }
 
-  /**
-   * Return a message by a code.
-   * @param field - the field that will replace the keyword '$ field' in the message
-   * @param code - the error code
-   * @param context - the joi validation context of the error
-   * @param parentType - type of object container field
-   * @param message - the default message if no message in found in messages
-   * @param messages?? - the set of messages
-   */
   protected getMessage(field: string, code: string, context: any, parentType: typeof Object.constructor | undefined, message: string, messages?: Messages | null): string {
-    if (messages) {
-      let found = false
-      const splittedType = code.split('.')
-      let data: any = messages
-      for (const part of splittedType) {
-        if (data.hasOwnProperty(part)) {
-          data = data[part]
-          if (typeof data === 'string') {
-            found = true
-            break
-          }
-        } else {
-          break
-        }
-      }
-      if (found && data) {
-        let result = data.toString()
-        for (const key in context) {
-          if (context.hasOwnProperty(key)) {
-            result = result.replace('$' + key, context[key])
-          }
-        }
-        return result
-      }
+    const labelKeys: Array<Array<string | undefined>> = [
+      ['error', parentType && parentType.name ? parentType.name.toLocaleLowerCase() : undefined, field, code, 'label'],
+      ['error', parentType && parentType.name ? parentType.name.toLocaleLowerCase() : undefined, field, code],
+      ['error', field, code, 'label'],
+      ['error', field, code],
+      ['error', code, 'label'],
+      ['error', code],
+    ]
+    const key = labelKeys
+      .map(keys => keys.filter(k => k !== undefined).join('.'))
+      .find(k => this.messageService.has(k))
+    if (key) {
+      return this.messageService.get(key, context)
     }
-    return message
+    return this.getMessage(field, code, context, undefined, message, messages)
   }
 
   /**

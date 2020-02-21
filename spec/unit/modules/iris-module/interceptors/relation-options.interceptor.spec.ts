@@ -3,12 +3,12 @@ import '@u-iris/iris-common-test-utils'
 import request from 'supertest'
 import { BodyParam, NumberPathParam } from '../../../../../src/decorators'
 import {
-  ErrorProvider,
   IrisModule,
   PaginatedListResult,
   PaginatedResources,
   Resource,
 } from '../../../../../src/modules/iris-module'
+import { ErrorService } from '../../../../../src/modules/iris-module/services'
 import { irisModuleOptionsForTests } from '../../../../commons/message-factory-for-tests'
 import { OrderBE } from '../../../../commons/objects/business/be/OrderBE'
 import { TestUtils } from '../../../../commons/test.utils'
@@ -51,7 +51,7 @@ class DefaultEBS {
     return order
   }
 
-  constructor(private readonly errorProvider: ErrorProvider) {
+  constructor(private readonly errorProvider: ErrorService) {
   }
 
   @Get('/:id')

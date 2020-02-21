@@ -3,7 +3,6 @@ import '@u-iris/iris-common-test-utils'
 import request from 'supertest'
 import { PaginatedEntitiesQueryParam } from '../../../../../src/decorators'
 import { PaginatedEntitiesOptions } from '../../../../../src/interfaces'
-import { enableCors } from '../../../../../src/middlewares/cors.middleware'
 import { IrisModule, PaginatedListResult, PaginatedResources } from '../../../../../src/modules/iris-module'
 import { irisModuleOptionsForTests } from '../../../../commons/message-factory-for-tests'
 import { TestUtils } from '../../../../commons/test.utils'
@@ -270,7 +269,6 @@ describe('@PaginatedResources', () => {
       })
 
       app = bootstraped.app
-      app.use(enableCors())
       orderLBS = bootstraped.module.get<OrderLBS>(OrderLBS)
       await app.init()
     })
