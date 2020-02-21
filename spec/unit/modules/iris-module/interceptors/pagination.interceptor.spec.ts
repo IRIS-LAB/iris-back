@@ -1,7 +1,7 @@
 import { Controller, Get, INestApplication } from '@nestjs/common'
 import '@u-iris/iris-common-test-utils'
 import request from 'supertest'
-import { PaginatedEntitiesQueryParam } from '../../../../../src/decorators'
+import { PaginatedEntitiesOptionsQueryParam } from '../../../../../src/decorators'
 import { PaginatedEntitiesOptions } from '../../../../../src/interfaces'
 import { IrisModule, PaginatedListResult, PaginatedResources } from '../../../../../src/modules/iris-module'
 import { irisModuleOptionsForTests } from '../../../../commons/message-factory-for-tests'
@@ -12,7 +12,7 @@ class DefaultEBS {
 
   @Get('/')
   @PaginatedResources(Number, 'numbers', 10, 100)
-  public async index(@PaginatedEntitiesQueryParam() queryableListParam: PaginatedEntitiesOptions): Promise<PaginatedListResult<number>> {
+  public async index(@PaginatedEntitiesOptionsQueryParam() queryableListParam: PaginatedEntitiesOptions): Promise<PaginatedListResult<number>> {
     const numbersInDatabase = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
     const results = numbersInDatabase.slice(queryableListParam.paginate!.size * queryableListParam.paginate!.page, queryableListParam.paginate!.size * queryableListParam.paginate!.page + queryableListParam.paginate!.size)
     return { list: results, count: numbersInDatabase.length }

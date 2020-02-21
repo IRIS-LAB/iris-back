@@ -1,7 +1,7 @@
 import { Controller, Get, INestApplication } from '@nestjs/common'
 import '@u-iris/iris-common-test-utils'
 import request from 'supertest'
-import { PaginatedEntitiesQueryParam } from '../../../src/decorators'
+import { PaginatedEntitiesOptionsQueryParam } from '../../../src/decorators'
 import { PaginatedEntitiesOptions } from '../../../src/interfaces'
 import { IrisModule } from '../../../src/modules/iris-module'
 import { irisModuleOptionsForTests } from '../../commons/message-factory-for-tests'
@@ -11,7 +11,7 @@ import { TestUtils } from '../../commons/test.utils'
 class DefaultEBS {
 
   @Get('/list')
-  public async index(@PaginatedEntitiesQueryParam() queryableListParam: PaginatedEntitiesOptions): Promise<PaginatedEntitiesOptions> {
+  public async index(@PaginatedEntitiesOptionsQueryParam() queryableListParam: PaginatedEntitiesOptions): Promise<PaginatedEntitiesOptions> {
 
     return queryableListParam
   }
@@ -50,9 +50,9 @@ describe('@PaginatedResourcesQueryParam', () => {
           options: null,
           paginate: {
             page: 0,
-            size: 20
+            size: 20,
           },
-          sort: []
+          sort: [],
         })
       })
   })

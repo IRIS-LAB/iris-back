@@ -1,7 +1,7 @@
 import { Controller, Get, INestApplication, Injectable } from '@nestjs/common'
 import '@u-iris/iris-common-test-utils'
 import request from 'supertest'
-import { PaginatedEntitiesQueryParam } from '../../../../../src/decorators'
+import { PaginatedEntitiesOptionsQueryParam } from '../../../../../src/decorators'
 import { PaginatedEntitiesOptions } from '../../../../../src/interfaces'
 import { IrisModule, PaginatedListResult, PaginatedResources } from '../../../../../src/modules/iris-module'
 import { irisModuleOptionsForTests } from '../../../../commons/message-factory-for-tests'
@@ -39,7 +39,7 @@ class OrderEBS {
 
   @Get('/')
   @PaginatedResources(OrderBE, 'orders', 10, 100)
-  public async search(@PaginatedEntitiesQueryParam() paginatedParams: PaginatedEntitiesOptions): Promise<PaginatedListResult<OrderBE>> {
+  public async search(@PaginatedEntitiesOptionsQueryParam() paginatedParams: PaginatedEntitiesOptions): Promise<PaginatedListResult<OrderBE>> {
     return this.orderLBS.findAndCount()
   }
 }
