@@ -19,11 +19,14 @@ export class MessageFactory {
   public get(key: string, datas?: object): string {
     let result = this.messages.get(key)
     if (result && datas && typeof datas === 'object') {
-      Object.keys(datas).forEach(k => {
-          result = result.replace('${' + k + '}', datas[k], 'g')
-          result = result.replace(new RegExp('\\$' + k + '(\\s|$)'), datas[k] + '$1', 'g')
-        }
-      )
+      Object.keys(datas)
+        .sort().reverse()
+        .forEach(k => {
+            result = result
+              .replace(new RegExp('\\${' + k + '}'), datas[k], 'g')
+              .replace(new RegExp('\\$' + k), datas[k], 'g')
+          },
+        )
     }
     return result
   }
