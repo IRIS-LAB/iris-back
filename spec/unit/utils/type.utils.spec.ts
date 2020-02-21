@@ -22,6 +22,11 @@ describe('Type converter', () => {
       expect(TypeUtils.stringToDate('2017-12-14T00:00:00')).toEqual(moment('2017-12-14T00:00:00').toDate())
       expect(TypeUtils.stringToDate('2017-12-14T16:34:10.234')).toEqual(moment('2017-12-14T16:34:10.234').toDate())
       expect(TypeUtils.stringToDate('2017-12-14T00:00:00.000')).toEqual(moment('2017-12-14').toDate())
+      expect(TypeUtils.stringToDate('2017-12-14T00:00:00.000Z')).toBeInstanceOf(Date)
+      expect(TypeUtils.stringToDate('2017-12-14T00:00:00.000-0100')).toBeInstanceOf(Date)
+      expect(TypeUtils.stringToDate('2017-12-14T00:00:00.000-01:00')).toBeInstanceOf(Date)
+      expect(TypeUtils.stringToDate('2017-12-14T00:00:00.000+0100')).toBeInstanceOf(Date)
+      expect(TypeUtils.stringToDate('2017-12-14T00:00:00.000+01:00')).toBeInstanceOf(Date)
     })
     it('should throw error', () => {
       expect(() => TypeUtils.stringToDate('5 1')).toThrow(BusinessException)

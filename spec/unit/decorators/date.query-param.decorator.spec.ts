@@ -66,4 +66,16 @@ describe('@DateQueryParam', () => {
       })
 
   })
+
+  it('should support timezone', () => {
+    const formattedDate = "2020-02-21T10:00:00.000+01:00"
+    const encodedDate = encodeURIComponent(formattedDate)
+    return request(app.getHttpServer())
+      .get('/default/date?filter=' + encodedDate)
+      .expect(200)
+      .expect(response => {
+        expect(response.body).toEqual({ filter: "2020-02-21T09:00:00.000Z" })
+      })
+
+  })
 })
