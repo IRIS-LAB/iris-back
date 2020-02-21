@@ -10,7 +10,7 @@ const assignMetadata = (args: { [key: string]: RelationMetadata } = {}, field: s
 })
 
 /**
- * NotExposed() decorator used to hide field from controller response
+ * ReadOnly() decorator used to hide field from controller response
  */
 export function ReadOnly(): PropertyDecorator {
   return (targetClass, propertyKey) => {

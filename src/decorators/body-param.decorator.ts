@@ -4,6 +4,11 @@ import { RelationEntity } from '../enums'
 import { RelationMetadata } from '../interfaces/relation-metadata.interface'
 import { TypeUtils } from '../utils'
 
+/**
+ * Inject body parameter and serialize datas.
+ * @param type - Type of the datas to serialize to
+ * @param pipes - NestJS Pipe transform
+ */
 export const BodyParam = (type?: new(...args: any[]) => any, ...pipes: Array<Type<PipeTransform> | PipeTransform>) => Body({
   transform(value: any, metadata: ArgumentMetadata): any {
     if (metadata && metadata.metatype && metadata.metatype.prototype) {
