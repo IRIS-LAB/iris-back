@@ -1,8 +1,8 @@
 import { Test } from '@nestjs/testing'
 import { BusinessException } from '@u-iris/iris-common'
 import { TestsUtils } from '@u-iris/iris-common-test-utils'
+import { BusinessValidatorService, IrisModule } from '../../../../../src'
 import { jf } from '../../../../../src/decorators'
-import { BusinessValidatorProvider, IrisModule } from '../../../../../src/modules/iris-module'
 import { irisModuleOptionsForTests } from '../../../../commons/message-factory-for-tests'
 
 class DTO {
@@ -15,20 +15,20 @@ class DTO {
 
 }
 
-describe('BusinessValidator', () => {
-  let businessValidatorProvider: BusinessValidatorProvider
+describe('BusinessValidatorService', () => {
+  let businessValidatorService: BusinessValidatorService
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
       imports: [IrisModule.forRoot(irisModuleOptionsForTests)],
     }).compile()
-    businessValidatorProvider = module.get<BusinessValidatorProvider>(BusinessValidatorProvider)
+    businessValidatorService = module.get<BusinessValidatorService>(BusinessValidatorService)
   })
 
   it('should export MessageProvider', async () => {
     const object = new DTO()
     object.count = -1
-    await TestsUtils.expectThrowIrisExceptionLike(() => businessValidatorProvider.validate(object), BusinessException,
+    await TestsUtils.expectThrowIrisExceptionLike(() => businessValidatorService.validate(object), BusinessException,
       {
         field: 'count',
         limit: 0,

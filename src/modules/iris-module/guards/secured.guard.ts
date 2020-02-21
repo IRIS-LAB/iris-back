@@ -2,31 +2,33 @@ import { CanActivate, ExecutionContext, Inject, Injectable } from '@nestjs/commo
 import { Reflector } from '@nestjs/core'
 import {
   APP_AUTHENTICATION_SERVICE,
-  APP_AUTHORIZATION_SERVICE, IRIS_CONFIG_OPTIONS, IRIS_DEFAULT_ROLE,
+  APP_AUTHORIZATION_SERVICE,
+  IRIS_CONFIG_OPTIONS,
+  IRIS_DEFAULT_ROLE,
   SECURED_METADATAS,
   UNSECURED_METADATAS,
 } from '../../../constants'
 import { IrisConfigOptions } from '../../config-module'
 import { AuthenticationService, AuthorizationService } from '../interfaces'
-import { ClsProvider } from '../providers'
+import { ClsService } from '../services'
 
 @Injectable()
 export class SecuredGuard implements CanActivate {
 
-  constructor(@Inject(IRIS_CONFIG_OPTIONS) private readonly irisConfigOptions: IrisConfigOptions, private readonly reflector: Reflector, @Inject(APP_AUTHORIZATION_SERVICE) private readonly authorizationService: AuthorizationService, private readonly clsManager: ClsProvider, @Inject(APP_AUTHENTICATION_SERVICE) private readonly authenticationProvider: AuthenticationService) {
+  constructor(@Inject(IRIS_CONFIG_OPTIONS) private readonly irisConfigOptions: IrisConfigOptions, private readonly reflector: Reflector, @Inject(APP_AUTHORIZATION_SERVICE) private readonly authorizationService: AuthorizationService, private readonly clsService: ClsService, @Inject(APP_AUTHENTICATION_SERVICE) private readonly authenticationService: AuthenticationService) {
   }
 
   public async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest()
 
     // get authenticated user from authentication provider
-    const user = await this.authenticationProvider.getAuthenticatedUser(request)
+    const user = await this.authenticationService.getAuthenticatedUser(request)
 
     // save user into request object
     request.user = user
 
     // save user into cls context
-    this.clsManager.setAuthenticatedUser(user)
+    this.clsService.setAuthenticatedUser(user)
 
     // first check method guard
     const guardsMethodUnsecured = this.reflector.get<string[]>(UNSECURED_METADATAS, context.getHandler())

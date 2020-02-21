@@ -1,7 +1,7 @@
 import { INestApplicationContext } from '@nestjs/common'
 import { ErrorDO, TechnicalException } from '@u-iris/iris-common'
 import winston from 'winston'
-import { ErrorProvider, LoggerProvider } from './providers'
+import { ErrorService, LoggerService } from './services'
 
 /**
  * NestJS application context
@@ -32,14 +32,28 @@ export function getApplicationContext(): INestApplicationContext {
   return applicationContext
 }
 
-export function getErrorProvider(): ErrorProvider {
-  return getApplicationContext().get(ErrorProvider)
+export function getErrorService(): ErrorService {
+  return getApplicationContext().get(ErrorService)
 }
 
-export function getLoggerProvider(): LoggerProvider {
-  return getApplicationContext().get(LoggerProvider)
+/**
+ * @deprecated use getErrorService() instead
+ */
+export function getErrorProvider(): ErrorService {
+  return getErrorService()
+}
+
+export function getLoggerService(): LoggerService {
+  return getApplicationContext().get(LoggerService)
+}
+
+/**
+ * @deprecated use getLoggerService() instead
+ */
+export function getLoggerProvider(): LoggerService {
+  return getLoggerService()
 }
 
 export function getLogger(): winston.Logger {
-  return getLoggerProvider().logger
+  return getLoggerService().logger
 }

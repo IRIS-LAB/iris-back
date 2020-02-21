@@ -13,9 +13,15 @@ import { HelmetMiddleware } from './middlewares/helmet.middleware'
 import { LoggerMiddleware } from './middlewares/logging.middleware'
 import { RequestContextMiddleware } from './middlewares/request-context.middleware'
 import { BusinessValidatorProvider, ClsProvider, ErrorProvider, LoggerProvider, MessageProvider } from './providers'
-import { DefaultAuthenticationProvider } from './providers/default-authentication.provider'
-import { DefaultAuthorizationProvider } from './providers/default-authorization.provider'
-import { RequestHolder } from './providers/request-holder.provider'
+import {
+  BusinessValidatorService,
+  ClsService,
+  DefaultAuthenticationService,
+  DefaultAuthorizationService,
+  ErrorService,
+  LoggerService,
+  MessageService,
+} from './services'
 
 @Module({})
 export class IrisModule implements NestModule {
@@ -42,12 +48,16 @@ export class IrisModule implements NestModule {
       imports: modulesToImport,
       controllers,
       providers: [
+        MessageService,
+        ErrorService,
+        LoggerService,
+        ClsService,
+        BusinessValidatorService,
         MessageProvider,
         ErrorProvider,
         LoggerProvider,
         ClsProvider,
         BusinessValidatorProvider,
-        RequestHolder,
         RequestContextMiddleware,
         {
           provide: APP_GUARD,
@@ -55,20 +65,24 @@ export class IrisModule implements NestModule {
         },
         {
           provide: APP_AUTHORIZATION_SERVICE,
-          useClass: options.authorizationProvider || DefaultAuthorizationProvider,
+          useClass: options.authorizationProvider || DefaultAuthorizationService,
         },
         {
           provide: APP_AUTHENTICATION_SERVICE,
-          useClass: options.authenticationProvider || DefaultAuthenticationProvider,
+          useClass: options.authenticationProvider || DefaultAuthenticationService,
         },
       ],
       exports: [
+        MessageService,
+        ErrorService,
+        LoggerService,
+        ClsService,
+        BusinessValidatorService,
         MessageProvider,
         ErrorProvider,
         LoggerProvider,
         ClsProvider,
         BusinessValidatorProvider,
-        RequestHolder,
         ConfigModule,
         {
           provide: APP_AUTHORIZATION_SERVICE,

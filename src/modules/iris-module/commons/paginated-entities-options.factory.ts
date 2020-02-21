@@ -1,7 +1,7 @@
 import express from 'express'
 import { PaginatedEntitiesOptions, SortDirection } from '../../../interfaces'
 import { PaginationUtils } from '../../../utils'
-import { getErrorProvider } from '../iris.context'
+import { getErrorService } from '../iris.context'
 import { EntityOptionsFactory } from './entity-options.factory'
 
 export class PaginatedEntitiesOptionsFactory {
@@ -14,7 +14,7 @@ export class PaginatedEntitiesOptionsFactory {
       for (const s of sortStr) {
         const sortParts = s.split(',')
         if (sortParts.length !== 2 || ['asc', 'desc'].indexOf(sortParts[1]) === -1) {
-          throw getErrorProvider().createBusinessException('sort', 'parameter.format.invalid', { validFormat: 'field,asc|desc' })
+          throw getErrorService().createBusinessException('sort', 'parameter.format.invalid', { validFormat: 'field,asc|desc' })
         }
         sort.push({ field: sortParts[0], direction: sortParts[1] as SortDirection })
       }

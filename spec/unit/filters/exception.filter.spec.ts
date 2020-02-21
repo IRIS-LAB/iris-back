@@ -2,14 +2,15 @@ import { Controller, Get, INestApplication } from '@nestjs/common'
 import { BusinessException, ErrorDO } from '@u-iris/iris-common'
 import request from 'supertest'
 import { StringPathParam } from '../../../src/decorators'
-import { ErrorProvider, IrisModule } from '../../../src/modules/iris-module'
+import { IrisModule } from '../../../src/modules/iris-module'
+import { ErrorService } from '../../../src/modules/iris-module/services'
 import { irisModuleOptionsForTests } from '../../commons/message-factory-for-tests'
 import { TestUtils } from '../../commons/test.utils'
 
 @Controller('/default')
 class DefaultEBS {
 
-  constructor(private readonly errorProvider: ErrorProvider) {
+  constructor(private readonly errorProvider: ErrorService) {
 
   }
 

@@ -1,7 +1,7 @@
 import { INestApplication, NestApplicationOptions, NestModule, Type } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { ExceptionFilter } from './filters'
-import { getLogger, LoggerProvider, setApplicationContext } from './modules/iris-module'
+import { getLogger, LoggerService, setApplicationContext } from './modules/iris-module'
 
 export async function bootstrapIrisApp(appModule: Type<NestModule>, options?: { port?: number, logger?: NestApplicationOptions['logger'] }): Promise<INestApplication> {
   return new Promise(async (resolve, reject) => {
@@ -13,7 +13,7 @@ export async function bootstrapIrisApp(appModule: Type<NestModule>, options?: { 
       setApplicationContext(app)
 
       app.useGlobalFilters(new ExceptionFilter())
-      app.useLogger(app.get(LoggerProvider))
+      app.useLogger(app.get(LoggerService))
       app.listen(port, () => {
         resolve(app)
       })

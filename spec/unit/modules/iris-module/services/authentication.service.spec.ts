@@ -6,22 +6,22 @@ import {
   AuthenticatedUser,
   AuthenticationService,
   AuthorizationService,
-  ClsProvider,
   IrisModule,
   Secured,
+  ClsService,
 } from '../../../../../src/modules/iris-module'
 import { irisModuleOptionsForTests } from '../../../../commons/message-factory-for-tests'
 import { TestUtils } from '../../../../commons/test.utils'
 
 @Injectable()
-class TestAuthenticationProvider implements AuthenticationService {
+class TestAuthenticationService implements AuthenticationService {
   public async getAuthenticatedUser(req: e.Request): Promise<AuthenticatedUser | undefined> {
     return undefined
   }
 }
 
 @Injectable()
-class TestAuthorizationProvider implements AuthorizationService {
+class TestAuthorizationService implements AuthorizationService {
   public async validateAuthorization(req: e.Request, ...functions: string[]): Promise<boolean> {
     return false
   }
@@ -30,7 +30,7 @@ class TestAuthorizationProvider implements AuthorizationService {
 @Controller('/')
 class DefaultEBS {
 
-  constructor(private readonly clsProvider: ClsProvider) {
+  constructor(private readonly clsProvider: ClsService) {
 
   }
 
@@ -53,20 +53,20 @@ class DefaultEBS {
 }
 
 
-describe('AuthenticationProvider', () => {
+describe('AuthenticationService', () => {
   let app: INestApplication
 
-  let authenticationProvider: AuthenticationService
+  let authenticationService: AuthenticationService
 
 
-  describe('with specific provider', () => {
+  describe('with specific service', () => {
     beforeAll(async () => {
       const bootstraped = await TestUtils.bootstrapNestJS({
         imports: [
           IrisModule.forRoot({
             ...irisModuleOptionsForTests,
-            authenticationProvider: TestAuthenticationProvider,
-            authorizationProvider: TestAuthorizationProvider,
+            authenticationProvider: TestAuthenticationService,
+            authorizationProvider: TestAuthorizationService,
           }),
         ],
         controllers: [
@@ -74,7 +74,7 @@ describe('AuthenticationProvider', () => {
         ],
         providers: [],
       })
-      authenticationProvider = bootstraped.module.get(APP_AUTHENTICATION_SERVICE)
+      authenticationService = bootstraped.module.get(APP_AUTHENTICATION_SERVICE)
       app = bootstraped.app
       await app.init()
     })
@@ -88,15 +88,15 @@ describe('AuthenticationProvider', () => {
       jest.clearAllMocks()
     })
 
-    it('should inject TestAuthorizationProvider', () => {
-      expect(authenticationProvider).toBeInstanceOf(TestAuthenticationProvider)
+    it('should inject TestAuthorizationService', () => {
+      expect(authenticationService).toBeInstanceOf(TestAuthenticationService)
     })
 
-    it('should set user into clsmanager', () => {
+    it('should set user into clsService', () => {
       const user = {
         username: 'username',
       }
-      jest.spyOn(authenticationProvider, 'getAuthenticatedUser').mockImplementation(async () => user)
+      jest.spyOn(authenticationService, 'getAuthenticatedUser').mockImplementation(async () => user)
 
       return request(app.getHttpServer())
         .get('/user')
