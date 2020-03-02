@@ -57,8 +57,9 @@ export class DatabaseTestUtils {
    */
   public getEntities() {
     const entities: Entity[] = []
-    this.connection.entityMetadatas.forEach(
-      x => entities.push({ name: x.name, tableName: x.tableName }),
+    this.connection.entityMetadatas.forEach(x => {
+        entities.push({ name: x.name, tableName: x.tableName })
+      },
     )
     return entities
   }
@@ -76,34 +77,29 @@ export class DatabaseTestUtils {
    * Cleans all the entities
    */
   public async cleanAll(entities: Entity[]) {
-    let previousEntitiesInError = await this.tryToClean(entities)
-    let currentEntitiesInError = await this.tryToClean(previousEntitiesInError)
-    while (currentEntitiesInError.length && currentEntitiesInError.length < previousEntitiesInError.length) {
-      previousEntitiesInError = currentEntitiesInError
-      currentEntitiesInError = await this.tryToClean(previousEntitiesInError)
+    try {
+      await this.connection.transaction(async entityManager => {
+        //   for (const entity of entities) {
+        //     await this.connection.query(`TRUNCATE TABLE "${entity.tableName}" CASCADE;`)
+        //   }
+        // })
+        // await this.connection.transaction(async entityManager => {
+        for (const entity of entities) {
+          // if (entity.created) {
+          // await entityManager.createQueryBuilder()
+          //   .from(entity.name, entity.name)
+          //   .delete()
+          //   .execute()
+          await this.connection.query(`TRUNCATE "${entity.tableName}" CASCADE;`)
+          // }
+        }
+      })
+    } catch (e) {
+      //none
     }
-    if (currentEntitiesInError.length) {
-      throw new Error(`ERROR: Cannot clean entities ${currentEntitiesInError.map(e => e.name).join(', ')}`)
-    }
-  }
-
-  public async tryToClean(entities: Entity[]): Promise<Entity[]> {
-    const entitiesInError: Entity[] = []
-    for (const entity of entities) {
-      try {
-        await this.connection.createQueryBuilder()
-          .delete()
-          .from(entity.name, entity.name)
-          .execute()
-      } catch (error) {
-        entitiesInError.push(entity)
-      }
-    }
-    return entitiesInError
   }
 
   public async cleanDatabase() {
     await this.cleanAll(this.getEntities())
   }
-
 }

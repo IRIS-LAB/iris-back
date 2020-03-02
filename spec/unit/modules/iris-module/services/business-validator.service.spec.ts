@@ -15,6 +15,13 @@ class DTO {
 
 }
 
+class UserEntity {
+
+  @jf.string().min(5).required()
+  public login: string
+
+}
+
 describe('BusinessValidatorService', () => {
   let businessValidatorService: BusinessValidatorService
 
@@ -25,7 +32,7 @@ describe('BusinessValidatorService', () => {
     businessValidatorService = module.get<BusinessValidatorService>(BusinessValidatorService)
   })
 
-  it('should export MessageProvider', async () => {
+  it('should export validate joiful decorators', async () => {
     const object = new DTO()
     object.count = -1
     await TestsUtils.expectThrowIrisExceptionLike(() => businessValidatorService.validate(object), BusinessException,
@@ -38,6 +45,17 @@ describe('BusinessValidatorService', () => {
       {
         field: 'name',
         label: 'Field name is required',
+      },
+    )
+  })
+
+  it('should construct labels with class name base', async () => {
+    const object = new UserEntity()
+    await TestsUtils.expectThrowIrisExceptionLike(() => businessValidatorService.validate(object), BusinessException,
+      {
+        field: 'login',
+        code: 'any.required',
+        label: 'User must have a login',
       },
     )
   })

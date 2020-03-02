@@ -192,12 +192,7 @@ export class TypeormQueryBuilder<T> {
     if (mainAliase.length >= 1) {
       mainAliase = mainAliase.substring(0, 1).toLowerCase() + mainAliase.substr(1)
     }
-    for (const suffix of ['BE', 'BEP', 'DO', 'XBE']) {
-      if (mainAliase.length >= (suffix.length + 1) && mainAliase.endsWith(suffix)) {
-        mainAliase = mainAliase.substring(0, mainAliase.length - suffix.length)
-      }
-
-    }
+    mainAliase = mainAliase.replace(new RegExp('^(.+)(?:Entity|EntityPart|XBE|([^X])BE|BEP|DTO)$'), '$1$2')
     return mainAliase
   }
 }

@@ -27,9 +27,19 @@ export class BusinessValidatorService {
   }
 
   protected getMessage(field: string, code: string, context: any, parentType: typeof Object.constructor | undefined, message: string, messages?: Messages | null): string {
+    let baseClassname: string | undefined = undefined
+    let baseClassnameWithoutSuffix: string | undefined = undefined
+    if (parentType && parentType.name) {
+      baseClassname = parentType.name
+      baseClassnameWithoutSuffix = baseClassname
+        .replace(new RegExp('^(.+)(?:Entity|EntityPart|XBE|([^X])BE|BEP|DTO)$'), '$1$2')
+        .toLowerCase()
+    }
     const labelKeys: Array<Array<string | undefined>> = [
-      ['error', parentType && parentType.name ? parentType.name.toLocaleLowerCase() : undefined, field, code, 'label'],
-      ['error', parentType && parentType.name ? parentType.name.toLocaleLowerCase() : undefined, field, code],
+      ['error', baseClassname, field, code, 'label'],
+      ['error', baseClassname, field, code],
+      ['error', baseClassnameWithoutSuffix, field, code, 'label'],
+      ['error', baseClassnameWithoutSuffix, field, code],
       ['error', field, code, 'label'],
       ['error', field, code],
       ['error', code, 'label'],
