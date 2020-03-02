@@ -96,7 +96,7 @@ describe('OrderDAO (e2e)', () => {
       order2.billingAddress = order.billingAddress
       order2 = await orderDAO.save(order2)
 
-      const results = await orderDAO.find(undefined, {options: ['billingAddress.orders']})
+      const results = await orderDAO.find(undefined, { options: ['billingAddress.orders'] })
       expect(results).toHaveLength(2)
 
       const result1 = results[0]
@@ -140,10 +140,8 @@ describe('OrderDAO (e2e)', () => {
       expect(result).toBeDefined()
       expect(result!.orderLinesWithoutRelation).toBeDefined()
       expect(result!.orderLinesWithoutRelation).toHaveLength(2)
-      expect(result!.orderLinesWithoutRelation![0].product).toBeDefined()
-      expect(result!.orderLinesWithoutRelation![0].product.label).toEqual('product 2')
-      expect(result!.orderLinesWithoutRelation![1].product).toBeDefined()
-      expect(result!.orderLinesWithoutRelation![1].product.label).toEqual('product 3')
+      expect(result!.orderLinesWithoutRelation).toContainObjectLike({ product: expect.objectContaining({ label: 'product 2' }) })
+      expect(result!.orderLinesWithoutRelation).toContainObjectLike({ product: expect.objectContaining({ label: 'product 3' }) })
     })
   })
 

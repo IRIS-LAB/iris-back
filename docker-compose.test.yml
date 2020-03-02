@@ -4,5 +4,5 @@ postgres:
     - "5435:5432"
   environment:
     - POSTGRES_USER=docker
-    - POSTGRES_PASSWORD=
+    - POSTGRES_PASSWORD=docker
     - POSTGRES_DB=docker

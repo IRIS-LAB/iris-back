@@ -31,6 +31,7 @@ export class OrderBE {
     eager: true,
     cascade: true
   })
+
   public orderLines: OrderLineBE[]
 
   @Relation(RelationEntity.ENTITY, () => OrderLineBE)
