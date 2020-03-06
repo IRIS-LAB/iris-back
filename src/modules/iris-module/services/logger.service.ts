@@ -2,7 +2,7 @@ import { Inject, Injectable, LoggerService as NestLoggerService } from '@nestjs/
 import { ErrorDO, TechnicalException } from '@u-iris/iris-common'
 import moment from 'moment-timezone'
 import uuid from 'uuid'
-import winston, { createLogger, format, transports } from 'winston'
+import winston, { createLogger, format, LeveledLogMethod, LogMethod, transports } from 'winston'
 import { IRIS_CONFIG_OPTIONS } from '../../../constants'
 import { ExtendedLoggerOptions, IrisConfigOptions } from '../../config-module'
 import { ClsService } from './cls.service'
@@ -26,28 +26,34 @@ export class LoggerService implements NestLoggerService {
     return this.winstonLogger
   }
 
-  public debug(message: string) {
-    this.logger.debug(message)
+  public debug: LeveledLogMethod = (...args: any []) => {
+    // @ts-ignore
+    return this.logger.debug.apply(this.logger, args)
   }
 
-  public info(message: string) {
-    this.logger.info(message)
+  public info: LeveledLogMethod = (...args: any []) => {
+    // @ts-ignore
+    return this.logger.info.apply(this.logger, args)
   }
 
-  public warn(message: string) {
-    this.logger.warn(message)
+  public warn: LeveledLogMethod = (...args: any []) => {
+    // @ts-ignore
+    return this.logger.warn(this.logger, args)
   }
 
-  public error(message: string) {
-    this.logger.error(message)
+  public error: LeveledLogMethod = (...args: any []) => {
+    // @ts-ignore
+    return this.logger.error(this.logger, args)
   }
 
-  public log(message: any): any {
-    this.logger.debug(message)
+  public verbose: LeveledLogMethod = (...args: any []) => {
+    // @ts-ignore
+    return this.logger.verbose(this.logger, args)
   }
 
-  public verbose(message: any): any {
-    this.logger.verbose(message)
+  public log: LogMethod = (...args: any []) => {
+    // @ts-ignore
+    return this.logger.log.apply(this.logger, args)
   }
 
   public setTraceId(traceId: string) {
