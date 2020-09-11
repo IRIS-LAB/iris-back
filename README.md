@@ -83,8 +83,9 @@ class AppModule implements NestModule {
 }
 (async () => {
   try {
-      const port = 3000
-      await bootstrapIrisApp(AppModule, { port })
+      const port = 3000 // You can use env var NODE_REQUESTPORT instead
+      const hostname = '0.0.0.0' // You can use env var NODE_REQUESTHOST instead
+      await bootstrapIrisApp(AppModule, { port, hostname })
       getLogger().info(`Server running at http://127.0.0.1:${port}/`)
     } catch (e) {
       getLogger().error(e)
