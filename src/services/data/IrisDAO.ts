@@ -1,11 +1,11 @@
-import { LoggerProvider, ErrorProvider } from 'modules/iris-module/providers'
+import { LoggerProvider, ErrorProvider } from '../../modules/iris-module/providers'
 import { EntityMetadata, RemoveOptions, Repository, SelectQueryBuilder } from 'typeorm'
 import * as constants from '../../constants'
 import { RelationEntity } from '../../enums'
 import { EntityFilterQuery, EntityOptions, PaginatedEntitiesOptions } from '../../interfaces'
 import { RelationMetadata } from '../../interfaces/relation-metadata.interface'
 import { TypeormQueryBuilder } from '../../utils'
-import { ErrorService, LoggerService } from 'modules/iris-module/services'
+import { ErrorService, LoggerService } from '../../modules/iris-module/services'
 
 /**
  * IrisDAO.
