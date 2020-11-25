@@ -17,7 +17,7 @@ const DEFAULT_OPTIONS: Partial<IrisConfigOptions> = {
   },
   enableCors: true,
   enableHelmet: true,
-  enableCompression: true,
+  enableCompression: true
 }
 
 export interface IrisActuatorConfigOptions {
