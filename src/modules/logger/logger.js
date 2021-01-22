@@ -48,9 +48,9 @@ class LoggerUtils {
     // disable console if mode = production
     const loggerTransports = []
     if (options.file.filename) loggerTransports.push(new transports.File(options.file))
-    if (process.env.NODE_ENV !== 'production') {
+    else {
       loggerTransports.push(new transports.Console(options.console))
-    } else if (!options.file.filename) throw new Error('You must set a pathFileName in production environment')
+    }
 
     return createLogger({
       level: logLevel,
