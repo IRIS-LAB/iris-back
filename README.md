@@ -69,7 +69,8 @@ import { IrisModule, bootstrapIrisApp, getLogger } from '@u-iris/iris-back'
            appName: 'my-application',
            appVersion: '1.0.0',
            level: 'error',
-           enableConsole: true
+           enableConsole: true,
+           dateFormat: 'YYYY-MM-DDTHH:mm:ssZ' // Moment.js dateFormat
          },
          messagesSources: '/path/to/i18n.properties'
        })
