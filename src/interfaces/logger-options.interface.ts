@@ -3,4 +3,5 @@ export interface LoggerOptions {
   appVersion: string;
   file?: string;
   enableConsole?: boolean;
+  dateFormat?: string;
 }

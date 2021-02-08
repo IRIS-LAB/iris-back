@@ -87,7 +87,7 @@ export class LoggerService implements NestLoggerService {
       if (opts.tz) {
         info.timestamp = moment()
           .tz(opts.tz)
-          .format()
+          .format(this.irisConfigOptions.logger.dateFormat)
       }
       return info
     })
