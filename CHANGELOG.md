@@ -1,3 +1,35 @@
+# [4.3.0](https://github.com/IRIS-LAB/iris-back/compare/v4.2.1...v4.3.0) (2021-02-08)
+
+
+### Features
+
+* override log date format by option dateFormat in logger configuration ([#55](https://github.com/IRIS-LAB/iris-back/issues/55)) ([c275da6](https://github.com/IRIS-LAB/iris-back/commit/c275da60b3eafc18f61937307887ab3056da674e))
+
+
+
+## [4.2.1](https://github.com/IRIS-LAB/iris-back/compare/v4.2.0...v4.2.1) (2020-09-11)
+
+
+### Bug Fixes
+
+* **imports:** fix imports ([6954697](https://github.com/IRIS-LAB/iris-back/commit/695469792ef7daabec9622f765b811e531ae273f))
+
+
+
+# [4.2.0](https://github.com/IRIS-LAB/iris-back/compare/v4.1.0...v4.2.0) (2020-09-11)
+
+
+### Bug Fixes
+
+* **message-factory:** fixes variables replacement in messages ([#44](https://github.com/IRIS-LAB/iris-back/issues/44)) ([0f1af94](https://github.com/IRIS-LAB/iris-back/commit/0f1af9498052c19b8a67bb0af110e15c031df551))
+
+
+### Features
+
+* **bootstrap:** add hostname option ([049cac8](https://github.com/IRIS-LAB/iris-back/commit/049cac855851e3a934c188747b599cec8dceec72))
+* **logger:** accept same parameters of winston for log methods ([#48](https://github.com/IRIS-LAB/iris-back/issues/48)) ([575d98e](https://github.com/IRIS-LAB/iris-back/commit/575d98ead4775c8a21ca7eab363fc054a3722fae))
+* **naming:** supports types/classes suffixed with Entity and EntityPart ([#47](https://github.com/IRIS-LAB/iris-back/issues/47)) ([9c14a1f](https://github.com/IRIS-LAB/iris-back/commit/9c14a1f5b7e94d6dc631862ba8c832ae2a2a28c5))
+
 # CHANGELOG
 
 # 4.1.0
