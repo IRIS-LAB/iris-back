@@ -1,4 +1,5 @@
 export * from './filter.utils'
+export * from './logger.utils'
 export * from './pagination.utils'
 export * from './type.utils'
 export * from './typeorm.utils'
